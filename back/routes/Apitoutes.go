@@ -2,12 +2,12 @@ package routes
 
 import (
 	"time"
-	"temple-app/database"
+	"temple-app/db"
+	"temple-app/handlers"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"temple-app/handlers"
-	"temple-app/middlewares/auth"
+	"temple-app/auth"
 )
 
 func Routing() *gin.Engine {
@@ -22,16 +22,16 @@ func Routing() *gin.Engine {
 		MaxAge:           12 * time.Hour,                                                                                                                                                                                                           // Tiempo máximo que los resultados pueden ser cacheados
 	}))
 
-	db := database.GetDB()
+	db := db.GetDB()
 	handler := handlers.NewHandler(db)
 
 	usuaris := router.Group("/api/usuaris", auth.UserAuthMiddleware([]string{"Administrador"}))
 	{
-		usuaris.GET("", handlers.IndexUsuari)
-		usuaris.GET("/:id", handlers.FindUsuari)
-		usuaris.POST("", handlers.CreateUsuari)
-		usuaris.PUT("/:id", handlers.UpdateUsuari)
-		usuaris.DELETE("/:id", handlers.DeleteUsuari)
+		usuaris.GET("", handler.IndexUsuari)
+		usuaris.GET("/:id", handler.FindUsuari)
+		usuaris.POST("", handler.CreateUsuari)
+		usuaris.PUT("/:id", handler.UpdateUsuari)
+		usuaris.DELETE("/:id", handler.DeleteUsuari)
 	}
 
 	return router
