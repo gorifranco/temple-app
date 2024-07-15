@@ -16,3 +16,7 @@ type Reserva struct {
 func (Reserva) TableName() string {
 	return "reserves"
 }
+
+type ReservaInput struct {
+	Hora 			string 	`json:"hora"`
+}

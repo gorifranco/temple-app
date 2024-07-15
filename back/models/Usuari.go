@@ -17,3 +17,9 @@ type Usuari struct {
 func (Usuari) TableName() string {
 	return "usuaris"
 }
+
+type UsuariInput struct {
+	Nom           string `json:"nom"`
+	Telefon       string `json:"telefon"`
+	Password      string `json:"password"`
+}
