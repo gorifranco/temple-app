@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SafeAreaView, StyleSheet, View, Button, Alert } from 'react-native';
+import { SafeAreaView, StyleSheet, View, Pressable } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { Picker } from '@react-native-picker/picker';
 import { Text } from 'react-native';
@@ -25,14 +25,14 @@ export default function Index() {
   };
 
   const handleSubmit = () => {
-    if (selectedDay != '' && selectedHour != '') {
-      Alert.alert('Solicitud enviada', `Día: ${selectedDay}, Hora: ${selectedHour}`);
+    if (selectedDay !== '' && selectedHour !== '') {
+      alert(`Día: ${selectedDay}, Hora: ${selectedHour}`);
     } else {
-      Alert.alert('Error', 'Por favor selecciona una fecha y una hora');
+      alert('Error', 'Por favor selecciona una fecha y una hora');
     }
   };
 
-   return (
+  return (
     <SafeAreaView style={styles.container}>
       <View style={styles.calendarContainer}>
         <Calendar
@@ -66,7 +66,20 @@ export default function Index() {
         </Picker>
       </View>
       <View style={styles.buttonContainer}>
-        <Button title="Apuntar-se" onPress={handleSubmit} />
+        <Pressable
+          onPress={() => {
+            handleSubmit()
+          }}
+          style={({ pressed }) => [
+            {
+              backgroundColor: pressed ? 'rgb(210, 230, 255)' : 'white',
+            },
+            styles.wrapperCustom,
+          ]}>
+          {({ pressed }) => (
+            <Text style={styles.buttonText}>Reservar</Text>
+          )}
+        </Pressable>
       </View>
       <Text style={styles.text}>Pròxims entrenos</Text>
       <Text style={styles.text}>Entrenos setmanals disponibles</Text>
@@ -96,6 +109,18 @@ const styles = StyleSheet.create({
   text: {
     textAlign: 'center',
     marginBottom: 10,
-  }
+  },
+  wrapperCustom: {
+    padding: 7,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#09f',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    color: '#09f',
+    fontSize: 20,
+  },
 });
 
