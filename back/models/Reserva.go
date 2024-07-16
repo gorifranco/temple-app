@@ -18,5 +18,5 @@ func (Reserva) TableName() string {
 }
 
 type ReservaInput struct {
-	Hora 			string 	`json:"hora"`
+	Hora 			time.Time 	`json:"hora"`
 }
