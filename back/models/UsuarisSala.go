@@ -1,8 +1,8 @@
 package models
 
 type UsuarisSala struct {
-	UsuariID uint   `gorm:"primaryKey"`
-	SalaID   uint   `gorm:"primaryKey"`
+	UsuariID uint `gorm:"primaryKey"`
+	SalaID   uint `gorm:"primaryKey"`
 }
 
 func (UsuarisSala) TableName() string {
