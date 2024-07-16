@@ -16,3 +16,8 @@ type Sala struct {
 func (Sala) TableName() string {
 	return "sales"
 }
+
+type SalaInput struct {
+	Nom string `json:"nom"`
+}
+
