@@ -7,11 +7,12 @@ import (
 // Festa representa una fiesta en la base de datos
 type Usuari struct {
 	gorm.Model
-	Nom           string 
+	Nom           string
 	Telefon       string
-	TipusUsuari   TipusUsuari 	`gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"` //1 = administrador, 2 = basic
-	TipusUsuariID uint        	`gorm:"default:2"`
-	Password      string      	`gorm:"not null;"`
+	TipusUsuari   TipusUsuari `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"` //1 = administrador, 2 = basic
+	TipusUsuariID uint        `gorm:"default:2"`
+	Password      string      `gorm:"not null;"`
+	Sales         []Sala      `gorm:"many2many:usuari_sala;"`
 }
 
 func (Usuari) TableName() string {
@@ -19,7 +20,7 @@ func (Usuari) TableName() string {
 }
 
 type UsuariInput struct {
-	Nom           string `json:"nom"`
-	Telefon       string `json:"telefon"`
-	Password      string `json:"password"`
+	Nom      string `json:"nom"`
+	Telefon  string `json:"telefon"`
+	Password string `json:"password"`
 }

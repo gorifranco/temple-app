@@ -1,18 +1,12 @@
 package main
 
 import (
-    "github.com/gin-gonic/gin"
-    "net/http"
+    "temple-app/routes"
 )
 
 func main() {
-    router := gin.Default()
 
-    router.GET("/", func(c *gin.Context) {
-        c.JSON(http.StatusOK, gin.H{
-            "message": "Bienvenido al backend de reservas del gimnasio",
-        })
-    })
+    router := routes.Routing()
 
     router.Run(":8080")
 }
