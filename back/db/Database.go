@@ -6,7 +6,7 @@ import (
 	"sync"
 	"temple-app/models"
 	"github.com/joho/godotenv"
-	"golang.org/x/crypto/bcrypt"
+        "temple-app/services"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -61,7 +61,7 @@ func InsertData() error {
         GetDB().Create(&tipos)
 
         // Insertar usuario administrador
-        cpass, err := encryptPassword("1234")
+        cpass, err := services.EncryptPassword("1234")
         if err != nil {
             return err
         }
@@ -76,10 +76,4 @@ func InsertData() error {
     
         return nil
     }
-    
-
-    func encryptPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	return string(bytes), err
-}
     

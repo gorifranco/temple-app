@@ -4,7 +4,6 @@ import (
 	"net/http"
 	"strings"
 	"temple-app/models"
-	"fmt"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -33,36 +32,65 @@ func GenerarToken(user *models.Usuari) (string, error) {
 
 func UserAuthMiddleware(tipusAdmesos []string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenStr := c.GetHeader("Authorization")
-		tokenStr = strings.TrimPrefix(tokenStr, "Bearer ")
+		tokenStr := ExtractToken(c)
 
-		// Extraer y validar el token
-		claims := &Claims{}
-		token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
-			return jwtKey, nil
-		})
-        if err != nil {
-            if err.(*jwt.ValidationError).Errors == jwt.ValidationErrorExpired {
-                c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "token_expired", "message": "The authentication token has expired. Please log in again."})
-                return
-            }
-            c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid_token", "message": "Invalid token"})
-            return
-        }
+		token, claims, err := ParseToken(tokenStr)
+		if !TokenValid(c, token, err) {
+			return
+		}
 
-        if !token.Valid {
-            c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid_token", "message": "Invalid token"})
-            return
-        }
-
-        // Validar el tipo de usuario
-        if !contains(tipusAdmesos, claims.TipusUsuari) {
-            c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "access_denied", "message": "Access denied for user type"})
-            return
-        }
+		if !UserTypeValid(c, claims, tipusAdmesos) {
+			return
+		}
 
 		c.Next()
 	}
+}
+
+func ExtractToken(c *gin.Context) string {
+	tokenStr := c.GetHeader("Authorization")
+	return strings.TrimPrefix(tokenStr, "Bearer ")
+}
+
+// ParseToken analiza y valida el token JWT
+func ParseToken(tokenStr string) (*jwt.Token, *Claims, error) {
+	claims := &Claims{}
+	token, err := jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
+		return jwtKey, nil
+	})
+	return token, claims, err
+}
+
+// TokenValid verifica si el token es válido y maneja errores
+func TokenValid(c *gin.Context, token *jwt.Token, err error) bool {
+	if err != nil {
+		if err.(*jwt.ValidationError).Errors == jwt.ValidationErrorExpired {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "token_expired", "message": "The authentication token has expired. Please log in again."})
+			return false
+		}
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid_token", "message": "Invalid token"})
+		return false
+	}
+
+	if !token.Valid {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid_token", "message": "Invalid token"})
+		return false
+	}
+
+	return true
+}
+
+// UserTypeValid verifica si el tipo de usuario es válido
+func UserTypeValid(c *gin.Context, claims *Claims, tipusAdmesos []string) bool {
+	if !contains(tipusAdmesos, claims.TipusUsuari) {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "access_denied", "message": "Access denied for user type"})
+		return false
+	}
+	return true
+}
+
+func UserIsAdmin(c *gin.Context, claims *Claims) bool {
+	return claims.TipusUsuari == "Administrador"
 }
 
 func GetUsuari(c *gin.Context) uint {
@@ -73,7 +101,6 @@ func GetUsuari(c *gin.Context) uint {
 	jwt.ParseWithClaims(tokenStr, claims, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil
 	})
-	fmt.Println(claims)
 
 	return claims.Id
 }

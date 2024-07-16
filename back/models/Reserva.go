@@ -5,7 +5,6 @@ import (
 	"time"
 )
 
-// Festa representa una fiesta en la base de datos
 type Reserva struct {
 	gorm.Model
 	UsuariID 		uint		`gorm:"not null;"`
