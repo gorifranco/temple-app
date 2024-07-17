@@ -35,7 +35,7 @@ func InitializeDB() {
                 }
 
                 err = db.AutoMigrate(
-                        &models.TipusUsuari{}, &models.Usuari{}, &models.Sala{}, &models.UsuarisSala{}, &models.Reserva{},
+                        &models.TipusUsuari{}, &models.Usuari{}, &models.Sala{}, &models.UsuarisSala{}, &models.Reserva{}, &models.SolicitudUnio{},
                 )
                 
                 if err != nil {
@@ -69,7 +69,7 @@ func InsertData() error {
         adminUser := models.Usuari{
             Nom:           "Admin",
             TipusUsuariID: 1,
-            Password:      cpass, // Asumiendo que tienes una función `encryptPassword` definida
+            Password:      cpass,
         }
 
         db.Create(&adminUser)
