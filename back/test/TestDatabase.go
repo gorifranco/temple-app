@@ -3,11 +3,11 @@ package test
 import (
         "log"
         "sync"
+        "os"
 
         "temple-app/models"
         "gorm.io/gorm"
-        "gorm.io/gorm/logger"
-		"gorm.io/driver/mysql"
+        "gorm.io/driver/mysql"
 )
 
 var (
@@ -19,30 +19,25 @@ func InitializeDBTest() {
         once.Do(func() {
                 var err error
 
-                dsn := "host=127.0.0.1 user=postgres password=NLe26MLC@cArfzt dbname=db1_test port=5432 sslmode=require TimeZone=UTC"
+                dsn := os.Getenv("DB_USER_TEST") + ":" + os.Getenv("DB_PASS_TEST") + 
+                "@tcp(" + os.Getenv("DB_HOST_TEST") + ":" + os.Getenv("DB_PORT_TEST") + ")/" + 
+                os.Getenv("DB_NAME") + "?charset=utf8mb4&parseTime=True&loc=Local"
 
-                db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
-                        Logger: logger.Default.LogMode(logger.Silent),
-                })
+                db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+                if err != nil {
+                        log.Fatalf("failed to connect to database: %v", err)
+                }
+
                 if err != nil {
                         log.Fatalf("failed to connect to database: %v", err)
                 }
                 err = db.AutoMigrate(
-                        &models.Festa{}, &models.Imatge{}, &models.Sala{},
-                        &models.TipusUsuari{}, &models.Ubicacio{}, &models.Usuari{},
-                        &models.Artista{}, &models.Estil{}, &models.Barriada{}, &models.Missatge{},
-                        
+                        &models.TipusUsuari{}, &models.Usuari{}, &models.Sala{}, &models.UsuarisSala{}, &models.Reserva{}, &models.SolicitudUnio{},
                 )
-
+                
                 if err != nil {
                         log.Fatalf("failed to auto-migrate: %v", err)
                 }
-
-                var admin models.Usuari
-		result := db.Where("nom = ?", "Admin").First(&admin)
-		if result.Error != nil && result.Error == gorm.ErrRecordNotFound {
-			insertDataTest(db)
-		}
         })
 }
 
