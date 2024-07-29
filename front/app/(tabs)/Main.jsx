@@ -3,8 +3,6 @@ import { SafeAreaView, StyleSheet, View, Pressable } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { Picker } from '@react-native-picker/picker';
 import { Text } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 // Configurar el idioma
@@ -20,22 +18,6 @@ LocaleConfig.defaultLocale = 'es';
 export default function Index() {
   const [selectedDay, setSelectedDay] = useState('');
   const [selectedHour, setSelectedHour] = useState('');
-  const navigation = useNavigation();
-
-  useEffect(() => {
-    const checkUser = async () => {
-      try {
-        const user = await AsyncStorage.getItem('user');
-        if (!user) {
-          navigation.navigate('LoginScreen');
-        }
-      } catch (error) {
-        console.error('Error checking user', error);
-      }
-    };
-
-    checkUser();
-  }, []);
 
   const handleDayPress = (day) => {
     setSelectedDay(day.dateString);
