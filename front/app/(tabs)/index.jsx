@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SafeAreaView, StyleSheet, View, Pressable } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { Picker } from '@react-native-picker/picker';
 import { Text } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from 'expo-router';
 
 
 // Configurar el idioma
@@ -27,7 +27,7 @@ export default function Index() {
       try {
         const user = await AsyncStorage.getItem('user');
         if (!user) {
-          navigation.navigate('LoginScreen');
+          navigation.navigate('(auth)');
         }
       } catch (error) {
         console.error('Error checking user', error);
@@ -39,7 +39,6 @@ export default function Index() {
 
   const handleDayPress = (day) => {
     setSelectedDay(day.dateString);
-    console.log('selected day', day);
   };
 
   const handleSubmit = () => {

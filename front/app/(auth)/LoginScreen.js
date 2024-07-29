@@ -10,10 +10,12 @@ import BackButton from '../components/BackButton'
 import { theme } from '../themes/theme'
 import { emailValidator } from '../helpers/emailValidator'
 import { passwordValidator } from '../helpers/passwordValidator'
+import { useNavigation } from 'expo-router';
 
-export default function LoginScreen({ navigation }) {
+export default function LoginScreen() {
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
+  const navigation = useNavigation();
 
   const onLoginPressed = () => {
     const emailError = emailValidator(email.value)
@@ -23,15 +25,10 @@ export default function LoginScreen({ navigation }) {
       setPassword({ ...password, error: passwordError })
       return
     }
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Dashboard' }],
-    })
   }
 
   return (
     <Background>
-      <BackButton goBack={navigation.goBack} />
       <Logo />
       <Header>Welcome back.</Header>
       <TextInput
@@ -67,7 +64,7 @@ export default function LoginScreen({ navigation }) {
       </Button>
       <View style={styles.row}>
         <Text>Don’t have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.replace('RegisterScreen')}>
+        <TouchableOpacity onPress={() => navigation.navigate('registerScreen')}>
           <Text style={styles.link}>Sign up</Text>
         </TouchableOpacity>
       </View>
