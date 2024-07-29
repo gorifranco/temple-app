@@ -41,6 +41,9 @@ func InitializeDB() {
                 if err != nil {
                         log.Fatalf("failed to auto-migrate: %v", err)
                 }
+                
+                db.getDB.find(&models.TipusUsuari{})
+
 
                 InsertData()
         })
