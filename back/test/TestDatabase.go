@@ -40,7 +40,11 @@ func InitializeDBTest() {
 		if err != nil {
 			log.Fatalf("failed to auto-migrate: %v", err)
 		}
-		InsertDataTest()
+		err = GetDBTest().Where("Nom = ?", "Admin").First(&models.TipusUsuari{}).Error
+
+		if err != nil {
+			InsertDataTest()
+		}
 	})
 }
 

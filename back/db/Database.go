@@ -1,82 +1,82 @@
 package db
 
 import (
+	"github.com/joho/godotenv"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 	"log"
 	"os"
 	"sync"
 	"temple-app/models"
-	"github.com/joho/godotenv"
-        "temple-app/services"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
+	"temple-app/services"
 )
 
 var (
-        db   *gorm.DB
-        once sync.Once
+	db   *gorm.DB
+	once sync.Once
 )
 
 func InitializeDB() {
-        once.Do(func() {
-                var err error
+	once.Do(func() {
+		var err error
 
-                err = godotenv.Load()
-                if err != nil {
-                    log.Fatalf("Error loading .env file")
-                }
+		err = godotenv.Load()
+		if err != nil {
+			log.Fatalf("Error loading .env file")
+		}
 
-                dsn := os.Getenv("DB_USER") + ":" + os.Getenv("DB_PASS") + 
-                "@tcp(" + os.Getenv("DB_HOST") + ":" + os.Getenv("DB_PORT") + ")/" + 
-                os.Getenv("DB_NAME") + "?charset=utf8mb4&parseTime=True&loc=Local"
+		dsn := os.Getenv("DB_USER") + ":" + os.Getenv("DB_PASS") +
+			"@tcp(" + os.Getenv("DB_HOST") + ":" + os.Getenv("DB_PORT") + ")/" +
+			os.Getenv("DB_NAME") + "?charset=utf8mb4&parseTime=True&loc=Local"
 
-                db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
-                if err != nil {
-                        log.Fatalf("failed to connect to database: %v", err)
-                }
+		db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+		if err != nil {
+			log.Fatalf("failed to connect to database: %v", err)
+		}
 
-                err = db.AutoMigrate(
-                        &models.TipusUsuari{}, &models.Usuari{}, &models.Sala{}, &models.UsuarisSala{}, &models.Reserva{}, &models.SolicitudUnio{},
-                )
-                
-                if err != nil {
-                        log.Fatalf("failed to auto-migrate: %v", err)
-                }
-                
-                db.getDB.find(&models.TipusUsuari{})
+		err = db.AutoMigrate(
+			&models.TipusUsuari{}, &models.Usuari{}, &models.Sala{}, &models.UsuarisSala{}, &models.Reserva{}, &models.SolicitudUnio{},
+		)
 
+		if err != nil {
+			log.Fatalf("failed to auto-migrate: %v", err)
+		}
 
-                InsertData()
-        })
+		err = GetDB().Where("Nom = ?", "Admin").First(&models.TipusUsuari{}).Error
+
+		if err != nil {
+			InsertData()
+		}
+	})
 }
 func GetDB() *gorm.DB {
-        if db == nil {
-                InitializeDB()
-        }
-        return db
+	if db == nil {
+		InitializeDB()
+	}
+	return db
 }
 
 func InsertData() error {
-        // Insertar tipos de usuarios
-        tipos := []models.TipusUsuari{
-            {Nom: "Administrador"},
-            {Nom: "Basic"},
-        }
-        GetDB().Create(&tipos)
+	// Insertar tipos de usuarios
+	tipos := []models.TipusUsuari{
+		{Nom: "Administrador"},
+		{Nom: "Basic"},
+	}
+	GetDB().Create(&tipos)
 
-        // Insertar usuario administrador
-        cpass, err := services.EncryptPassword("1234")
-        if err != nil {
-            return err
-        }
-    
-        adminUser := models.Usuari{
-            Nom:           "Admin",
-            TipusUsuariID: 1,
-            Password:      cpass,
-        }
+	// Insertar usuario administrador
+	cpass, err := services.EncryptPassword("1234")
+	if err != nil {
+		return err
+	}
 
-        db.Create(&adminUser)
-    
-        return nil
-    }
-    
+	adminUser := models.Usuari{
+		Nom:           "Admin",
+		TipusUsuariID: 1,
+		Password:      cpass,
+	}
+
+	db.Create(&adminUser)
+
+	return nil
+}

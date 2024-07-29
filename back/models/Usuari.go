@@ -9,6 +9,7 @@ type Usuari struct {
 	gorm.Model
 	Nom                string
 	Telefon            string
+	Email              string	   `gorm:"not null;uniqueIndex;unique"`
 	TipusUsuari        TipusUsuari `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"` //1 = administrador, 2 = basic
 	TipusUsuariID      uint        `gorm:"default:2"`
 	Password           string      `gorm:"not null;"`
@@ -23,6 +24,5 @@ func (Usuari) TableName() string {
 
 type UsuariInput struct {
 	Nom      string `json:"nom"`
-	Telefon  string `json:"telefon"`
 	Password string `json:"password"`
 }

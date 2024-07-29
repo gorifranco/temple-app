@@ -39,7 +39,7 @@ func (h *Handler) CreateUsuari(c *gin.Context) {
 		return
 	}
 
-	usuari := models.Usuari{Nom: input.Nom, Telefon: input.Telefon, Password: hash}
+	usuari := models.Usuari{Nom: input.Nom, Password: hash}
 
 	h.DB.Create(&usuari)
 
@@ -74,7 +74,7 @@ func (h *Handler) UpdateUsuari(c *gin.Context) {
 		}
 	}
 
-	updatedUsuari := models.Usuari{Nom: input.Nom, Telefon: input.Telefon, Password: hash}
+	updatedUsuari := models.Usuari{Nom: input.Nom, Password: hash}
 
 	h.DB.Model(&usuari).Updates(&updatedUsuari)
 

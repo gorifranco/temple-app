@@ -34,14 +34,8 @@ func Routing() *gin.Engine {
 		usuaris.DELETE("/:id", handler.DeleteUsuari)
 	}
 
-/* 	reserves := router.Group("/api/reserves", auth.OwnerMiddleware())
-	{
-		reserves.GET("", handler.IndexReserva)
-		reserves.GET("/:id", handler.FindReserva)
-		reserves.POST("", handler.CreateReserva)
-		reserves.PUT("/:id", handler.UpdateReserva)
-		reserves.DELETE("/:id", handler.DeleteReserva)
-	} */
+	router.POST("/login", handler.Login)
+	router.POST("/register", handler.Registre)
 
 	return router
 }
