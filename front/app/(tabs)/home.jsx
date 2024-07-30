@@ -3,7 +3,6 @@ import { SafeAreaView, StyleSheet, View, Pressable } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { Picker } from '@react-native-picker/picker';
 import { Text } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from 'expo-router';
 
 
@@ -22,20 +21,6 @@ export default function Index() {
   const [selectedHour, setSelectedHour] = useState('');
   const navigation = useNavigation();
 
-  useEffect(() => {
-    const checkUser = async () => {
-      try {
-        const user = await AsyncStorage.getItem('user');
-        if (!user) {
-          navigation.navigate('(auth)');
-        }
-      } catch (error) {
-        console.error('Error checking user', error);
-      }
-    };
-
-    checkUser();
-  }, []);
 
   const handleDayPress = (day) => {
     setSelectedDay(day.dateString);

@@ -6,11 +6,11 @@ import Logo from '../components/Logo'
 import Header from '../components/Header'
 import Button from '../components/Button'
 import TextInput from '../components/TextInput'
-import BackButton from '../components/BackButton'
 import { theme } from '../themes/theme'
 import { emailValidator } from '../helpers/emailValidator'
 import { passwordValidator } from '../helpers/passwordValidator'
 import { useNavigation } from 'expo-router';
+import { Link } from 'expo-router';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState({ value: '', error: '' })
@@ -64,9 +64,7 @@ export default function LoginScreen() {
       </Button>
       <View style={styles.row}>
         <Text>Don’t have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate('registerScreen')}>
-          <Text style={styles.link}>Sign up</Text>
-        </TouchableOpacity>
+        <Link href={{ pathname: 'RegisterScreen' }} style={styles.link}>Sign up</Link>
       </View>
     </Background>
   )

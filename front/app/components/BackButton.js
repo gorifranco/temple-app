@@ -1,15 +1,18 @@
 import React from 'react'
-import { TouchableOpacity, Image, StyleSheet } from 'react-native'
+import { Image, StyleSheet } from 'react-native'
 import { getStatusBarHeight } from 'react-native-status-bar-height'
+import { Link } from 'expo-router'
 
-export default function BackButton({ goBack }) {
+export default function BackButton({href}) {
   return (
-    <TouchableOpacity onPress={goBack} style={styles.container}>
+    <Link asChild href={{href}}>
+      <div style={styles.container}>
       <Image
         style={styles.image}
         source={require('../assets/arrow_back.png')}
       />
-    </TouchableOpacity>
+      </div>        
+    </Link>
   )
 }
 

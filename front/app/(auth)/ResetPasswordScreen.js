@@ -7,8 +7,9 @@ import TextInput from '../components/TextInput'
 import Button from '../components/Button'
 import { emailValidator } from '../helpers/emailValidator'
 
-export default function ResetPasswordScreen({ navigation }) {
+export default function ResetPasswordScreen() {
   const [email, setEmail] = useState({ value: '', error: '' })
+
 
   const sendResetPasswordEmail = () => {
     const emailError = emailValidator(email.value)
@@ -21,7 +22,7 @@ export default function ResetPasswordScreen({ navigation }) {
 
   return (
     <Background>
-      <BackButton goBack={navigation.goBack} />
+      <BackButton href={"/LoginScreen"}/>
       <Logo />
       <Header>Restore Password</Header>
       <TextInput
