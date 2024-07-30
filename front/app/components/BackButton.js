@@ -1,29 +1,36 @@
 import React from 'react'
 import { Image, StyleSheet } from 'react-native'
-import { getStatusBarHeight } from 'react-native-status-bar-height'
 import { Link } from 'expo-router'
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-export default function BackButton({href}) {
+export default function BackButton({ href })
+ {
   return (
-    <Link asChild href={{href}}>
-      <div style={styles.container}>
-      <Image
-        style={styles.image}
-        source={require('../assets/arrow_back.png')}
-      />
-      </div>        
-    </Link>
-  )
+    <div style={styles.divContainer}>
+      <Link href={href} asChild>
+        <TouchableOpacity >
+          <Image
+            style={styles.image}
+            source={require('../assets/arrow_back.png')}
+          />
+        </TouchableOpacity>
+      </Link>
+    </div>
+  );
 }
 
+
 const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    top: 10 + getStatusBarHeight(),
-    left: 4,
-  },
   image: {
     width: 24,
     height: 24,
+  },
+  divContainer: {
+    position: 'absolute',
+    top: 25,
+    left: 25,
+    display: 'flex',
+    width: '100%',
+    height: "30px",
   },
 })

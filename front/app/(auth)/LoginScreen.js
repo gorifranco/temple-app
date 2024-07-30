@@ -11,13 +11,14 @@ import { emailValidator } from '../helpers/emailValidator'
 import { passwordValidator } from '../helpers/passwordValidator'
 import { useNavigation } from 'expo-router';
 import { Link } from 'expo-router';
+import api from '../api'; 
 
 export default function LoginScreen() {
   const [email, setEmail] = useState({ value: '', error: '' })
   const [password, setPassword] = useState({ value: '', error: '' })
   const navigation = useNavigation();
 
-  const onLoginPressed = () => {
+  const onLoginPressed = async () => {
     const emailError = emailValidator(email.value)
     const passwordError = passwordValidator(password.value)
     if (emailError || passwordError) {
@@ -25,6 +26,18 @@ export default function LoginScreen() {
       setPassword({ ...password, error: passwordError })
       return
     }
+    //login
+    try {
+      const response = await api.post('/login', {
+        email,
+        password,
+      });
+      console.log('Login successful', response.data);
+    } catch (err) {
+      setError('Login failed. Please check your credentials.');
+      console.error('Login error', err);
+    }
+    
   }
 
   return (
