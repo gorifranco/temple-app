@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Crear una instancia de Axios
 const api = axios.create({
-  baseURL: 'https://tu-api.com/api', // Cambia esta URL por la de tu API
+  baseURL: 'https://tu-api.com/api',
   timeout: 10000, // Tiempo máximo de espera para una petición
 });
 

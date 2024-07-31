@@ -1,12 +1,12 @@
 import React from 'react'
-import { Image, StyleSheet } from 'react-native'
+import { Image, StyleSheet, View } from 'react-native'
 import { Link } from 'expo-router'
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 export default function BackButton({ href })
  {
   return (
-    <div style={styles.divContainer}>
+    <View style={styles.divContainer}>
       <Link href={href} asChild>
         <TouchableOpacity >
           <Image
@@ -15,7 +15,7 @@ export default function BackButton({ href })
           />
         </TouchableOpacity>
       </Link>
-    </div>
+    </View>
   );
 }
 
