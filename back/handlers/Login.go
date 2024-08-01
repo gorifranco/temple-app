@@ -43,8 +43,6 @@ func (h *Handler) Login(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
-	fmt.Println(user.Email)
-	h.DB.Model(&user).Preload("TipusUsuari").First(&user)
 	
 	token, err = auth.GenerarToken(user)
 
@@ -66,15 +64,13 @@ func (h *Handler) Login(c *gin.Context) {
 
 func (h *Handler) GetUserByEmailAndPassword(email string, password string) (*models.Usuari, error) {
 	var user models.Usuari
-	result := h.DB.Where("email = ?", email).First(&user)
+	result := h.DB.Where("email = ?", email).Preload("TipusUsuari").First(&user)
 	if result.Error != nil {
 		return nil, result.Error
 	}
 
 	// Verificando la contraseña
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
-	fmt.Println(user.Password)
-	fmt.Println(password)
 	if err != nil {
 		return nil, err // La contraseña no coincide
 	}
