@@ -8,6 +8,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AuthContext, { AuthProvider } from './AuthContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -23,7 +24,7 @@ export default function RootLayout() {
       const user = await AsyncStorage.getItem('user');
       setIsAuthenticated(!!user);
     };
-    
+
     checkUser();
     if (loaded) {
       SplashScreen.hideAsync();
@@ -37,14 +38,20 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack screenOptions={{ headerShown: false }}>
-          {isAuthenticated ? (
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          ) : (
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-          )}
-          <Stack.Screen name="+not-found" options={{ headerShown: false }} />
-        </Stack>
+        <AuthProvider>
+          <AuthContext.Consumer>
+            {({ isAuthenticated }) => (
+              <Stack screenOptions={{ headerShown: false }}>
+                {isAuthenticated ? (
+                  <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                ) : (
+                  <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                )}
+                <Stack.Screen name="+not-found" options={{ headerShown: false }} />
+              </Stack>
+            )}
+          </AuthContext.Consumer>
+        </AuthProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
   );

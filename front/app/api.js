@@ -1,18 +1,22 @@
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Crear una instancia de Axios
 const api = axios.create({
-  baseURL: 'https://tu-api.com/api',
+  baseURL: 'http://localhost:8080',
   timeout: 10000, // Tiempo máximo de espera para una petición
 });
 
 // Interceptores de petición
 api.interceptors.request.use(
-  (config) => {
-    // Puedes añadir headers comunes como tokens de autenticación aquí
-    const token = 'tu-token-de-autenticacion'; // Reemplaza con tu lógica para obtener el token
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
+  async (config) => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    } catch (error) {
+      console.error('Error getting token from AsyncStorage', error);
     }
     return config;
   },

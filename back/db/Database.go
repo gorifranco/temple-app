@@ -34,17 +34,17 @@ func InitializeDB() {
 			log.Fatalf("failed to connect to database: %v", err)
 		}
 
-		err = db.AutoMigrate(
+/* 		err = db.AutoMigrate(
 			&models.TipusUsuari{}, &models.Usuari{}, &models.Sala{}, &models.UsuarisSala{}, &models.Reserva{}, &models.SolicitudUnio{},
-		)
+		) */
 
-		if err != nil {
+/* 		if err != nil {
 			log.Fatalf("failed to auto-migrate: %v", err)
-		}
+		} */
 
 		err = GetDB().Where("Nom = ?", "Admin").First(&models.TipusUsuari{}).Error
 
-		if err != nil {
+		if err == nil {
 			InsertData()
 		}
 	})
@@ -64,7 +64,6 @@ func InsertData() error {
 	}
 	GetDB().Create(&tipos)
 
-	// Insertar usuario administrador
 	cpass, err := services.EncryptPassword("1234")
 	if err != nil {
 		return err

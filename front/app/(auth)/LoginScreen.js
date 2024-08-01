@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import { TouchableOpacity, StyleSheet, View } from 'react-native'
 import { Text } from 'react-native-paper'
 import Background from '../components/Background'
@@ -12,33 +12,44 @@ import { passwordValidator } from '../helpers/passwordValidator'
 import { useNavigation } from 'expo-router';
 import { Link } from 'expo-router';
 import api from '../api'; 
+import AuthContext from '../AuthContext';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState({ value: '', error: '' })
-  const [password, setPassword] = useState({ value: '', error: '' })
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [errors, setErrors] = useState({
+    email: '',
+    password: '',
+  });
   const navigation = useNavigation();
+  const { login } = useContext(AuthContext);
 
   const onLoginPressed = async () => {
-    const emailError = emailValidator(email.value)
-    const passwordError = passwordValidator(password.value)
+    const emailError = emailValidator(email)
+    const passwordError = passwordValidator(password)
+  
     if (emailError || passwordError) {
-      setEmail({ ...email, error: emailError })
-      setPassword({ ...password, error: passwordError })
+      setErrors({ ...errors, email: emailError })
+      setErrors({ ...errors, password: passwordError })
       return
     }
     //login
     try {
-      const response = await api.post('/login', {
-        email,
-        password,
-      });
-      console.log('Login successful', response.data);
-    } catch (err) {
-      setError('Login failed. Please check your credentials.');
-      console.error('Login error', err);
+      // Lógica de autenticación aquí
+      const response = await api.post('/login', { email, password });
+      const token = response.data.token;
+
+      // Guarda el token en AsyncStorage
+      await AsyncStorage.setItem('token', token);
+
+      // Llama a la función de login del contexto
+      login({ email }); // Puedes pasar más información del usuario si es necesario
+    } catch (error) {
+      console.error('Error logging in', error);
     }
-    
-  }
+  };
 
   return (
     <Background>
@@ -47,10 +58,10 @@ export default function LoginScreen() {
       <TextInput
         label="Email"
         returnKeyType="next"
-        value={email.value}
-        onChangeText={(text) => setEmail({ value: text, error: '' })}
-        error={!!email.error}
-        errorText={email.error}
+        value={email}
+        onChangeText={(text) => setEmail(text)}
+        error={!!errors.email}
+        errorText={errors.email}
         autoCapitalize="none"
         autoCompleteType="email"
         textContentType="emailAddress"
@@ -59,10 +70,10 @@ export default function LoginScreen() {
       <TextInput
         label="Password"
         returnKeyType="done"
-        value={password.value}
-        onChangeText={(text) => setPassword({ value: text, error: '' })}
-        error={!!password.error}
-        errorText={password.error}
+        value={password}
+        onChangeText={(text) => setPassword(text)}
+        error={!!errors.password}
+        errorText={errors.password}
         secureTextEntry
       />
       <View style={styles.forgotPassword}>
