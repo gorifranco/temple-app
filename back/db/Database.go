@@ -1,14 +1,15 @@
 package db
 
 import (
-	"github.com/joho/godotenv"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 	"log"
 	"os"
 	"sync"
 	"temple-app/models"
 	"temple-app/services"
+
+	"github.com/joho/godotenv"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 var (
@@ -44,7 +45,7 @@ func InitializeDB() {
 
 		err = GetDB().Where("Nom = ?", "Admin").First(&models.Usuari{}).Error
 
-		if err == nil {
+	if err != nil {
 			InsertData()
 		}
 	})

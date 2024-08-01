@@ -46,6 +46,7 @@ export default function LoginScreen() {
 
       // Llama a la función de login del contexto
       login({ email }); // Puedes pasar más información del usuario si es necesario
+      navigation.navigate('(tabs)');
     } catch (error) {
       console.error('Error logging in', error);
     }
