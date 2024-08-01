@@ -42,7 +42,7 @@ func InitializeDB() {
 			log.Fatalf("failed to auto-migrate: %v", err)
 		} */
 
-		err = GetDB().Where("Nom = ?", "Admin").First(&models.TipusUsuari{}).Error
+		err = GetDB().Where("Nom = ?", "Admin").First(&models.Usuari{}).Error
 
 		if err == nil {
 			InsertData()

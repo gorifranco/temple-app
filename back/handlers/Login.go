@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"temple-app/auth"
 	"temple-app/models"
@@ -42,6 +43,7 @@ func (h *Handler) Login(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
+	fmt.Println(user.Email)
 	h.DB.Model(&user).Preload("TipusUsuari").First(&user)
 	
 	token, err = auth.GenerarToken(user)
@@ -62,7 +64,7 @@ func (h *Handler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Login successful", "user": response})
 }
 
-func (h *Handler) GetUserByEmailAndPassword(email, password string) (*models.Usuari, error) {
+func (h *Handler) GetUserByEmailAndPassword(email string, password string) (*models.Usuari, error) {
 	var user models.Usuari
 	result := h.DB.Where("email = ?", email).First(&user)
 	if result.Error != nil {
@@ -71,6 +73,8 @@ func (h *Handler) GetUserByEmailAndPassword(email, password string) (*models.Usu
 
 	// Verificando la contraseña
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
+	fmt.Println(user.Password)
+	fmt.Println(password)
 	if err != nil {
 		return nil, err // La contraseña no coincide
 	}
