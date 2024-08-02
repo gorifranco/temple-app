@@ -3,33 +3,19 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthContext, { AuthProvider } from './AuthContext';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
-
-  useEffect(() => {
-    const checkUser = async () => {
-      const user = await AsyncStorage.getItem('user');
-      setIsAuthenticated(!!user);
-    };
-
-    checkUser();
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
 
   if (!loaded) {
     return null;
@@ -39,20 +25,24 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <AuthProvider>
-          <AuthContext.Consumer>
-            {({ isAuthenticated }) => (
-              <Stack screenOptions={{ headerShown: false }}>
-                {isAuthenticated ? (
-                  <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                ) : (
-                  <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-                )}
-                <Stack.Screen name="+not-found" options={{ headerShown: false }} />
-              </Stack>
-            )}
-          </AuthContext.Consumer>
+          <RootNavigator />
         </AuthProvider>
       </ThemeProvider>
     </GestureHandlerRootView>
   );
 }
+
+const RootNavigator = () => {
+  const { user } = useContext(AuthContext);
+
+  return (
+    <Stack screenOptions={{ headerShown: false }}>
+      {user ? (
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      ) : (
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      )}
+      <Stack.Screen name="+not-found" options={{ headerShown: false }} />
+    </Stack>
+  );
+};

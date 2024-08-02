@@ -39,13 +39,13 @@ export default function LoginScreen() {
     try {
       // Lógica de autenticación aquí
       const response = await api.post('/login', { email, password });
-      const token = response.data.token;
 
       // Guarda el token en AsyncStorage
-      await AsyncStorage.setItem('token', token);
+      await AsyncStorage.setItem('user', response.data);
 
       // Llama a la función de login del contexto
-      login({ email }); // Puedes pasar más información del usuario si es necesario
+      login(response.user); // Puedes pasar más información del usuario si es necesario login
+      console.log(response.user)
       navigation.navigate('(tabs)');
     } catch (error) {
       console.error('Error logging in', error);

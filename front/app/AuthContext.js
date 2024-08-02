@@ -4,21 +4,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(null);
   const [user, setUser] = useState(null);
 
   useEffect(() => {
     const checkUser = async () => {
       try {
-        const token = await AsyncStorage.getItem('token');
-        if (token) {
-          setIsAuthenticated(true);
-        } else {
-          setIsAuthenticated(false);
-        }
+        const user = await AsyncStorage.getItem('user');
+        setUser(JSON.parse(user));
       } catch (error) {
         console.error('Error checking user', error);
-        setIsAuthenticated(false);
       }
     };
 
@@ -27,21 +21,20 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (userData) => {
     setUser(userData);
-    setIsAuthenticated(true);
+    AsyncStorage.setItem('user', JSON.stringify(userData));
   };
 
   const logout = async () => {
     try {
-      await AsyncStorage.removeItem('token');
+      await AsyncStorage.removeItem('user');
       setUser(null);
-      setIsAuthenticated(false);
     } catch (error) {
       console.error('Error logging out', error);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
