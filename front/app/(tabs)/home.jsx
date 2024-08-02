@@ -3,7 +3,6 @@ import { SafeAreaView, StyleSheet, View, Pressable } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { Picker } from '@react-native-picker/picker';
 import { Text } from 'react-native';
-import { useNavigation } from 'expo-router';
 
 
 // Configurar el idioma
@@ -19,7 +18,6 @@ LocaleConfig.defaultLocale = 'es';
 export default function Index() {
   const [selectedDay, setSelectedDay] = useState('');
   const [selectedHour, setSelectedHour] = useState('');
-  const navigation = useNavigation();
 
 
   const handleDayPress = (day) => {

@@ -12,22 +12,40 @@ import { emailValidator } from '../helpers/emailValidator'
 import { passwordValidator } from '../helpers/passwordValidator'
 import { nameValidator } from '../helpers/nameValidator'
 import { Link } from 'expo-router';
+import api from '../api'; 
 
 export default function RegisterScreen() {
-  const [name, setName] = useState({ value: '', error: '' })
-  const [email, setEmail] = useState({ value: '', error: '' })
-  const [password, setPassword] = useState({ value: '', error: '' })
+  const [nom, setNom] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [errors, setErrors] = useState({
+    nom: '',
+    email: '',
+    password: '',
+  });
 
-  const onSignUpPressed = () => {
-    const nameError = nameValidator(name.value)
-    const emailError = emailValidator(email.value)
-    const passwordError = passwordValidator(password.value)
+  const onSignUpPressed = async () => {
+    const nameError = nameValidator(nom)
+    const emailError = emailValidator(email)
+    const passwordError = passwordValidator(password)
     if (emailError || passwordError || nameError) {
-      setName({ ...name, error: nameError })
-      setEmail({ ...email, error: emailError })
-      setPassword({ ...password, error: passwordError })
+      setErrors({
+        nom: nameError,
+        email: emailError,
+        password: passwordError
+      })
       return
     }
+
+    try {
+      const response = await api.post('/register', { nom, email, password });
+      const token = response.data.token;
+
+      navigation.navigate('LoginScreen');
+    } catch (error) {
+      console.error('Error logging in', error);
+    }
+    
   }
 
   return (
@@ -38,18 +56,18 @@ export default function RegisterScreen() {
       <TextInput
         label="Name"
         returnKeyType="next"
-        value={name.value}
-        onChangeText={(text) => setName({ value: text, error: '' })}
-        error={!!name.error}
-        errorText={name.error}
+        value={nom}
+        onChangeText={(text) => setNom(text)}
+        error={!!errors.nom}
+        errorText={errors.nom}
       />
       <TextInput
         label="Email"
         returnKeyType="next"
-        value={email.value}
-        onChangeText={(text) => setEmail({ value: text, error: '' })}
-        error={!!email.error}
-        errorText={email.error}
+        value={email}
+        onChangeText={(text) => setEmail(text)}
+        error={!!errors.email}
+        errorText={errors.email}
         autoCapitalize="none"
         autoCompleteType="email"
         textContentType="emailAddress"
@@ -58,10 +76,10 @@ export default function RegisterScreen() {
       <TextInput
         label="Password"
         returnKeyType="done"
-        value={password.value}
-        onChangeText={(text) => setPassword({ value: text, error: '' })}
-        error={!!password.error}
-        errorText={password.error}
+        value={password}
+        onChangeText={(text) => setPassword(text)}
+        error={!!errors.password}
+        errorText={errors.password} 
         secureTextEntry
       />
       <Button
