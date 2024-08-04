@@ -43,9 +43,8 @@ export default function LoginScreen() {
       // Guarda el token en AsyncStorage
       await AsyncStorage.setItem('user', response.data);
 
-      // Llama a la función de login del contexto
-      login(response.user); // Puedes pasar más información del usuario si es necesario login
-      console.log(response.user)
+      login(response.data.user);
+      console.log(response.data.user)
       navigation.navigate('(tabs)');
     } catch (error) {
       console.error('Error logging in', error);
