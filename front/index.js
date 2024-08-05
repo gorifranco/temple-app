@@ -1,5 +1,0 @@
-export { default as StartScreen } from './app/(tabs)/StartScreen'
-export { default as LoginScreen } from './app/(tabs)/LoginScreen'
-export { default as RegisterScreen } from './app/(tabs)/RegisterScreen'
-export { default as ResetPasswordScreen } from './app/(tabs)/ResetPasswordScreen'
-export { default as Dashboard } from './app/(tabs)/Dashboard'
