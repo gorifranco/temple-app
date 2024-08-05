@@ -13,7 +13,6 @@ export default function ConfigScreen() {
   const navigation = useNavigation();
 
   function doLogout() {
-    
     logout();
     navigation.navigate('(auth)');
   }

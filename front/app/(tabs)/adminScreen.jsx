@@ -1,7 +1,9 @@
+import { View, Text } from 'react-native';
+
 export default function AdminScreen() {
   return (
-    <div>
-      <h1>Admin screen</h1>
-    </div>
+    <View>
+      <Text>Admin screen</Text>
+    </View>
   );
 }

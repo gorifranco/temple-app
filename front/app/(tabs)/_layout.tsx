@@ -1,10 +1,10 @@
-import { Tabs } from 'expo-router';
 import React from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import AuthContext from '../AuthContext';
 import { useContext } from 'react';
+import { Tabs } from "expo-router";
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
@@ -18,7 +18,7 @@ export default function TabLayout() {
       }}>
       {(user.tipusUsuari === 'Basic' || user.tipusUsuari === 'Administrador') && (
         <Tabs.Screen
-          name="home"
+          name="HomeBasic"
           options={{
             title: 'Home',
             headerShown: false,
@@ -28,9 +28,9 @@ export default function TabLayout() {
           }}
         />
       )}
-      {(user.tipusUsuari === 'Entrenador' || user.tipusUsuari === 'Administrador') && (
+{/*       {(user.tipusUsuari === 'Entrenador' || user.tipusUsuari === 'Administrador') && (
         <Tabs.Screen
-          name="homeEntrenador"
+          name="HomeEntrenador"
           options={{
             title: 'Entrenador',
             tabBarIcon: ({ color, focused }) => (
@@ -41,7 +41,7 @@ export default function TabLayout() {
       )}
       {(user.tipusUsuari === 'Administrador') && (
         <Tabs.Screen
-          name="adminScreen"
+          name="AdminScreen"
           options={{
             title: 'Administrador',
             headerShown: false,
@@ -50,7 +50,18 @@ export default function TabLayout() {
             ),
           }}
         />
-      )}
+      )} */}
+      <Tabs.Screen
+        name="ConfigScreen"
+        options={{
+          title: 'Configuració',
+          headerShown: false,
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
+          ),
+        }}
+      />
+    
     </Tabs>
   );
 }

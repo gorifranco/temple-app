@@ -62,6 +62,7 @@ func InsertData() error {
 	tipos := []models.TipusUsuari{
 		{Nom: "Administrador"},
 		{Nom: "Basic"},
+		{Nom: "Entrenador"},
 	}
 	GetDB().Create(&tipos)
 
