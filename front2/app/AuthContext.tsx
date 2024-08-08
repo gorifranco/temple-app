@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter } from 'expo-router';
 
 // Definir la interfaz para el usuario
 interface User {
@@ -19,6 +20,7 @@ export interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -45,6 +47,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await AsyncStorage.removeItem('user');
       setUser(null);
+      router.replace('/(auth)');
     } catch (error) {
       console.error('Error logging out', error);
     }

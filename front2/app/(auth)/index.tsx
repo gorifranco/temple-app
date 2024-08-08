@@ -15,6 +15,7 @@ import Header from '../../components/Header';
 import TextInput from '../../components/TextInput';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { theme } from '../../themes/theme';
+import { AuthContextType } from '../AuthContext';
 
 
 export default function Index() {
@@ -24,8 +25,14 @@ export default function Index() {
     email: '',
     password: '',
   });
-  const navigation = useNavigation();
-  const { login } = useContext(AuthContext);
+
+  const authContext = useContext<AuthContextType | undefined>(AuthContext);
+
+  if (!authContext) {
+    throw new Error("AuthProvider is missing. Please wrap your component tree with AuthProvider.");
+  }
+
+  const { login } = authContext;
 
   const onLoginPressed = async () => {
     const emailError = emailValidator(email)
@@ -72,7 +79,7 @@ export default function Index() {
         label="Password"
         returnKeyType="done"
         value={password}
-        onChangeText={(text: string) => setEmail(text)} 
+        onChangeText={(text: string) => setPassword(text)} 
         error={!!errors.password}
         errorText={errors.password}
         secureTextEntry

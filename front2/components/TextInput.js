@@ -13,9 +13,6 @@ export default function TextInput({ errorText, ...props }) {
         mode="outlined"
         {...props}
       />
-      {description && !errorText ? (
-        <Text style={styles.description}>{description}</Text>
-      ) : null}
       {errorText ? <Text style={styles.error}>{errorText}</Text> : null}
     </View>
   )
@@ -28,11 +25,6 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: theme.colors.surface,
-  },
-  description: {
-    fontSize: 13,
-    color: theme.colors.secondary,
-    paddingTop: 8,
   },
   error: {
     fontSize: 13,
