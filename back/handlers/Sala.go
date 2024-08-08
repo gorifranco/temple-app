@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"temple-app/models"
 
@@ -75,4 +76,18 @@ func (h *Handler) DeleteSala(c *gin.Context) {
 
     h.DB.Delete(&sala)
     c.JSON(http.StatusOK, gin.H{"data": "success"})
+}
+
+func (h *Handler) SalesUsuari(c *gin.Context) {
+	var usuari models.Usuari
+
+
+	if err := h.DB.Where("id = ?", c.Param("id")).Preload("sala").Find(&usuari).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	fmt.Println(usuari.Sales)
+
+	c.JSON(http.StatusOK, gin.H{"data": usuari.Sales})
 }

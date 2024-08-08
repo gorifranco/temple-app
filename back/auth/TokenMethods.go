@@ -2,6 +2,7 @@ package auth
 
 import (
 	"net/http"
+	"strconv"
 	"strings"
 	"temple-app/models"
 
@@ -20,8 +21,8 @@ type Claims struct {
 
 func GenerarToken(user *models.Usuari) (string, error) {
 	claims := &Claims{
-		Id:          user.ID,
-		TipusUsuari: user.TipusUsuari.Nom,
+		Id:             user.ID,
+		TipusUsuari:    user.TipusUsuari.Nom,
 		StandardClaims: jwt.StandardClaims{},
 	}
 
@@ -41,6 +42,30 @@ func UserAuthMiddleware(tipusAdmesos []string) gin.HandlerFunc {
 
 		if !UserTypeValid(c, claims, tipusAdmesos) {
 			return
+		}
+
+		c.Next()
+	}
+}
+
+func OwnerAuthMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tokenStr := ExtractToken(c)
+
+		token, claims, err := ParseToken(tokenStr)
+		if !TokenValid(c, token, err) {
+			return
+		}
+		if claims.TipusUsuari == "Administrador" {
+			c.Next()
+		}
+
+		i, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			return
+		}
+		if(claims.Id == uint(i)) {
+			c.Next()
 		}
 
 		c.Next()
