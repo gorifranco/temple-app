@@ -6,53 +6,75 @@ import { nomSalaValidator } from '../../helpers/validators';
 import { useAxios } from '../api';
 import Toast from 'react-native-toast-message';
 import { theme } from '../../themes/theme';
+import * as types from '../../types/apiTypes';
 
 export default function Index() {
   const [nomSala, setNomSala] = useState('')
   const [errors, setErrors] = useState({
     nomSala: '',
   });
+  const [sales, setSales] = useState<types.SalaType[]>([])
   const api = useAxios();
 
+  async function getSales() {
+    let response = await api.get('/sales/salesEntrenador')
+    setSales(response.data.data)
+  }
+
   async function crearSala() {
-    const nomSalaError = nomSalaValidator(nomSala)
+    let nomSalaError = nomSalaValidator(nomSala)
     if (nomSalaError) {
       setErrors({ ...errors, nomSala: nomSalaError })
       return
     }
-    try {
-      const response = await api.post('/sales', { nom: nomSala });
-    } catch (error) {
-      console.error('Error creating sala', error);
+    let response = await api.post('/sales', { nom: nomSala });
+    if (response.status === 200) {
+      Toast.show({
+        type: 'success',
+        text1: 'Sala creada',
+        position: 'top',
+      });
+      getSales()
+    } else {
+      Toast.show({
+        type: 'error',
+        text1: 'Error creant la sala',
+        position: 'top',
+      });
     }
   }
 
-
-
-
-  return (
-    <View>
-      <Text style={styles.primeraSala}>Crea la teva primera sala</Text>
-      <TextInput
-        style={styles.salaInput}
-        label="Nom de la sala"
-        returnKeyType="next"
-        value={nomSala}
-        onChangeText={(text: string) => setNomSala(text)}
-        error={!!errors.nomSala}
-        errorText={errors.nomSala}
-        autoCapitalize="none"
-      />
-      <Pressable
-      style={styles.button}
-        onPress={() => {
-          crearSala()
-        }}
-      >
-        <Text style={styles.buttonText}>Crear</Text>
-      </Pressable>
-    </View>
-  );
+  if (sales.length === 0) {
+    return (
+      <View>
+        <Text style={styles.primeraSala}>Crea la teva primera sala</Text>
+        <TextInput
+          style={styles.salaInput}
+          label="Nom de la sala"
+          returnKeyType="next"
+          value={nomSala}
+          onChangeText={(text: string) => setNomSala(text)}
+          error={!!errors.nomSala}
+          errorText={errors.nomSala}
+          autoCapitalize="none"
+        />
+        <Pressable
+          style={styles.button}
+          onPress={() => {
+            crearSala()
+          }}
+        >
+          <Text style={styles.buttonText}>Crear</Text>
+        </Pressable>
+      </View>
+    );
+  }else{
+    return (
+      <View>
+        <Text>Sala {sales[0].nom}</Text>
+      </View>
+    )
+  }
 }
 
 const styles = StyleSheet.create({
