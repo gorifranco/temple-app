@@ -49,7 +49,7 @@ func (h *Handler) CreateSala(c *gin.Context) {
 		}
 	}
 
-	sala := models.Sala{Nom: input.Nom, CodiSala: codi}
+	sala := models.Sala{Nom: input.Nom, CodiSala: codi, AdminID: auth.GetUsuari(c)}
 
 	if err := h.DB.Create(&sala).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create sala"})
