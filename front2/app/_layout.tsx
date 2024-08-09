@@ -8,6 +8,7 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider } from './AuthContext'
 import { useContext } from 'react';
 import AuthContext, { AuthContextType } from './AuthContext';
+import Toast from 'react-native-toast-message';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -68,6 +69,7 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <AuthProvider>
         <StackLayout />
+        <Toast />
       </AuthProvider>
     </ThemeProvider>
   );

@@ -13,6 +13,7 @@ import { passwordValidator } from '../../helpers/passwordValidator'
 import { nameValidator } from '../../helpers/nameValidator'
 import { Link } from 'expo-router';
 import api from '../api'; 
+import { router } from 'expo-router'
 
 export default function RegisterScreen() {
   const [nom, setNom] = useState('')
@@ -41,7 +42,7 @@ export default function RegisterScreen() {
       const response = await api.post('/register', { nom, email, password });
       const token = response.data.token;
 
-      navigation.navigate('LoginScreen');
+      router.replace('/');
     } catch (error) {
       console.error('Error logging in', error);
     }
@@ -50,7 +51,7 @@ export default function RegisterScreen() {
 
   return (
     <Background>
-      <BackButton href={"/LoginScreen"} />
+      <BackButton href={"/"} />
       <Logo />
       <Header>Create Account</Header>
       <TextInput
@@ -91,7 +92,7 @@ export default function RegisterScreen() {
       </Button>
       <View style={styles.row}>
         <Text>Already have an account? </Text>
-        <Link href={'/LoginScreen'} style={styles.link}>Sign in</Link>
+        <Link href={'/'} style={styles.link}>Sign in</Link>
       </View>
     </Background>
   )

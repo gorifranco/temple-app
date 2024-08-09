@@ -8,7 +8,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Button } from 'react-native-paper';
 import { emailValidator } from '../../helpers/emailValidator';
 import { passwordValidator } from '../../helpers/passwordValidator';
-import api from '../api';
 import Background from '../../components/Background';
 import Logo from '../../components/Logo';
 import Header from '../../components/Header';
@@ -16,9 +15,11 @@ import TextInput from '../../components/TextInput';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { theme } from '../../themes/theme';
 import { AuthContextType } from '../AuthContext';
+import { useAxios } from '../api';
 
 
 export default function Index() {
+  const api = useAxios();
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [errors, setErrors] = useState({
@@ -49,7 +50,7 @@ export default function Index() {
       const response = await api.post('/login', { email, password });
 
       // Guarda el token en AsyncStorage
-      await AsyncStorage.setItem('user', response.data);
+      await AsyncStorage.setItem('user', response.data.data);
 
       login(response.data.user);
       router.replace('/');
