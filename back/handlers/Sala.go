@@ -113,6 +113,15 @@ func (h *Handler) SalesUsuari(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": usuari.Sales})
 }
 
+func (h *Handler) SalesEntrenador(c *gin.Context) {
+	var sales []models.Sala
+
+	h.DB.Find(&sales).Where("admin_id = ?", auth.GetUsuari(c)).Preload("Usuaris").Preload("Reservas")
+
+	c.JSON(http.StatusOK, gin.H{"data": sales})
+}
+
+
 func GenerateCode(n int) string {
 	const lettersAndNumbers = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 

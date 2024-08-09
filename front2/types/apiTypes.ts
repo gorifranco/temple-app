@@ -1,8 +1,9 @@
 export interface SalaType {
-  id: number;
-  nom: string;
-  admin: UsuariType
-  codi: string
+  ID: number;
+  Nom: string;
+  Admin: UsuariType
+  CodiSala: string
+  Usuaris: UsuariType[]|null
 }
 
 export interface UsuariType {

@@ -42,6 +42,7 @@ func Routing() *gin.Engine {
 		sales.PUT("/:id", handler.UpdateSala)
 		sales.DELETE("/:id", handler.DeleteSala)
 		sales.GET("/salesUsuari", handler.SalesUsuari)
+		sales.GET("/salesEntrenador", handler.SalesEntrenador)
 	}
 
 	router.POST("/api/login", handler.Login)
