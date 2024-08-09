@@ -7,6 +7,7 @@ interface User {
   id: string;
   email: string;
   tipusUsuari: string;
+  token: string;
 }
 
 // Definir la interfaz para el contexto de autenticación

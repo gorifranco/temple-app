@@ -3,8 +3,9 @@ import { SafeAreaView, StyleSheet, View, Pressable } from 'react-native';
 import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { Picker } from '@react-native-picker/picker';
 import { Text } from 'react-native';
-import api from '../api';
 import { ActivityIndicator } from 'react-native';
+import { useAxios } from '../api';
+import * as types from '../../types/apiTypes';
 
 
 // Configurar el idioma
@@ -18,22 +19,26 @@ LocaleConfig.locales['es'] = {
 LocaleConfig.defaultLocale = 'es';
 
 export default function Index() {
-  const [sales, setSales] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const api = useAxios();
+  const [sales, setSales] = useState<types.SalaType[]>([]);
+  const [loading, setLoading] = useState(true);
   const [selectedDay, setSelectedDay] = useState('');
   const [selectedHour, setSelectedHour] = useState('');
 
   useEffect(() => {
     async function fetchSales() {
-      await api.get('/sales').then((response) => {
-        setSales(response.data);
-      });
-      setLoading(false);
+      try {
+        const response = await api.get<{ data: types.SalaType[] }>('/sales/salesUsuari');
+        setSales(response.data.data || []);
+      } catch (error) {
+        console.error('Error fetching sales:', error);
+      } finally {
+        setLoading(false);
+      }
     }
-
+  
     fetchSales();
   }, []);
-
 
   const handleDayPress = (day: { dateString: React.SetStateAction<string>; }) => {
     setSelectedDay(day.dateString);
@@ -49,10 +54,8 @@ export default function Index() {
 
   if (loading) {
     return <ActivityIndicator size="large" color="#00ff00" />
-  }
-
-  if (!loading && sales.length === 0) {
-    return <Text>No hay entrenos disponibles</Text>
+  } else if (!loading && sales.length == 0) {
+    return <Text>Encara no ets a cap sala</Text>
   } else {
     return (
       <SafeAreaView style={styles.container}>

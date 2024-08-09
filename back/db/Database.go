@@ -35,17 +35,17 @@ func InitializeDB() {
 			log.Fatalf("failed to connect to database: %v", err)
 		}
 
-/* 		err = db.AutoMigrate(
+		err = db.AutoMigrate(
 			&models.TipusUsuari{}, &models.Usuari{}, &models.Sala{}, &models.UsuarisSala{}, &models.Reserva{}, &models.SolicitudUnio{},
-		) */
+		)
 
-/* 		if err != nil {
+		if err != nil {
 			log.Fatalf("failed to auto-migrate: %v", err)
-		} */
+		}
 
 		err = GetDB().Where("Nom = ?", "Admin").First(&models.Usuari{}).Error
 
-	if err != nil {
+		if err != nil {
 			InsertData()
 		}
 	})
@@ -73,11 +73,29 @@ func InsertData() error {
 
 	adminUser := models.Usuari{
 		Nom:           "Admin",
+		Email:         "admin@temple.com",
 		TipusUsuariID: 1,
 		Password:      cpass,
 	}
 
+	basicUser := models.Usuari{
+		Nom:           "Basic",
+		Email:         "basic@temple.com",
+		TipusUsuariID: 2,
+		Password:      cpass,
+	}
+
+	entrenadorUser := models.Usuari{
+		Nom:           "Entrenador",
+		Email:         "entrenador@temple.com",
+		TipusUsuariID: 3,
+		Password:      cpass,
+	}
+
+
 	db.Create(&adminUser)
+	db.Create(&basicUser)
+	db.Create(&entrenadorUser)
 
 	return nil
 }

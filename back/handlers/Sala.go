@@ -1,9 +1,11 @@
 package handlers
 
 import (
-	"fmt"
+	"math/rand"
 	"net/http"
+	"temple-app/auth"
 	"temple-app/models"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -33,15 +35,36 @@ func (h *Handler) CreateSala(c *gin.Context) {
 		return
 	}
 
-	sala := models.Sala{Nom: input.Nom}
+	var codi string
+	const maxAttempts = 100
+	for attempts := 0; attempts < maxAttempts; attempts++ {
+		codi = GenerateCode(7)
+		var existingSala models.Sala
+		if h.DB.Where("CodiSala = ?", codi).First(&existingSala).Error != nil {
+			break
+		}
+		if attempts == maxAttempts-1 {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate unique code"})
+			return
+		}
+	}
 
-	h.DB.Create(&sala)
+	sala := models.Sala{Nom: input.Nom, CodiSala: codi}
 
-	var createdSala models.Usuari
-	h.DB.First(&createdSala, sala.ID)
+	if err := h.DB.Create(&sala).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create sala"})
+		return
+	}
+
+	var createdSala models.Sala
+	if err := h.DB.First(&createdSala, sala.ID).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve created sala"})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{"data": createdSala})
 }
+
 
 func (h *Handler) UpdateSala(c *gin.Context) {
 	var sala models.Sala
@@ -82,12 +105,23 @@ func (h *Handler) SalesUsuari(c *gin.Context) {
 	var usuari models.Usuari
 
 
-	if err := h.DB.Where("id = ?", c.Param("id")).Preload("sala").Find(&usuari).Error; err != nil {
+	if err := h.DB.Where("id = ?", auth.GetUsuari(c)).Preload("Sales").Find(&usuari).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
 
-	fmt.Println(usuari.Sales)
-
 	c.JSON(http.StatusOK, gin.H{"data": usuari.Sales})
+}
+
+func GenerateCode(n int) string {
+	const lettersAndNumbers = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+	r := rand.New(rand.NewSource(time.Now().UnixNano()))
+
+	code := make([]byte, n)
+	for i := range code {
+		code[i] = lettersAndNumbers[r.Intn(len(lettersAndNumbers))]
+	}
+
+	return string(code)
 }

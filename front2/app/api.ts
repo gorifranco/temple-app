@@ -1,5 +1,7 @@
 import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useContext } from 'react';
+import AuthContext from './AuthContext';
+import { AuthContextType } from './AuthContext';
 
 // Crear una instancia de Axios
 const api = axios.create({
@@ -7,36 +9,25 @@ const api = axios.create({
   timeout: 10000, // Tiempo máximo de espera para una petición
 });
 
-// Interceptores de petición
-api.interceptors.request.use(
-  async (config) => {
-    try {
-      const token = await AsyncStorage.getItem('token');
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+export const useAxios = () => {
+  const authContext = useContext<AuthContextType | undefined>(AuthContext);
+
+  if (!authContext) {
+    throw new Error("AuthProvider is missing. Please wrap your component tree with AuthProvider.");
+  }
+  const { user } = authContext;
+
+  api.interceptors.request.use(
+    (config) => {
+      if (user && user.token) {
+        config.headers.Authorization = `Bearer ${user.token}`;
       }
-    } catch (error) {
-      console.error('Error getting token from AsyncStorage', error);
+      return config;
+    },
+    (error) => {
+      return Promise.reject(error);
     }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
+  );
 
-// Interceptores de respuesta
-api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
-  (error) => {
-    // Manejo de errores globales
-    if (error.response && error.response.status === 401) {
-      // Manejo de errores de autenticación, por ejemplo
-    }
-    return Promise.reject(error);
-  }
-);
-
-export default api;
+  return api;
+};

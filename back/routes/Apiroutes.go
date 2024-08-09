@@ -34,15 +34,15 @@ func Routing() *gin.Engine {
 		usuaris.DELETE("/:id", handler.DeleteUsuari)
 	}
 
-	sales := router.Group("/api/sales", auth.UserAuthMiddleware([]string{"Basic"}))
+	sales := router.Group("/api/sales", auth.UserAuthMiddleware([]string{}))
 	{
 		sales.GET("", handler.IndexSala)
 		sales.GET("/:id", handler.FindSala)
 		sales.POST("", handler.CreateSala)
 		sales.PUT("/:id", handler.UpdateSala)
 		sales.DELETE("/:id", handler.DeleteSala)
+		sales.GET("/salesUsuari", handler.SalesUsuari)
 	}
-	router.GET("/api/salesUsuari", handler.SalesUsuari)
 
 	router.POST("/api/login", handler.Login)
 	router.POST("/api/register", handler.Registre)

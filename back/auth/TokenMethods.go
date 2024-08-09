@@ -40,6 +40,11 @@ func UserAuthMiddleware(tipusAdmesos []string) gin.HandlerFunc {
 			return
 		}
 
+		if(len(tipusAdmesos) == 0){
+			c.Next()
+			return
+		} 
+
 		if !UserTypeValid(c, claims, tipusAdmesos) {
 			return
 		}
