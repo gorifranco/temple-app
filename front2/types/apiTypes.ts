@@ -7,8 +7,13 @@ export interface SalaType {
 }
 
 export interface UsuariType {
-  id: number;
-  nom: string;
-  email: string;
-  tipusUsuari: string;
+  ID: number;
+  Nom: string;
+  Email: string;
+  TipusUsuari: string;
+}
+
+export interface ExerciciType {
+  ID: number;
+  Nom: string;
 }

@@ -81,13 +81,14 @@ export default function Index() {
                         <Text>{sala.Nom} - {sala.CodiSala}</Text>
                         {!sala.Usuaris && <Text>Afegeix usuaris</Text>}
                         {sala.Usuaris && sala.Usuaris.map((usuari) => (
-                            <View key={usuari.id}>
-                                <Text>{usuari.nom}</Text>
-                                <Text>{usuari.email}</Text>
+                            <View key={usuari.ID}>
+                                <Text>{usuari.Nom}</Text>
+                                <Text>{usuari.Email}</Text>
                             </View>
                         ))}
                     </View>
                 ))}
+                <Text style={styles.titol}>Rutines</Text>
             </View>
         )
     }
