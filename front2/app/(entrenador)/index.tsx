@@ -7,6 +7,7 @@ import { useAxios } from '../api';
 import Toast from 'react-native-toast-message';
 import { theme } from '../../themes/theme';
 import * as types from '../../types/apiTypes';
+import { router } from 'expo-router';
 
 export default function Index() {
     const [nomSala, setNomSala] = useState('')
@@ -14,15 +15,22 @@ export default function Index() {
         nomSala: '',
     });
     const [sales, setSales] = useState<types.SalaType[]>([])
+    const [rutines, setRutines] = useState<types.RutinaType[]>([])
     const api = useAxios();
 
     useEffect(() => {
         getSales()
+        getRutines()
     }, [])
 
     async function getSales() {
         let response = await api.get('/sales/salesEntrenador')
         setSales(response.data.data)
+    }
+
+    async function getRutines() {
+        let response = await api.get('/rutines/rutinesEntrenador')
+        setRutines(response.data.data)
     }
 
     async function crearSala() {
@@ -48,51 +56,86 @@ export default function Index() {
         }
     }
 
-    if (sales.length === 0) {
-        return (
-            <View>
-                <Text style={styles.primeraSala}>Crea la teva primera sala</Text>
-                <TextInput
-                    style={styles.salaInput}
-                    label="Nom de la sala"
-                    returnKeyType="next"
-                    value={nomSala}
-                    onChangeText={(text: string) => setNomSala(text)}
-                    error={!!errors.nomSala}
-                    errorText={errors.nomSala}
-                    autoCapitalize="none"
-                />
-                <Pressable
-                    style={styles.button}
-                    onPress={() => {
-                        crearSala()
-                    }}
-                >
-                    <Text style={styles.buttonText}>Crear</Text>
-                </Pressable>
-            </View>
-        );
-    } else {
-        return (
-            <View style={styles.text}>
-                <Text style={styles.titol}>Sales</Text>
-                {sales.map((sala) => (
-                    <View key={sala.ID} style={styles.salaContainer}>
-                        <Text>{sala.Nom} - {sala.CodiSala}</Text>
-                        {!sala.Usuaris && <Text>Afegeix usuaris</Text>}
-                        {sala.Usuaris && sala.Usuaris.map((usuari) => (
-                            <View key={usuari.ID}>
-                                <Text>{usuari.Nom}</Text>
-                                <Text>{usuari.Email}</Text>
-                            </View>
-                        ))}
-                    </View>
-                ))}
-                <Text style={styles.titol}>Rutines</Text>
-            </View>
-        )
-    }
+    return (
+        <View style={styles.text}>
+            <Text style={styles.titol}>Sales</Text>
+
+            {rutines.length === 0 ? (
+                <View>
+                    <Text style={styles.primeraSala}>Crea la teva primera sala</Text>
+                    <TextInput
+                        style={styles.salaInput}
+                        label="Nom de la sala"
+                        returnKeyType="next"
+                        value={nomSala}
+                        onChangeText={(text: string) => setNomSala(text)}
+                        error={!!errors.nomSala}
+                        errorText={errors.nomSala}
+                        autoCapitalize="none"
+                    />
+                    <Pressable
+                        style={styles.button}
+                        onPress={() => {
+                            crearSala()
+                        }}
+                    >
+                        <Text style={styles.buttonText}>Crear</Text>
+                    </Pressable>
+                </View>
+            ) : (
+                <View>
+                    {sales.map((sala) => (
+                        <View key={sala.ID} style={styles.salaContainer}>
+                            <Text>{sala.Nom} - {sala.CodiSala}</Text>
+                            {!sala.Usuaris && <Text>Afegeix usuaris</Text>}
+                            {sala.Usuaris && sala.Usuaris.map((usuari) => (
+                                <View key={usuari.ID}>
+                                    <Text>{usuari.Nom}</Text>
+                                    <Text>{usuari.Email}</Text>
+                                </View>
+                            ))}
+                        </View>
+                    ))}
+                </View>
+            )}
+            <View
+                style={{
+                    borderBottomColor: 'black',
+                    borderBottomWidth: StyleSheet.hairlineWidth,
+                    width: '80%',
+                    marginTop: 20,
+                    alignSelf: 'center',
+                }}
+            />
+            <Text style={styles.titol}>Rutines</Text>
+
+            {rutines.length === 0 ? (
+                <View>
+                    <Pressable
+                        style={styles.button}
+                        onPress={() => {
+                            //RutaCrearRutina
+                        }}><Text style={styles.buttonText}>Crea la teva primera rutina</Text></Pressable>
+                    <Pressable
+                        style={styles.button}
+                        onPress={() => {
+                            router.replace("../(rutines)/rutinesPred")
+                        }}><Text style={styles.buttonText}>Rutines predisenyades</Text></Pressable>
+                </View>
+            ) : (
+                <View>
+                    {rutines.map((rutina) => (
+                        <View key={rutina.ID} style={styles.rutinaContainer}>
+                            <Text>{rutina.Nom}</Text>
+                            <Text>{rutina.Descripcio}</Text>
+                        </View>
+                    ))}
+                </View>
+            )}
+        </View>
+    )
 }
+
 
 const styles = StyleSheet.create({
     primeraSala: {
@@ -100,10 +143,6 @@ const styles = StyleSheet.create({
         marginTop: 20,
         color: 'black',
         textAlign: 'center',
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 15,
     },
     salaInput: {
         width: '80%',
@@ -116,6 +155,10 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginTop: 20,
         alignSelf: 'center',
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 15,
     },
     text: {
         fontSize: 15,
@@ -136,5 +179,12 @@ const styles = StyleSheet.create({
         marginTop: 20,
         color: 'black',
         textAlign: 'center',
-    }
+    },
+    rutinaContainer: {
+        margin: 20,
+        borderWidth: 1,
+        borderColor: "black",
+        padding: 10,
+        borderRadius: 10,
+    },
 })

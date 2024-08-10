@@ -60,6 +60,7 @@ func Routing() *gin.Engine {
 		rutines.DELETE("/:id", handler.DeleteRutina)
 		rutines.POST("/exercicis/:rutinaId", handler.AfegirExercici)
 		rutines.DELETE("/exercicis", handler.LlevarExercici)
+		rutines.GET("/rutinesEntrenador", handler.RutinesEntrenador)
 	}
 
 	router.POST("/api/login", handler.Login)

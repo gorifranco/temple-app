@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"net/http"
-	"temple-app/models"
 	"temple-app/auth"
+	"temple-app/models"
 
 	"github.com/gin-gonic/gin"
 )
@@ -23,11 +23,11 @@ func (h *Handler) CreateRutina(c *gin.Context) {
 		return
 	}
 
-	rutina := models.Rutina{Nom: input.Nom, EntrenadorID: auth.GetUsuari(c)}
+	rutina := models.Rutina{Nom: input.Nom, Descripcio: input.Descripcio, EntrenadorID: auth.GetUsuari(c)}
 
 	err = h.DB.Create(&rutina).Error
 
-	if(err != nil) {
+	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create rutina"})
 		return
 	}
@@ -51,7 +51,7 @@ func (h Handler) UpdateRutina(c *gin.Context) {
 		return
 	}
 
-	updatedRutina := models.Rutina{Nom: input.Nom}
+	updatedRutina := models.Rutina{Nom: input.Nom, Descripcio: input.Descripcio}
 
 	h.DB.Model(&rutina).Updates(&updatedRutina)
 
@@ -62,13 +62,20 @@ func (h Handler) UpdateRutina(c *gin.Context) {
 }
 
 func (h *Handler) DeleteRutina(c *gin.Context) {
-    var rutina models.Rutina
-    if err := h.DB.Where("id = ?", c.Param("id")).First(&rutina).Error; err != nil {
-        c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "record not found"})
-        return
-    }
+	var rutina models.Rutina
+	if err := h.DB.Where("id = ?", c.Param("id")).First(&rutina).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "record not found"})
+		return
+	}
 
-    h.DB.Delete(&rutina)
-    c.JSON(http.StatusOK, gin.H{"data": "success"})
+	h.DB.Delete(&rutina)
+	c.JSON(http.StatusOK, gin.H{"data": "success"})
 }
 
+func (h *Handler) RutinesEntrenador(c *gin.Context) {
+	var rutines []models.Rutina
+
+	h.DB.Find(&rutines).Where("entrenador_id = ?", auth.GetUsuari(c)).Preload("Exercicis")
+
+	c.JSON(http.StatusOK, gin.H{"data": rutines})
+}

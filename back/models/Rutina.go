@@ -6,8 +6,9 @@ import (
 
 type Rutina struct {
 	gorm.Model
-	Nom            string           `gorm:"not null;"`
-	EntrenadorID   uint             `gorm:"not null;"`
+	Nom            string `gorm:"not null;"`
+	EntrenadorID   uint   `gorm:"not null;"`
+	Descripcio     string
 	Exercicis      []Exercici       `gorm:"many2many:exercici_rutina;"`
 	ExerciciRutina []ExerciciRutina `gorm:"foreignKey:RutinaID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 	DiesDuracio    int              `gorm:"not null"`
@@ -15,5 +16,6 @@ type Rutina struct {
 }
 
 type RutinaInput struct {
-	Nom string `json:"nom"`
+	Nom        string `json:"nom"`
+	Descripcio string `json:"descripcio"`
 }

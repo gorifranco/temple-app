@@ -17,3 +17,10 @@ export interface ExerciciType {
   ID: number;
   Nom: string;
 }
+
+export interface RutinaType {
+  ID: number;
+  Nom: string;
+  Descripcio: string;
+  Exercicis: ExerciciType[]
+}
