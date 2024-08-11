@@ -1,13 +1,14 @@
 import { View, Text, Pressable } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native'
-import TextInput from '@/components/TextInput';
 import { nomSalaValidator } from '../../helpers/validators';
 import { useAxios } from '../api';
 import Toast from 'react-native-toast-message';
 import { theme } from '../../themes/theme';
 import * as types from '../../types/apiTypes';
 import { router } from 'expo-router';
+import { Modal } from 'react-native';
+import TextInput from '@/components/TextInput';
 
 export default function Index() {
     const [nomSala, setNomSala] = useState('')
@@ -17,6 +18,7 @@ export default function Index() {
     const [sales, setSales] = useState<types.SalaType[]>([])
     const [rutines, setRutines] = useState<types.RutinaType[]>([])
     const api = useAxios();
+    const [crearSalaVisible, setCrearSalaVisible] = useState(false)
 
     useEffect(() => {
         getSales()
@@ -76,7 +78,7 @@ export default function Index() {
                 {sales.length < 3 && (<Pressable
                     style={styles.button}
                     onPress={() => {
-                        crearSala()
+                        setCrearSalaVisible(true)
                     }}
                 >
                     <Text style={styles.buttonText}>Crear sala</Text>
@@ -117,6 +119,36 @@ export default function Index() {
                     ))}
                 </View>
             )}
+            <Modal
+            animationType="fade"
+            transparent={false}
+            visible={crearSalaVisible}
+            onRequestClose={() => {
+                setCrearSalaVisible(false)
+            }}
+            >
+                <View style={styles.modal}>
+                    <Text style={styles.titol}>Crear sala</Text>
+                    <TextInput
+                        label="Nom"
+                        returnKeyType="done"
+                        value={nomSala}
+                        onChangeText={(text:string) => setNomSala(text)}
+                        error={!!errors.nomSala}
+                        errorText={errors.nomSala}
+                        autoCapitalize="none"
+                    />
+                        <Pressable
+                            onPress={() => {
+                                crearSala()
+                                setCrearSalaVisible(false)
+                            }}
+                            style= {styles.button}
+    >
+                                <Text style={styles.buttonText}>Crear sala</Text>
+                        </Pressable>
+                    </View>
+            </Modal>
         </View>
     )
 }
@@ -172,4 +204,10 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 10,
     },
+    modal: {
+        padding: 20,
+        alignSelf: 'center',
+        alignItems: 'center',
+        justifyContent: 'center',
+    }
 })
