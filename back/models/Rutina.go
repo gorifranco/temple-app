@@ -13,6 +13,7 @@ type Rutina struct {
 	ExerciciRutina []ExerciciRutina `gorm:"foreignKey:RutinaID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 	DiesDuracio    int              `gorm:"not null"`
 	Cicles         int              `gorm:"not null"`
+	Publica        bool             `gorm:"not null:default:false"`
 }
 
 type RutinaInput struct {

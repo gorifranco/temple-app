@@ -58,46 +58,32 @@ export default function Index() {
 
     return (
         <View style={styles.text}>
-            <Text style={styles.titol}>Sales</Text>
+            <Text style={styles.titol}>Sales ({sales.length}/3)</Text>
 
-            {rutines.length === 0 ? (
-                <View>
-                    <Text style={styles.primeraSala}>Crea la teva primera sala</Text>
-                    <TextInput
-                        style={styles.salaInput}
-                        label="Nom de la sala"
-                        returnKeyType="next"
-                        value={nomSala}
-                        onChangeText={(text: string) => setNomSala(text)}
-                        error={!!errors.nomSala}
-                        errorText={errors.nomSala}
-                        autoCapitalize="none"
-                    />
-                    <Pressable
-                        style={styles.button}
-                        onPress={() => {
-                            crearSala()
-                        }}
-                    >
-                        <Text style={styles.buttonText}>Crear</Text>
-                    </Pressable>
-                </View>
-            ) : (
-                <View>
-                    {sales.map((sala) => (
-                        <View key={sala.ID} style={styles.salaContainer}>
-                            <Text>{sala.Nom} - {sala.CodiSala}</Text>
-                            {!sala.Usuaris && <Text>Afegeix usuaris</Text>}
-                            {sala.Usuaris && sala.Usuaris.map((usuari) => (
-                                <View key={usuari.ID}>
-                                    <Text>{usuari.Nom}</Text>
-                                    <Text>{usuari.Email}</Text>
-                                </View>
-                            ))}
-                        </View>
-                    ))}
-                </View>
-            )}
+            <View>
+                {sales.map((sala) => (
+                    <View key={sala.ID} style={styles.salaContainer}>
+                        <Text>{sala.Nom} - {sala.CodiSala}</Text>
+                        {!sala.Usuaris && <Text>Afegeix usuaris</Text>}
+                        {sala.Usuaris && sala.Usuaris.map((usuari) => (
+                            <View key={usuari.ID}>
+                                <Text>{usuari.Nom}</Text>
+                                <Text>{usuari.Email}</Text>
+                            </View>
+                        ))}
+                    </View>
+                ))}
+
+                {sales.length < 3 && (<Pressable
+                    style={styles.button}
+                    onPress={() => {
+                        crearSala()
+                    }}
+                >
+                    <Text style={styles.buttonText}>Crear sala</Text>
+                </Pressable>)}
+            </View>
+
             <View
                 style={{
                     borderBottomColor: 'black',

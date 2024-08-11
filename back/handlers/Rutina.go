@@ -79,3 +79,37 @@ func (h *Handler) RutinesEntrenador(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": rutines})
 }
+
+func (h *Handler) RutinesPubliques(c *gin.Context) {
+	var rutines []models.Rutina
+
+	h.DB.Find(&rutines).Where("publica = ?", true).Preload("Exercicis")
+
+	c.JSON(http.StatusOK, gin.H{"data": rutines})
+}
+
+func (h *Handler) CanviarVisibilitat(c *gin.Context) {
+	var rutina models.Rutina
+	var err error
+
+	if err = h.DB.Where("id = ?", c.Param("id")).First(&rutina).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "record not found"})
+		return
+	}
+
+	if(rutina.EntrenadorID != auth.GetUsuari(c)){
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	rutina.Publica = !rutina.Publica
+
+	err = h.DB.Model(&rutina).Update("publica", rutina.Publica).Error
+
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to update rutina"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": rutina})
+}
