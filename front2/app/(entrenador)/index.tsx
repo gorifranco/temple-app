@@ -73,7 +73,6 @@ export default function Index() {
                         ))}
                     </View>
                 ))}
-
                 {sales.length < 3 && (<Pressable
                     style={styles.button}
                     onPress={() => {
@@ -105,8 +104,8 @@ export default function Index() {
                     <Pressable
                         style={styles.button}
                         onPress={() => {
-                            router.replace("../(rutines)/rutinesPred")
-                        }}><Text style={styles.buttonText}>Rutines predisenyades</Text></Pressable>
+                            router.replace("../(rutines)/rutinesPubliques")
+                        }}><Text style={styles.buttonText}>Rutines publiques</Text></Pressable>
                 </View>
             ) : (
                 <View>

@@ -5,15 +5,18 @@ import { useAxios } from '../api';
 import * as types from '../../types/apiTypes';
 import { StyleSheet } from 'react-native'
 import { Checkbox } from 'react-native-paper';
+import BackButton from '../../components/BackButton';
+import { Link } from 'expo-router';
 
-export default function RutinesPred() {
+
+export default function RutinesPubliques() {
     const api = useAxios();
     const [rutines, setRutines] = useState<types.RutinaType[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(false)
 
     async function getRutines() {
-        let response = await api.get('/rutines/rutinesPredefinides')
+        let response = await api.get('/rutines/rutinesPubliques')
         console.log(response)
         if (response.status !== 200) {
             setError(true)
@@ -43,8 +46,9 @@ export default function RutinesPred() {
     }
     if (!error && !loading) {
         return (
-            <View>
-                <Text style={themeStyles.titol1}>Rutines predefinides</Text>
+            <View style={styles.container}>
+                <BackButton href={"/(entrenador)"} />
+                <Text style={themeStyles.titol1}>Rutines públiques</Text>
 
                 {rutines.map((rutina) => (
                     <View key={rutina.ID} style={styles.rutinaContainer}>
@@ -66,4 +70,9 @@ const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 10,
     },
+    container: {
+        width: '100%',
+        flex: 1,
+        overflow: 'hidden',
+    }
 })

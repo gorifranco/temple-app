@@ -1,29 +1,44 @@
-import React from 'react'
-import { Image, StyleSheet, View } from 'react-native'
-import { Link } from 'expo-router'
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import React, { useState } from 'react';
+import { Image, StyleSheet, View } from 'react-native';
+import { router } from 'expo-router';
+import { Pressable } from 'react-native';
 
-export default function BackButton({ href })
- {
+export default function BackButton({ href }) {
+  const [isPressed, setIsPressed] = useState(false);
+
   return (
     <View style={styles.divContainer}>
-      <Link href={href} asChild>
-        <TouchableOpacity >
-          <Image
-            style={styles.image}
-            source={require('../assets/images/arrow_back.png')}
-          />
-        </TouchableOpacity>
-      </Link>
+      <Pressable
+        onPressIn={() => setIsPressed(true)}
+        onPressOut={() => {
+          setIsPressed(false);
+          router.navigate(href);
+          console.log(href)
+        }}
+        style={({ pressed }) => [
+          {
+            opacity: pressed ? 0.5 : 1,
+          },
+          styles.image,
+        ]}
+      >
+        <Image
+          style={[styles.image, isPressed && styles.imagePressed]}
+          source={require('../assets/images/arrow_back.png')}
+        />
+      </Pressable>
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   image: {
     width: 24,
     height: 24,
+    transform: [{ scale: 1 }],
+  },
+  imagePressed: {
+    transform: [{ scale: 0.9 }]
   },
   divContainer: {
     position: 'absolute',
@@ -31,6 +46,7 @@ const styles = StyleSheet.create({
     left: 25,
     display: 'flex',
     width: '100%',
-    height: "30px",
+    height: 30,
+    zIndex: 100,
   },
-})
+});
