@@ -45,6 +45,7 @@ export default function RootLayout() {
         <Stack.Screen name="(entrenador)" options={{ headerShown: false }} />
         <Stack.Screen name="(config)" options={{ headerShown: false }} />
         <Stack.Screen name="(rutines)" options={{ headerShown: false }} />
+        <Stack.Screen name="(sales)" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
     );

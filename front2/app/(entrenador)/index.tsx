@@ -61,21 +61,16 @@ export default function Index() {
     }
 
     return (
-        <View style={styles.text}>
+        <View>
             <Text style={themeStyles.titol1}>Sales ({sales.length}/3)</Text>
 
             <View>
                 {sales.map((sala) => (
-                    <View key={sala.ID} style={styles.salaContainer}>
-                        <Text>{sala.Nom} - {sala.CodiSala}</Text>
-                        {!sala.Usuaris && <Text>Afegeix usuaris</Text>}
-                        {sala.Usuaris && sala.Usuaris.map((usuari) => (
-                            <View key={usuari.ID}>
-                                <Text>{usuari.Nom}</Text>
-                                <Text>{usuari.Email}</Text>
-                            </View>
-                        ))}
-                    </View>
+                    <Pressable key={sala.ID} style={styles.salaContainer} onPress={() => {
+                        router.replace(`../(sales)/${sala.ID}`)
+                    }}>
+                            <Text style={styles.text}>{sala.Nom}</Text>
+                    </Pressable>
                 ))}
                 {sales.length < 3 && (<Pressable
                     style={themeStyles.button1}
@@ -122,12 +117,12 @@ export default function Index() {
                 </View>
             )}
             <Modal
-            animationType="fade"
-            transparent={false}
-            visible={crearSalaVisible}
-            onRequestClose={() => {
-                setCrearSalaVisible(false)
-            }}
+                animationType="fade"
+                transparent={false}
+                visible={crearSalaVisible}
+                onRequestClose={() => {
+                    setCrearSalaVisible(false)
+                }}
             >
                 <View style={styles.modal}>
                     <Text style={themeStyles.titol1}>Crear sala</Text>
@@ -135,20 +130,20 @@ export default function Index() {
                         label="Nom"
                         returnKeyType="done"
                         value={nomSala}
-                        onChangeText={(text:string) => setNomSala(text)}
+                        onChangeText={(text: string) => setNomSala(text)}
                         error={!!errors.nomSala}
                         errorText={errors.nomSala}
                         autoCapitalize="none"
                     />
-                        <Pressable
-                            onPress={() => {
-                                crearSala()
-                            }}
-                            style= {themeStyles.button1}
-    >
-                                <Text style={styles.buttonText}>Crear sala</Text>
-                        </Pressable>
-                    </View>
+                    <Pressable
+                        onPress={() => {
+                            crearSala()
+                        }}
+                        style={themeStyles.button1}
+                    >
+                        <Text style={styles.buttonText}>Crear sala</Text>
+                    </Pressable>
+                </View>
             </Modal>
         </View>
     )
@@ -174,7 +169,6 @@ const styles = StyleSheet.create({
         fontSize: 15,
         lineHeight: 21,
         textAlign: 'center',
-        marginBottom: 12,
         color: "black",
     },
     salaContainer: {
