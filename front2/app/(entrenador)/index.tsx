@@ -4,11 +4,11 @@ import { StyleSheet } from 'react-native'
 import { nomSalaValidator } from '../../helpers/validators';
 import { useAxios } from '../api';
 import Toast from 'react-native-toast-message';
-import { theme } from '../../themes/theme';
 import * as types from '../../types/apiTypes';
 import { router } from 'expo-router';
 import { Modal } from 'react-native';
 import TextInput from '@/components/TextInput';
+import { themeStyles } from '@/themes/theme';
 
 export default function Index() {
     const [nomSala, setNomSala] = useState('')
@@ -43,6 +43,7 @@ export default function Index() {
         }
         let response = await api.post('/sales', { nom: nomSala });
         if (response.status === 200) {
+            setCrearSalaVisible(false)
             Toast.show({
                 type: 'success',
                 text1: 'Sala creada',
@@ -50,6 +51,7 @@ export default function Index() {
             });
             getSales()
         } else {
+            setCrearSalaVisible(false)
             Toast.show({
                 type: 'error',
                 text1: 'Error creant la sala',
@@ -60,7 +62,7 @@ export default function Index() {
 
     return (
         <View style={styles.text}>
-            <Text style={styles.titol}>Sales ({sales.length}/3)</Text>
+            <Text style={themeStyles.titol1}>Sales ({sales.length}/3)</Text>
 
             <View>
                 {sales.map((sala) => (
@@ -76,7 +78,7 @@ export default function Index() {
                     </View>
                 ))}
                 {sales.length < 3 && (<Pressable
-                    style={styles.button}
+                    style={themeStyles.button1}
                     onPress={() => {
                         setCrearSalaVisible(true)
                     }}
@@ -94,20 +96,20 @@ export default function Index() {
                     alignSelf: 'center',
                 }}
             />
-            <Text style={styles.titol}>Rutines</Text>
+            <Text style={themeStyles.titol1}>Rutines</Text>
 
             {rutines.length === 0 ? (
                 <View>
                     <Pressable
-                        style={styles.button}
+                        style={themeStyles.button1}
                         onPress={() => {
-                            //RutaCrearRutina
-                        }}><Text style={styles.buttonText}>Crea la teva primera rutina</Text></Pressable>
+                            router.replace("../(rutines)/crearRutina")
+                        }}><Text style={styles.buttonText}>Crea una rutina</Text></Pressable>
                     <Pressable
-                        style={styles.button}
+                        style={themeStyles.button1}
                         onPress={() => {
                             router.replace("../(rutines)/rutinesPubliques")
-                        }}><Text style={styles.buttonText}>Rutines publiques</Text></Pressable>
+                        }}><Text style={styles.buttonText}>Rutines públiques</Text></Pressable>
                 </View>
             ) : (
                 <View>
@@ -128,7 +130,7 @@ export default function Index() {
             }}
             >
                 <View style={styles.modal}>
-                    <Text style={styles.titol}>Crear sala</Text>
+                    <Text style={themeStyles.titol1}>Crear sala</Text>
                     <TextInput
                         label="Nom"
                         returnKeyType="done"
@@ -141,9 +143,8 @@ export default function Index() {
                         <Pressable
                             onPress={() => {
                                 crearSala()
-                                setCrearSalaVisible(false)
                             }}
-                            style= {styles.button}
+                            style= {themeStyles.button1}
     >
                                 <Text style={styles.buttonText}>Crear sala</Text>
                         </Pressable>
@@ -165,14 +166,6 @@ const styles = StyleSheet.create({
         width: '80%',
         margin: "auto",
     },
-    button: {
-        backgroundColor: theme.colors.primary,
-        padding: 10,
-        paddingHorizontal: 20,
-        borderRadius: 10,
-        marginTop: 20,
-        alignSelf: 'center',
-    },
     buttonText: {
         color: 'white',
         fontSize: 15,
@@ -190,12 +183,6 @@ const styles = StyleSheet.create({
         borderColor: "black",
         padding: 10,
         borderRadius: 10,
-    },
-    titol: {
-        fontSize: 25,
-        marginTop: 20,
-        color: 'black',
-        textAlign: 'center',
     },
     rutinaContainer: {
         margin: 20,

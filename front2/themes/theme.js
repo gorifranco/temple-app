@@ -23,4 +23,13 @@ export const themeStyles = StyleSheet.create({
     fontSize: 15,
     color: "black",
   },
+  button1: {
+    backgroundColor: theme.colors.primary,
+    padding: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginTop: 20,
+    alignSelf: 'center',
+},
+
 })
