@@ -67,7 +67,7 @@ export default function Index() {
             <View>
                 {sales.map((sala) => (
                     <Pressable key={sala.ID} style={styles.salaContainer} onPress={() => {
-                        router.replace(`../(sales)/${sala.ID}`)
+                        router.push({pathname: `../(sales)/${sala.ID}`})
                     }}>
                             <Text style={styles.text}>{sala.Nom}</Text>
                     </Pressable>
