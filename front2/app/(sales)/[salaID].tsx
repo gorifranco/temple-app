@@ -10,13 +10,17 @@ import { RootState } from '../../store'
 import { SalaType, UsuariType } from '../../types/apiTypes'
 import BackButton from '@/components/BackButton'
 import { Pressable } from 'react-native'
+import ModalAfegirUsuari from '@/components/ModalAfegirUsuari'
 import { StyleSheet } from 'react-native'
+import { Modal } from 'react-native-paper'
 
 
 export default function Index() {
     const { salaID } = useLocalSearchParams();
     const api = useAxios();
     const dispatch = useDispatch();
+    const [modalVisible, setModalVisible] = useState(false)
+    const [crearFictici, setCrearFictici] = useState(false)
 
     // Obtén la sala desde el estado global (Redux)
     const sala = useSelector((state: RootState) => state.sales[Number(salaID)]);
@@ -49,6 +53,13 @@ export default function Index() {
 
     }
 
+    function crearUsuariFictici() {
+
+    }
+
+    function compartir() {
+    }
+
 
     if (!sala) {
         return (
@@ -60,25 +71,35 @@ export default function Index() {
     }
 
     return (
-        <View>
+        <View style={{overflow: 'hidden'}}>
             <BackButton href={"../"} />
             <Text style={themeStyles.titol1}>{sala.Nom}</Text>
 
             <Text style={themeStyles.titol1}>Pupilos</Text>
 
-            {sala.Usuaris && sala.Usuaris.map((usuari: UsuariType) => (
-                <View key={usuari.ID} style={styles.usuariContainer}>
-                    <Text>{usuari.Nom}</Text>
-                    <Text>{usuari.Email}</Text>
-                </View>
-            ))}
+            {!sala.Usuaris ? (
+                <Text style={themeStyles.text}>No hi ha usuaris al grup</Text>
+            ) : (
+                sala.Usuaris.map((usuari: UsuariType) => (
+                    <View key={usuari.ID} style={styles.usuariContainer}>
+                        <Text>{usuari.Nom}</Text>
+                        <Text>{usuari.Email}</Text>
+                    </View>
+                ))
+            )}
 
             <Pressable style={themeStyles.button1} onPress={() => {
-                convidarUsuari()
+                setModalVisible(true)
             }}>
                 <Text style={themeStyles.button1Text}>Afegir usuari</Text>
-                </Pressable>
-        </View>
+            </Pressable>
+            <ModalAfegirUsuari
+                modalVisible={modalVisible}
+                closeModal={() => setModalVisible(false)}
+                compartir={() => compartir()}
+                sala={sala}
+                crearUsuariFictici={() => crearUsuariFictici()} />
+        </View >
     );
 }
 
@@ -89,5 +110,5 @@ const styles = StyleSheet.create({
         borderColor: "black",
         padding: 10,
         borderRadius: 10,
-    },
-}); 
+    }
+});

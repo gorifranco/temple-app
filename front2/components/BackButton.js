@@ -13,7 +13,6 @@ export default function BackButton({ href }) {
         onPressOut={() => {
           setIsPressed(false);
           router.navigate(href);
-          console.log(href)
         }}
         style={({ pressed }) => [
           {

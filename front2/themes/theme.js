@@ -16,12 +16,14 @@ export const themeStyles = StyleSheet.create({
   titol1: {
     fontSize: 25,
     marginTop: 20,
+    marginBottom: 20,
     color: 'black',
     textAlign: 'center',
   },
   text: {
     fontSize: 15,
     color: "black",
+    alignSelf: 'center',
   },
   button1: {
     backgroundColor: theme.colors.primary,
@@ -35,6 +37,11 @@ export const themeStyles = StyleSheet.create({
   color: 'white',
   fontSize: 15,
 },
-
-
+inputContainer: {
+  width: '80%',
+  marginVertical: 12,
+  alignItems: 'center',
+  alignSelf: 'center',
+  marginHorizontal: "auto",
+},
 })
