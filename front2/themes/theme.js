@@ -30,6 +30,11 @@ export const themeStyles = StyleSheet.create({
     borderRadius: 10,
     marginTop: 20,
     alignSelf: 'center',
+  },
+  button1Text: {
+  color: 'white',
+  fontSize: 15,
 },
+
 
 })

@@ -9,6 +9,8 @@ import { AuthProvider } from './AuthContext'
 import { useContext } from 'react';
 import AuthContext, { AuthContextType } from './AuthContext';
 import Toast from 'react-native-toast-message';
+import store from '../store';
+import { Provider } from 'react-redux';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -45,7 +47,7 @@ export default function RootLayout() {
         <Stack.Screen name="(entrenador)" options={{ headerShown: false }} />
         <Stack.Screen name="(config)" options={{ headerShown: false }} />
         <Stack.Screen name="(rutines)" options={{ headerShown: false }} />
-        <Stack.Screen name="(sales)" options={{ headerShown: false }} />
+        <Stack.Screen name="(sales)/[salaID]" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
       </Stack>
     );
@@ -70,8 +72,10 @@ export default function RootLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <AuthProvider>
-        <StackLayout />
-        <Toast />
+        <Provider store={store}>
+          <StackLayout />
+          <Toast />
+        </Provider>
       </AuthProvider>
     </ThemeProvider>
   );

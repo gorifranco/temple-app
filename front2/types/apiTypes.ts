@@ -24,3 +24,7 @@ export interface RutinaType {
   Descripcio: string;
   Exercicis: ExerciciType[]
 }
+
+export interface SalesState {
+  [id: number]: SalaType;
+}
