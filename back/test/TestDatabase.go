@@ -34,7 +34,7 @@ func InitializeDBTest() {
 			log.Fatalf("failed to connect to database: %v", err)
 		}
 		err = db.AutoMigrate(
-			&models.TipusUsuari{}, &models.Usuari{}, &models.Sala{}, &models.UsuarisSala{}, &models.Reserva{}, &models.SolicitudUnio{},
+			&models.TipusUsuari{}, &models.Usuari{}, &models.Sala{}, &models.UsuarisSala{}, &models.Reserva{}, &models.SolicitudUnioSala{},
 		)
 
 		if err != nil {

@@ -4,16 +4,16 @@ import (
 	"gorm.io/gorm"
 )
 
-type SolicitudUnio struct {
+type SolicitudUnioSala struct {
 	gorm.Model
 	UsuariID uint      `gorm:"primaryKey"`
 	SalaID   uint      `gorm:"primaryKey"`
 }
 
-func (SolicitudUnio) TableName() string {
-	return "solicituds_unio"
+func (SolicitudUnioSala) TableName() string {
+	return "solicituds_unio_sala"
 }
 
-type SolicitudUnioInput struct {
+type SolicitudUnioSalaInput struct {
 	SalaID   uint `json:"sala_id"`
 }

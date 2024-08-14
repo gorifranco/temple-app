@@ -9,14 +9,14 @@ import (
 )
 
 func (h *Handler) SolicitarUnio (cx *gin.Context) {
-	var input models.SolicitudUnioInput
+	var input models.SolicitudUnioSalaInput
 	if err := cx.ShouldBindJSON(&input); err != nil {
 		cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	//Sala no existeix
-	err := h.DB.Where("sala_id = ?", input.SalaID).First(models.Sala{}).Error
+	err := h.DB.Where("sala_id = ?", input.SalaID).First(&models.Sala{}).Error
 	if err != nil {
 		cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -29,7 +29,7 @@ func (h *Handler) SolicitarUnio (cx *gin.Context) {
 		return
 	}
 
-	solicitud := models.SolicitudUnio{SalaID: input.SalaID, UsuariID: auth.GetUsuari(cx)}
+	solicitud := models.SolicitudUnioSala{SalaID: input.SalaID, UsuariID: auth.GetUsuari(cx)}
 
 	err = h.DB.Create(&solicitud).Error
 
@@ -43,7 +43,7 @@ func (h *Handler) SolicitarUnio (cx *gin.Context) {
 
 func (h *Handler) AcceptarSolicitudUnio(cx *gin.Context) {
 
-	var solicitud models.SolicitudUnio
+	var solicitud models.SolicitudUnioSala
 
 	err := h.DB.Where("id = ?", cx.Param("solicitud_id")).First(&solicitud).Error
 
@@ -70,7 +70,7 @@ func (h *Handler) AcceptarSolicitudUnio(cx *gin.Context) {
 }
 
 func (h *Handler) DeclinarSolicitudUnio(cx *gin.Context) {
-	var solicitud models.SolicitudUnio
+	var solicitud models.SolicitudUnioSala 
 
 	err := h.DB.Where("id = ?", cx.Param("solicitud_id")).First(&solicitud).Error
 	if err != nil {

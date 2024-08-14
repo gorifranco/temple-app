@@ -34,16 +34,25 @@ func Routing() *gin.Engine {
 		usuaris.DELETE("/:id", handler.DeleteUsuari)
 	}
 
-	sales := router.Group("/api/sales", auth.UserAuthMiddleware([]string{}))
+	// sales := router.Group("/api/sales", auth.UserAuthMiddleware([]string{}))
+	// {
+	// 	sales.GET("", handler.IndexSala)
+	// 	sales.GET("/:id", handler.FindSala)
+	// 	sales.POST("", handler.CreateSala)
+	// 	sales.PUT("/:id", handler.UpdateSala)
+	// 	sales.DELETE("/:id", handler.DeleteSala)
+	// 	sales.GET("/salesUsuari", handler.SalesUsuari)
+	// 	sales.GET("/salesEntrenador", handler.SalesEntrenador)
+	// }
+
+	solicituds := router.Group("/api/solicituds", auth.UserAuthMiddleware([]string{"Entrenador"}))
 	{
-		sales.GET("", handler.IndexSala)
-		sales.GET("/:id", handler.FindSala)
-		sales.POST("", handler.CreateSala)
-		sales.PUT("/:id", handler.UpdateSala)
-		sales.DELETE("/:id", handler.DeleteSala)
-		sales.GET("/salesUsuari", handler.SalesUsuari)
-		sales.GET("/salesEntrenador", handler.SalesEntrenador)
+		solicituds.GET("/solicitudsEntrenador", handler.SolicitudsEntrenador)
+		solicituds.POST("/:id/aceptar", handler.AcceptarSolicitudUnioEntrenador)
+		solicituds.POST("/:id/declinar", handler.DeclinarSolicitudUnioEntrenador)
 	}
+
+	router.POST("/api/solicitarUnio", handler.SolicitarUnioEntrenador, auth.UserAuthMiddleware([]string{}))
 
 	exercicis := router.Group("/api/exercicis", auth.UserAuthMiddleware([]string{"Administrador"}))
 	{

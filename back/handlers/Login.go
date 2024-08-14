@@ -20,9 +20,10 @@ type UserResponse struct {
 }
 
 type usuariInput struct {
-	Nom       string `json:"nom" binding:"required"`
-	Email     string `json:"email" binding:"required"`
-	Password  string `json:"password" binding:"required"`
+	Nom           string `json:"nom" binding:"required"`
+	Email         string `json:"email" binding:"required"`
+	Password      string `json:"password" binding:"required"`
+	TipusUsuariID int    `json:"tipusUsuariID" binding:"required"`
 }
 
 func (h *Handler) Login(c *gin.Context) {
@@ -42,14 +43,13 @@ func (h *Handler) Login(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
-	
+
 	token, err = auth.GenerarToken(user)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Couldn't generate token"})
 		return
 	}
-
 
 	response := UserResponse{
 		Nom:         user.Nom,
@@ -89,9 +89,33 @@ func (h *Handler) Registre(c *gin.Context) {
 		c.JSON(http.StatusConflict, gin.H{"error": "User already exists"})
 		return
 	}
+	if userInput.TipusUsuariID == 1 {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Cannot register an admin"})
+		return
+	}
+
+	newUser := models.Usuari{Nom: userInput.Nom, Email: userInput.Email, Password: userInput.Password, TipusUsuariID: uint(userInput.TipusUsuariID)}
+
+	if(userInput.TipusUsuariID == 3){
+		var codi string
+		const maxAttempts = 100
+		for attempts := 0; attempts < maxAttempts; attempts++ {
+			codi = GenerateCode(7)
+			var existingEntrenador models.Usuari
+			if h.DB.Where("CodiEntrenador = ?", codi).First(&existingEntrenador).Error != nil {
+				break
+			}
+			if attempts == maxAttempts-1 {
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate unique code"})
+				return
+			}
+		}
+
+		newUser.CodiEntrenador = codi
+	}
 
 	// Simulando una función que guardaría los datos del usuario en alguna parte
-	if err := h.SaveUser(userInput); err != nil {
+	if err := h.SaveUser(newUser); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not register user", "details": err.Error()})
 		return
 	}
@@ -112,13 +136,10 @@ func (h *Handler) UsuariExisteix(email string) bool {
 	return true
 }
 
-func (h *Handler) SaveUser(userInput usuariInput) error {
+func (h *Handler) SaveUser(usuari models.Usuari) error {
 	var err error
-	var usuari models.Usuari
-	usuari.Email = userInput.Email
-	usuari.Nom = userInput.Nom
 
-	usuari.Password, err = services.EncryptPassword(userInput.Password)
+	usuari.Password, err = services.EncryptPassword(usuari.Password)
 	if err != nil {
 		return err
 	}
