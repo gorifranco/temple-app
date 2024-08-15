@@ -11,6 +11,7 @@ export interface UsuariType {
   Nom: string;
   Email: string;
   TipusUsuari: string;
+  CodiEntrenador: string|null;
 }
 
 export interface ExerciciType {
@@ -27,4 +28,21 @@ export interface RutinaType {
 
 export interface SalesState {
   [id: number]: SalaType;
+}
+
+export interface AlumnesState {
+  [id: number]: AlumneType;
+}
+
+export interface AlumneType {
+  ID: number;
+  Nom: string;
+  entrenos: EntrenoType[];
+}
+
+export interface EntrenoType {
+  dia_hora: Date;
+  usuari: UsuariType;
+  Rutina: RutinaType;
+  diaRutina: number;
 }

@@ -16,6 +16,10 @@ type Rutina struct {
 	Publica        bool             `gorm:"not null:default:false"`
 }
 
+func (Rutina) TableName() string {
+	return "rutines"
+}
+
 type RutinaInput struct {
 	Nom        string `json:"nom"`
 	Descripcio string `json:"descripcio"`

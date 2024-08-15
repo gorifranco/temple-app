@@ -5,25 +5,37 @@ import { EvilIcons } from '@expo/vector-icons'
 import { themeStyles } from '@/themes/theme'
 import { StyleSheet } from 'react-native'
 import { useState } from 'react'
-import { SalaType } from '../types/apiTypes'
 import TextInput from './TextInput'
 import { nameValidator } from '../helpers/nameValidator'
+import { useContext } from 'react'
+import AuthContext, { AuthContextType } from '../app/AuthContext'
+import { Redirect } from 'expo-router';
 
 interface propsType {
     modalVisible: boolean
     closeModal: Function
     compartir: Function
-    sala: SalaType
     crearUsuariFictici: Function
 }
 
 export default function ModalAfegirUsuari(props: propsType) {
-    const { modalVisible, closeModal, compartir, sala, crearUsuariFictici } = props
+    const { modalVisible, closeModal, compartir, crearUsuariFictici } = props
     const [crearFictici, setCrearFictici] = useState(false)
     const [nom, setNom] = useState('')
     const [errors, setErrors] = useState({
         nom: '',
     });
+    const authContext = useContext<AuthContextType | undefined>(AuthContext);
+
+    if (!authContext) {
+        throw new Error("AuthProvider is missing. Please wrap your component tree with AuthProvider.");
+      }
+    
+      const { user } = authContext;
+      if(!user){
+        return <Redirect href="/(auth)" />
+      }
+
 
     function submit() {
         const nameError = nameValidator(nom)
@@ -60,7 +72,7 @@ export default function ModalAfegirUsuari(props: propsType) {
             {!crearFictici ? (
                 <View>
                     <Text style={themeStyles.titol1}>Crear usuari</Text>
-                    <Text style={themeStyles.text}>Codi del grup: #{sala.CodiSala}</Text>
+                    <Text style={themeStyles.text}>Codi d'entrenador: #{user.codiEntrenador}</Text>
                     <Pressable
                         onPress={() => {
                             compartir()

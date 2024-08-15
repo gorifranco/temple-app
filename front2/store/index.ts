@@ -1,11 +1,9 @@
-import salesReducer from './salesSlice';
+import rootReducer from './slices';
 import { configureStore } from '@reduxjs/toolkit'
 
 
 const store = configureStore({
-  reducer: {
-    sales: salesReducer,
-  },
+  reducer: rootReducer,
 });
 
 

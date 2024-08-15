@@ -5,14 +5,13 @@ import { themeStyles } from '@/themes/theme'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useAxios } from '../api'
 import { useDispatch, useSelector } from 'react-redux'
-import { setSales, updateSala } from '../../store/salesSlice'
+import { setSales, updateSala } from '../../store/slices'
 import { RootState } from '../../store'
 import { SalaType, UsuariType } from '../../types/apiTypes'
 import BackButton from '@/components/BackButton'
 import { Pressable } from 'react-native'
 import ModalAfegirUsuari from '@/components/ModalAfegirUsuari'
 import { StyleSheet } from 'react-native'
-import { Modal } from 'react-native-paper'
 
 
 export default function Index() {
@@ -97,7 +96,6 @@ export default function Index() {
                 modalVisible={modalVisible}
                 closeModal={() => setModalVisible(false)}
                 compartir={() => compartir()}
-                sala={sala}
                 crearUsuariFictici={() => crearUsuariFictici()} />
         </View >
     );

@@ -8,6 +8,7 @@ interface User {
   email: string;
   tipusUsuari: string;
   token: string;
+  codiEntrenador: string|null;
 }
 
 // Definir la interfaz para el contexto de autenticación

@@ -1,41 +1,52 @@
 import { View, Text, Pressable } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native'
-import { nomSalaValidator } from '../../helpers/validators';
 import { useAxios } from '../api';
-import Toast from 'react-native-toast-message';
 import * as types from '../../types/apiTypes';
 import { router } from 'expo-router';
-import { Modal } from 'react-native';
-import TextInput from '@/components/TextInput';
 import { themeStyles } from '@/themes/theme';
+import ModalAfegirUsuari from '@/components/ModalAfegirUsuari';
 
 export default function Index() {
     const [nomSala, setNomSala] = useState('')
     const [errors, setErrors] = useState({
         nomSala: '',
     });
-    const [sales, setSales] = useState<types.SalaType[]>([])
+    //const [sales, setSales] = useState<types.SalaType[]>([])
+    const [alumnes, setAlumnes] = useState<types.UsuariType[]>([])
     const [rutines, setRutines] = useState<types.RutinaType[]>([])
     const api = useAxios();
-    const [crearSalaVisible, setCrearSalaVisible] = useState(false)
+    // const [crearSalaVisible, setCrearSalaVisible] = useState(false)
+    const [afegirAlumneVisible, setAfegirAlumneVisible] = useState(false)
 
     useEffect(() => {
-        getSales()
+        // getSales()
         getRutines()
+        getAlumnes()
     }, [])
 
-    async function getSales() {
-        let response = await api.get('/sales/salesEntrenador')
-        setSales(response.data.data)
-    }
+    /*     async function getSales() {
+            let response = await api.get('/sales/salesEntrenador')
+            setSales(response.data.data)
+        } */
 
     async function getRutines() {
         let response = await api.get('/rutines/rutinesEntrenador')
         setRutines(response.data.data)
     }
 
-    async function crearSala() {
+    async function getAlumnes() {
+        let response = await api.get('/entrenador/alumnes')
+        setAlumnes(response.data.data)
+    }
+
+    function compartir() {
+    }
+    function crearUsuariFictici() {
+
+    }
+
+/*     async function crearSala() {
         let nomSalaError = nomSalaValidator(nomSala)
         if (nomSalaError) {
             setErrors({ ...errors, nomSala: nomSalaError })
@@ -49,7 +60,7 @@ export default function Index() {
                 text1: 'Sala creada',
                 position: 'top',
             });
-            getSales()
+            // getSales()
         } else {
             setCrearSalaVisible(false)
             Toast.show({
@@ -58,13 +69,36 @@ export default function Index() {
                 position: 'top',
             });
         }
-    }
+    } */
+
 
     return (
         <View>
+            <Text style={themeStyles.titol1}>Alumnes ({alumnes.length}/12)</Text>
+            <View>
+                {alumnes && alumnes.map((alumne) => (
+                    <Pressable key={alumne.ID} style={styles.salaContainer} onPress={() => {
+                        router.push({ pathname: `../(alumnes)/${alumne.ID}` })
+                    }}>
+                        <Text style={styles.text}>{alumne.Nom}</Text>
+                    </Pressable>
+                ))}
+
+                {alumnes.length < 12 && (<Pressable
+                    style={themeStyles.button1}
+                    onPress={() => {
+                        setAfegirAlumneVisible(true)
+                    }}
+                >
+                    <Text style={styles.buttonText}>Crear alumne</Text>
+                </Pressable>)}
+            </View>
+
+
+            {/*
             <Text style={themeStyles.titol1}>Sales ({sales.length}/3)</Text>
 
-            <View>
+             <View>
                 {sales.map((sala) => (
                     <Pressable key={sala.ID} style={styles.salaContainer} onPress={() => {
                         router.push({pathname: `../(sales)/${sala.ID}`})
@@ -81,6 +115,7 @@ export default function Index() {
                     <Text style={styles.buttonText}>Crear sala</Text>
                 </Pressable>)}
             </View>
+             */}
 
             <View
                 style={{
@@ -116,35 +151,12 @@ export default function Index() {
                     ))}
                 </View>
             )}
-            <Modal
-                animationType="fade"
-                transparent={false}
-                visible={crearSalaVisible}
-                onRequestClose={() => {
-                    setCrearSalaVisible(false)
-                }}
-            >
-                <View style={styles.modal}>
-                    <Text style={themeStyles.titol1}>Crear sala</Text>
-                    <TextInput
-                        label="Nom"
-                        returnKeyType="done"
-                        value={nomSala}
-                        onChangeText={(text: string) => setNomSala(text)}
-                        error={!!errors.nomSala}
-                        errorText={errors.nomSala}
-                        autoCapitalize="none"
-                    />
-                    <Pressable
-                        onPress={() => {
-                            crearSala()
-                        }}
-                        style={themeStyles.button1}
-                    >
-                        <Text style={styles.buttonText}>Crear sala</Text>
-                    </Pressable>
-                </View>
-            </Modal>
+
+            <ModalAfegirUsuari
+                modalVisible={afegirAlumneVisible}
+                closeModal={() => setAfegirAlumneVisible(false)}
+                compartir={() => compartir()}
+                crearUsuariFictici={() => crearUsuariFictici()} />
         </View>
     )
 }
