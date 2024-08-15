@@ -52,7 +52,12 @@ func Routing() *gin.Engine {
 		solicituds.POST("/:id/declinar", handler.DeclinarSolicitudUnioEntrenador)
 	}
 
-	router.POST("/api/solicitarUnio", handler.SolicitarUnioEntrenador, auth.UserAuthMiddleware([]string{}))
+	entrenador := router.Group("/api/entrenador", auth.UserAuthMiddleware([]string{"Entrenador"}))
+	{
+		entrenador.GET("/alumnes", handler.AlumnesEntrenador)
+	}
+	
+	router.POST("/api/solicitarUnioEntrenador", handler.SolicitarUnioEntrenador, auth.UserAuthMiddleware([]string{}))
 
 	exercicis := router.Group("/api/exercicis", auth.UserAuthMiddleware([]string{"Administrador"}))
 	{
