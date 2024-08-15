@@ -9,8 +9,8 @@ type Usuari struct {
 	gorm.Model
 	Nom                      string
 	Telefon                  string
-	Email                    string      `gorm:"not null;uniqueIndex;unique"`
-	TipusUsuari              TipusUsuari `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"` //1 = administrador, 2 = basic
+	Email                    string      `gorm:"index"`
+	TipusUsuari              TipusUsuari `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"` //1 = administrador, 2 = basic , 3 = entrenador, 4 = fictici
 	TipusUsuariID            uint        `gorm:"default:2"`
 	Password                 string      `gorm:"not null;"`
 	Sales                    []Sala      `gorm:"many2many:usuari_sala;"`
@@ -31,4 +31,8 @@ type UsuariInput struct {
 	Nom           string `json:"nom"`
 	Password      string `json:"password"`
 	TipusUsuariID uint   `json:"tipusUsuariID"`
+}
+
+type UsuariFicticiInput struct {
+	Nom                      string
 }

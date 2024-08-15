@@ -37,7 +37,7 @@ func InitializeDB() {
 
 		err = db.AutoMigrate(
 			&models.TipusUsuari{}, &models.Usuari{}, &models.Sala{}, &models.UsuarisSala{}, &models.Reserva{}, &models.SolicitudUnioSala{},
-			&models.Exercici{}, &models.Rutina{}, &models.ExerciciRutina{}, &models.SolicitudUnioEntrenador{}, &models.UsuariFictici{},
+			&models.Exercici{}, &models.Rutina{}, &models.ExerciciRutina{}, &models.SolicitudUnioEntrenador{},
 		)
 
 		if err != nil {
@@ -64,6 +64,7 @@ func InsertData() error {
 		{Nom: "Administrador"},
 		{Nom: "Basic"},
 		{Nom: "Entrenador"},
+		{Nom: "Fictici"},
 	}
 	GetDB().Create(&tipos)
 

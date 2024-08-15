@@ -34,9 +34,10 @@ func (h *Handler) CrearUsuariFictici(c *gin.Context) {
 	}
 
 	usuariID := auth.GetUsuari(c)
-	usuari := models.UsuariFictici{
+	usuari := models.Usuari{
 		Nom:          input.Nom,
 		EntrenadorID: &usuariID,
+		TipusUsuariID: 4,
 	}
 
 	err = h.DB.Create(&usuari).Error
@@ -50,7 +51,7 @@ func (h *Handler) CrearUsuariFictici(c *gin.Context) {
 }
 
 func (h *Handler) UpdateUsuariFictici(c *gin.Context) {
-	var usuari models.UsuariFictici
+	var usuari models.Usuari
 	var err error
 
 	var entrenador models.Usuari
@@ -60,7 +61,7 @@ func (h *Handler) UpdateUsuariFictici(c *gin.Context) {
 		return
 	}
 
-	if(usuari.EntrenadorID != &entrenador.ID){
+	if(usuari.EntrenadorID != &entrenador.ID || usuari.TipusUsuariID != 4){
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
@@ -77,18 +78,18 @@ func (h *Handler) UpdateUsuariFictici(c *gin.Context) {
 		return
 	}
 
-	updatedUsuari := models.UsuariFictici{Nom: input.Nom}
+	updatedUsuari := models.Usuari{Nom: input.Nom}
 
 	h.DB.Model(&usuari).Updates(&updatedUsuari)
 
-	var uu models.UsuariFictici
+	var uu models.Usuari
 	h.DB.First(&uu, c.Param("id"))
 
 	c.JSON(http.StatusOK, gin.H{"data": uu})
 }
 
 func (h *Handler) DeleteUsuariFictici(c *gin.Context) {
-	var usuari models.UsuariFictici
+	var usuari models.Usuari
 	var err error
 
 	if err = h.DB.Where("id = ?", c.Param("id")).First(&usuari).Error; err != nil {
@@ -103,7 +104,7 @@ func (h *Handler) DeleteUsuariFictici(c *gin.Context) {
 		return
 	}
 
-	if(usuari.EntrenadorID != &entrenador.ID){
+	if(usuari.EntrenadorID != &entrenador.ID || usuari.TipusUsuariID != 4){
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
