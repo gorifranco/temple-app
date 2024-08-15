@@ -13,10 +13,11 @@ import (
 )
 
 type UserResponse struct {
-	Nom         string `json:"nom"`
-	Email       string `json:"email"`
-	Token       string `json:"token"`
-	TipusUsuari string `json:"tipusUsuari"`
+	Nom            string `json:"nom"`
+	Email          string `json:"email"`
+	Token          string `json:"token"`
+	TipusUsuari    string `json:"tipusUsuari"`
+	CodiEntrenador string `json:"codiEntrenador"`
 }
 
 type usuariInput struct {
@@ -57,6 +58,9 @@ func (h *Handler) Login(c *gin.Context) {
 		Token:       token,
 		TipusUsuari: user.TipusUsuari.Nom,
 	}
+	if user.TipusUsuari.Nom == "Entrenador" {
+		response.CodiEntrenador = user.CodiEntrenador
+	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Login successful", "user": response})
 }
@@ -96,7 +100,7 @@ func (h *Handler) Registre(c *gin.Context) {
 
 	newUser := models.Usuari{Nom: userInput.Nom, Email: userInput.Email, Password: userInput.Password, TipusUsuariID: uint(userInput.TipusUsuariID)}
 
-	if(userInput.TipusUsuariID == 3){
+	if userInput.TipusUsuariID == 3 {
 		var codi string
 		const maxAttempts = 100
 		for attempts := 0; attempts < maxAttempts; attempts++ {

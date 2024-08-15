@@ -16,6 +16,10 @@ func (h *Handler) AlumnesEntrenador(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
+	if(entrenador.Alumnes == nil){
+		c.JSON(http.StatusOK, gin.H{"data": []models.Usuari{}})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{"data": entrenador.Alumnes})
 }

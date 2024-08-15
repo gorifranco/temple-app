@@ -42,39 +42,40 @@ export default function Index() {
 
     function compartir() {
     }
+
     function crearUsuariFictici() {
 
     }
 
-/*     async function crearSala() {
-        let nomSalaError = nomSalaValidator(nomSala)
-        if (nomSalaError) {
-            setErrors({ ...errors, nomSala: nomSalaError })
-            return
-        }
-        let response = await api.post('/sales', { nom: nomSala });
-        if (response.status === 200) {
-            setCrearSalaVisible(false)
-            Toast.show({
-                type: 'success',
-                text1: 'Sala creada',
-                position: 'top',
-            });
-            // getSales()
-        } else {
-            setCrearSalaVisible(false)
-            Toast.show({
-                type: 'error',
-                text1: 'Error creant la sala',
-                position: 'top',
-            });
-        }
-    } */
+    /*     async function crearSala() {
+            let nomSalaError = nomSalaValidator(nomSala)
+            if (nomSalaError) {
+                setErrors({ ...errors, nomSala: nomSalaError })
+                return
+            }
+            let response = await api.post('/sales', { nom: nomSala });
+            if (response.status === 200) {
+                setCrearSalaVisible(false)
+                Toast.show({
+                    type: 'success',
+                    text1: 'Sala creada',
+                    position: 'top',
+                });
+                // getSales()
+            } else {
+                setCrearSalaVisible(false)
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error creant la sala',
+                    position: 'top',
+                });
+            }
+        } */
 
 
     return (
         <View>
-            <Text style={themeStyles.titol1}>Alumnes ({alumnes.length}/12)</Text>
+            <Text style={themeStyles.titol1}>Alumnes ({!alumnes ? '0' : alumnes.length}/12)</Text>
             <View>
                 {alumnes && alumnes.map((alumne) => (
                     <Pressable key={alumne.ID} style={styles.salaContainer} onPress={() => {
@@ -84,14 +85,16 @@ export default function Index() {
                     </Pressable>
                 ))}
 
-                {alumnes.length < 12 && (<Pressable
-                    style={themeStyles.button1}
-                    onPress={() => {
-                        setAfegirAlumneVisible(true)
-                    }}
-                >
-                    <Text style={styles.buttonText}>Crear alumne</Text>
-                </Pressable>)}
+                {!alumnes || alumnes.length < 12 && (
+                        <Pressable
+                            style={themeStyles.button1}
+                            onPress={() => {
+                                setAfegirAlumneVisible(true)
+                            }}
+                        >
+                            <Text style={styles.buttonText}>Afegeix un alumne</Text>
+                        </Pressable>
+                )}
             </View>
 
 
