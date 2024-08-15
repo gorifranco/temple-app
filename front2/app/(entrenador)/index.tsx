@@ -6,12 +6,9 @@ import * as types from '../../types/apiTypes';
 import { router } from 'expo-router';
 import { themeStyles } from '@/themes/theme';
 import ModalAfegirUsuari from '@/components/ModalAfegirUsuari';
+import Toast from 'react-native-toast-message';
 
 export default function Index() {
-    const [nomSala, setNomSala] = useState('')
-    const [errors, setErrors] = useState({
-        nomSala: '',
-    });
     //const [sales, setSales] = useState<types.SalaType[]>([])
     const [alumnes, setAlumnes] = useState<types.UsuariType[]>([])
     const [rutines, setRutines] = useState<types.RutinaType[]>([])
@@ -43,8 +40,22 @@ export default function Index() {
     function compartir() {
     }
 
-    function crearUsuariFictici() {
-
+    async function crearUsuariFictici(nom: string) {
+        console.log("aqui")
+        const response = await api.post(`/entrenador/usuarisFicticis`, { nom });
+        if (response.status === 200) {
+            Toast.show({
+                type: 'success',
+                text1: 'Usuari creat',
+                position: 'top',
+            });
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: 'Error creant l\'usuari',
+                position: 'top',
+            });
+        }
     }
 
     /*     async function crearSala() {
@@ -158,8 +169,8 @@ export default function Index() {
             <ModalAfegirUsuari
                 modalVisible={afegirAlumneVisible}
                 closeModal={() => setAfegirAlumneVisible(false)}
-                compartir={() => compartir()}
-                crearUsuariFictici={() => crearUsuariFictici()} />
+                compartir={compartir}
+                crearUsuariFictici={crearUsuariFictici} />
         </View>
     )
 }

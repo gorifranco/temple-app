@@ -29,12 +29,12 @@ export default function ModalAfegirUsuari(props: propsType) {
 
     if (!authContext) {
         throw new Error("AuthProvider is missing. Please wrap your component tree with AuthProvider.");
-      }
-    
-      const { user } = authContext;
-      if(!user){
+    }
+
+    const { user } = authContext;
+    if (!user) {
         return <Redirect href="/(auth)" />
-      }
+    }
 
 
     function submit() {
@@ -45,15 +45,14 @@ export default function ModalAfegirUsuari(props: propsType) {
             })
             return
         }
-
-        crearUsuariFictici()
+        crearUsuariFictici(nom)
         closeModal()
     }
 
 
     return (
         <Modal
-        style={{overflow: 'hidden'}}
+            style={{ overflow: 'hidden' }}
             animationType="fade"
             transparent={false}
             visible={modalVisible}
@@ -71,7 +70,7 @@ export default function ModalAfegirUsuari(props: propsType) {
 
             {!crearFictici ? (
                 <View>
-                    <Text style={themeStyles.titol1}>Crear usuari</Text>
+                    <Text style={themeStyles.titol1}>Afegir alumne</Text>
                     <Text style={themeStyles.text}>Codi d'entrenador: #{user.codiEntrenador}</Text>
                     <Pressable
                         onPress={() => {
@@ -88,12 +87,12 @@ export default function ModalAfegirUsuari(props: propsType) {
                             setCrearFictici(true)
                         }}
                         style={themeStyles.button1}>
-                        <Text style={themeStyles.button1Text}>Crear usuari</Text>
+                        <Text style={themeStyles.button1Text}>Crear alumne</Text>
                     </Pressable>
                 </View>
             ) : (
                 <View>
-                    <Text style={themeStyles.titol1}>Crear usuari</Text>
+                    <Text style={themeStyles.titol1}>Crear alumne</Text>
                     <TextInput
                         style={themeStyles.inputContainer}
                         label="Nom"
@@ -108,7 +107,7 @@ export default function ModalAfegirUsuari(props: propsType) {
                             submit()
                         }}
                         style={themeStyles.button1}>
-                        <Text style={themeStyles.button1Text}>Crear usuari</Text>
+                        <Text style={themeStyles.button1Text}>Crear alumne</Text>
                     </Pressable>
                 </View>
             )}
@@ -122,10 +121,10 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 25,
         left: 25,
-        width: 50, 
-        height: 50,  
-        zIndex: 100, 
+        width: 50,
+        height: 50,
+        zIndex: 100,
         justifyContent: 'center',
-        alignItems: 'center', 
+        alignItems: 'center',
     },
 });

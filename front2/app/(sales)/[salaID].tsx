@@ -12,6 +12,7 @@ import BackButton from '@/components/BackButton'
 import { Pressable } from 'react-native'
 import ModalAfegirUsuari from '@/components/ModalAfegirUsuari'
 import { StyleSheet } from 'react-native'
+import Toast from 'react-native-toast-message';
 
 
 export default function Index() {
@@ -19,7 +20,6 @@ export default function Index() {
     const api = useAxios();
     const dispatch = useDispatch();
     const [modalVisible, setModalVisible] = useState(false)
-    const [crearFictici, setCrearFictici] = useState(false)
 
     // Obtén la sala desde el estado global (Redux)
     const sala = useSelector((state: RootState) => state.sales[Number(salaID)]);
@@ -52,8 +52,22 @@ export default function Index() {
 
     }
 
-    function crearUsuariFictici() {
-
+    async function crearUsuariFictici(nom: string) {
+        console.log("aqui")
+        const response = await api.post(`/entrenador/usuarisFicticis`, { nom });
+        if (response.status === 200) {
+            Toast.show({
+                type: 'success',
+                text1: 'Usuari creat',
+                position: 'top',
+            });
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: 'Error creant l\'usuari',
+                position: 'top',
+            });
+        }
     }
 
     function compartir() {
@@ -90,13 +104,13 @@ export default function Index() {
             <Pressable style={themeStyles.button1} onPress={() => {
                 setModalVisible(true)
             }}>
-                <Text style={themeStyles.button1Text}>Afegir usuari</Text>
+                <Text style={themeStyles.button1Text}>Afegir alumne</Text>
             </Pressable>
             <ModalAfegirUsuari
                 modalVisible={modalVisible}
                 closeModal={() => setModalVisible(false)}
-                compartir={() => compartir()}
-                crearUsuariFictici={() => crearUsuariFictici()} />
+                compartir={compartir}
+                crearUsuariFictici={crearUsuariFictici} />
         </View >
     );
 }
