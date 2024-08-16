@@ -9,7 +9,7 @@ export interface SalaType {
 export interface UsuariType {
   ID: number;
   Nom: string;
-  Email: string;
+  Email: string|null;
   TipusUsuari: string;
   CodiEntrenador: string|null;
 }

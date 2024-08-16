@@ -8,20 +8,35 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+type alumneResposta struct {
+	ID          uint             `json:"id"`
+	Nom         string           `json:"nom"`
+	Alumnes     []models.Usuari  `json:"alumnes"`
+	TipusUsuari string           `json:"tipusUsuari"`
+	Reserves    []models.Reserva `json:"reserves"`
+}
+
 func (h *Handler) AlumnesEntrenador(c *gin.Context) {
-	var entrenador models.Usuari
+	var alumnes []models.Usuari
 	var err error
 
-	if err = h.DB.Where("id = ?", auth.GetUsuari(c)).First(&entrenador).Error; err != nil {
+	if err = h.DB.Where("entrenador_id = ?", auth.GetUsuari(c)).Preload("Alumnes").Preload("TipusUsuari").Preload("Reserves").Find(&alumnes).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
-	if(entrenador.Alumnes == nil){
-		c.JSON(http.StatusOK, gin.H{"data": []models.Usuari{}})
-		return
+
+	var resposta []alumneResposta
+	for _, alumne := range alumnes {
+		resposta = append(resposta, alumneResposta{
+			ID:          alumne.ID,
+			Nom:         alumne.Nom,
+			Alumnes:     alumne.Alumnes,
+			TipusUsuari: alumne.TipusUsuari.Nom,
+			Reserves:    alumne.Reserves,
+		})
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": entrenador.Alumnes})
+	c.JSON(http.StatusOK, gin.H{"data": resposta})
 }
 
 func (h *Handler) CrearUsuariFictici(c *gin.Context) {
@@ -35,8 +50,8 @@ func (h *Handler) CrearUsuariFictici(c *gin.Context) {
 
 	usuariID := auth.GetUsuari(c)
 	usuari := models.Usuari{
-		Nom:          input.Nom,
-		EntrenadorID: &usuariID,
+		Nom:           input.Nom,
+		EntrenadorID:  &usuariID,
 		TipusUsuariID: 4,
 	}
 
@@ -61,7 +76,7 @@ func (h *Handler) UpdateUsuariFictici(c *gin.Context) {
 		return
 	}
 
-	if(usuari.EntrenadorID != &entrenador.ID || usuari.TipusUsuariID != 4){
+	if usuari.EntrenadorID != &entrenador.ID || usuari.TipusUsuariID != 4 {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
@@ -104,7 +119,7 @@ func (h *Handler) DeleteUsuariFictici(c *gin.Context) {
 		return
 	}
 
-	if(usuari.EntrenadorID != &entrenador.ID || usuari.TipusUsuariID != 4){
+	if usuari.EntrenadorID != &entrenador.ID || usuari.TipusUsuariID != 4 {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
