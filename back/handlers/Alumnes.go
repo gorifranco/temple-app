@@ -9,11 +9,11 @@ import (
 )
 
 type alumneResposta struct {
-	ID          uint             `json:"id"`
-	Nom         string           `json:"nom"`
-	Alumnes     []models.Usuari  `json:"alumnes"`
-	TipusUsuari string           `json:"tipusUsuari"`
-	Reserves    []models.Reserva `json:"reserves"`
+	ID          uint             `json:"ID"`
+	Nom         string           `json:"Nom"`
+	Alumnes     []models.Usuari  `json:"Alumnes"`
+	TipusUsuari string           `json:"TipusUsuari"`
+	Reserves    []models.Reserva `json:"Reserves"`
 }
 
 func (h *Handler) AlumnesEntrenador(c *gin.Context) {
