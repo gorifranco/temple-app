@@ -59,7 +59,7 @@ export default function Index() {
   } else {
     return (
       <SafeAreaView style={styles.container}>
-        <View style={styles.calendarContainer}>
+        <View style={styles.calendarContainer}>1
           <Calendar
             firstDay={1}
             onDayPress={handleDayPress}

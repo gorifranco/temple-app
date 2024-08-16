@@ -44,6 +44,7 @@ export default function Index() {
         console.log("aqui")
         const response = await api.post(`/entrenador/usuarisFicticis`, { nom });
         if (response.status === 200) {
+            getAlumnes()
             Toast.show({
                 type: 'success',
                 text1: 'Usuari creat',

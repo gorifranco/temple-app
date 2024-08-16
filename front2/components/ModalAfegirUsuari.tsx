@@ -45,6 +45,7 @@ export default function ModalAfegirUsuari(props: propsType) {
             })
             return
         }
+        setNom('')
         crearUsuariFictici(nom)
         closeModal()
     }
