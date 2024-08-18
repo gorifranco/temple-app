@@ -127,3 +127,34 @@ func (h *Handler) DeleteUsuariFictici(c *gin.Context) {
 	h.DB.Delete(&usuari)
 	c.JSON(http.StatusOK, gin.H{"data": "success"})
 }
+
+func (h *Handler) FindAlumneEntrenador(c *gin.Context) {
+	var alumne models.Usuari
+	var err error
+	var entrenador models.Usuari
+
+	err = h.DB.Where("id = ?", auth.GetUsuari(c)).First(&entrenador).Error
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err = h.DB.Where("id = ?", c.Param("id")).First(&alumne).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	if(alumne.EntrenadorID != &entrenador.ID){
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+		var resposta = alumneResposta{
+			ID:          alumne.ID,
+			Nom:         alumne.Nom,
+			Reserves:    alumne.Reserves,
+		}
+	
+
+	c.JSON(http.StatusOK, gin.H{"data": resposta})
+}
