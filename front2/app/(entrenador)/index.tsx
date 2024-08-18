@@ -7,20 +7,31 @@ import { router } from 'expo-router';
 import { themeStyles } from '@/themes/theme';
 import ModalAfegirUsuari from '@/components/ModalAfegirUsuari';
 import Toast from 'react-native-toast-message';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useDispatch } from 'react-redux';
+import { setAlumne, updateAlumnes } from '../../store/slices';
+import { AlumneType } from '../../types/apiTypes';
 
 export default function Index() {
     //const [sales, setSales] = useState<types.SalaType[]>([])
-    const [alumnes, setAlumnes] = useState<types.UsuariType[]>([])
     const [rutines, setRutines] = useState<types.RutinaType[]>([])
     const api = useAxios();
     // const [crearSalaVisible, setCrearSalaVisible] = useState(false)
     const [afegirAlumneVisible, setAfegirAlumneVisible] = useState(false)
 
+    const alumnes = useSelector((state: RootState) => state.alumnes);
+    const alumnesArray = Object.values(alumnes);
+
+    const dispatch = useDispatch();
+    
     useEffect(() => {
-        // getSales()
         getRutines()
-        getAlumnes()
-    }, [])
+        fetchAlumnes()
+        fetchAlumnesAPI()
+    }, [dispatch]);
+
 
     /*     async function getSales() {
             let response = await api.get('/sales/salesEntrenador')
@@ -32,19 +43,30 @@ export default function Index() {
         setRutines(response.data.data)
     }
 
-    async function getAlumnes() {
-        let response = await api.get('/entrenador/alumnes')
-        setAlumnes(response.data.data)
+    async function fetchAlumnes() {
+        const alumnesData = await AsyncStorage.getItem('alumnes');
+        if (alumnesData) {
+            dispatch(setAlumne(JSON.parse(alumnesData)));
+        }
     }
+
+    async function fetchAlumnesAPI() {
+        const response = await api.get(`/entrenador/alumnes`);
+        if (response.status === 200) {
+            const fetchedAlumnes: AlumneType[] = response.data.data;
+                dispatch(updateAlumnes({ data: fetchedAlumnes }));
+            
+        }
+    }
+
 
     function compartir() {
     }
 
     async function crearUsuariFictici(nom: string) {
-        console.log("aqui")
         const response = await api.post(`/entrenador/usuarisFicticis`, { nom });
         if (response.status === 200) {
-            getAlumnes()
+            fetchAlumnesAPI()
             Toast.show({
                 type: 'success',
                 text1: 'Usuari creat',
@@ -87,9 +109,9 @@ export default function Index() {
 
     return (
         <View>
-            <Text style={themeStyles.titol1}>Alumnes ({!alumnes ? '0' : alumnes.length}/12)</Text>
+            <Text style={themeStyles.titol1}>Alumnes ({!alumnesArray ? '0' : alumnesArray.length}/12)</Text>
             <View>
-                {alumnes && alumnes.map((alumne) => (
+                {alumnesArray && alumnesArray.map((alumne) => (
                     <Pressable key={alumne.ID} style={styles.salaContainer} onPress={() => {
                         router.push({ pathname: `../(alumnes)/${alumne.ID}` })
                     }}>
@@ -97,7 +119,7 @@ export default function Index() {
                     </Pressable>
                 ))}
 
-                {!alumnes || alumnes.length < 12 && (
+                {!alumnesArray || alumnesArray.length < 12 && (
                         <Pressable
                             style={themeStyles.button1}
                             onPress={() => {

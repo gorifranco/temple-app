@@ -11,7 +11,21 @@ const alumnesSlice = createSlice({
     updateAlumne(state: AlumnesState, action: PayloadAction<{ id: number; data: AlumneType }>) {
       const { id, data } = action.payload;
       state[id] = data;
+    },
+    updateAlumnes(state: AlumnesState, action: PayloadAction<{ data: AlumneType[] }>) {
+      const { data } = action.payload;
+      for (let i = 0; i < data.length; i++) {
+        const alumne = data[i];
+
+        if (state[alumne.ID]) {
+          state[alumne.ID].Nom = alumne.Nom;
+          state[alumne.ID].entrenos = alumne.entrenos;
+        } else {
+          state[alumne.ID] = alumne;
+        }
+      }
     }
+    
   },
 })
 
@@ -31,7 +45,7 @@ const salesSlice = createSlice({
 
 
 export const { setSales, updateSala } = salesSlice.actions;
-export const { setAlumne, updateAlumne } = alumnesSlice.actions;
+export const { setAlumne, updateAlumne, updateAlumnes } = alumnesSlice.actions;
 
 const rootReducer = combineReducers({
   sales: salesSlice.reducer,

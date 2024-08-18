@@ -7,11 +7,14 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@/store'
 import BackButton from '@/components/BackButton';
 import { useDispatch } from 'react-redux';
-import { setSales, updateSala, setAlumne, updateAlumne } from '../../store/slices';
+import { setAlumne, updateAlumne } from '../../store/slices';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Calendar } from 'react-native-calendars';
+import { themeStyles } from '@/themes/theme';
 
 export default function AlumneScreen() {
     const { alumneID } = useLocalSearchParams();
+    const [selectedDay, setSelectedDay] = useState('');
     const api = useAxios();
     const dispatch = useDispatch();
 
@@ -19,18 +22,23 @@ export default function AlumneScreen() {
 
     useEffect(() => {
         fetchAlumne();
+        console.log(alumne)
         fetchApi();
     }, [dispatch, alumneID]);
 
     async function fetchAlumne() {
-        const salesData = await AsyncStorage.getItem('sales');
-        if (salesData) {
-            dispatch(setAlumne(JSON.parse(salesData)));
+        const alumnesData = await AsyncStorage.getItem('alumnes');
+        if (alumnesData) {
+            dispatch(setAlumne(JSON.parse(alumnesData)));
         }
     }
 
+    function handleDayPress(day: { dateString: React.SetStateAction<string>; }) {
+        setSelectedDay(day.dateString);
+    }
+
     async function fetchApi() {
-        const response = await api.get(`/sales/${alumneID}`);
+        const response = await api.get(`/alumnes/${alumneID}`);
         if (response.status === 200) {
             const fetchedAlumne: AlumneType = response.data.data;
             if (!alumne || alumne.ID !== fetchedAlumne.ID) {
@@ -43,7 +51,17 @@ export default function AlumneScreen() {
     return (
         <View>
             <BackButton href={"../"}/>
-            <Text>Alumne</Text>
+            <Text>{alumne.Nom}</Text>
+            <Calendar 
+                firstDay={1}
+                onDayPress={handleDayPress}
+                markedDates={{
+                    [selectedDay]: { selected: true, marked: true, selectedColor: 'blue' }
+                }}
+            />
+
+            <Text style={themeStyles.titol1}>Pròxim entreno</Text>
+            <Text style={themeStyles.titol1}>Rutina actual</Text>
         </View>
     )
 }
