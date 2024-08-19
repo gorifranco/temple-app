@@ -22,7 +22,6 @@ export default function AlumneScreen() {
 
     useEffect(() => {
         fetchAlumne();
-        console.log(alumne)
         fetchApi();
     }, [dispatch, alumneID]);
 
@@ -38,20 +37,24 @@ export default function AlumneScreen() {
     }
 
     async function fetchApi() {
-        const response = await api.get(`/alumnes/${alumneID}`);
+        const response = await api.get(`entrenador/alumnes/${alumneID}`);
         if (response.status === 200) {
             const fetchedAlumne: AlumneType = response.data.data;
-            if (!alumne || alumne.ID !== fetchedAlumne.ID) {
+            if (!alumne || alumne !== fetchedAlumne) {
                 dispatch(updateAlumne({ id: Number(alumneID), data: fetchedAlumne }));
             }
         }
+    }
+
+    if (!alumne) {
+        return (<View>Carregant alumne</View>)
     }
 
 
     return (
         <View>
             <BackButton href={"../"}/>
-            <Text>{alumne.Nom}</Text>
+            <Text style={themeStyles.titol1}>{alumne.Nom}</Text>
             <Calendar 
                 firstDay={1}
                 onDayPress={handleDayPress}

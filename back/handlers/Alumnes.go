@@ -144,7 +144,7 @@ func (h *Handler) FindAlumneEntrenador(c *gin.Context) {
 		return
 	}
 
-	if(alumne.EntrenadorID != &entrenador.ID){
+	if alumne.EntrenadorID == nil || *alumne.EntrenadorID != entrenador.ID {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
