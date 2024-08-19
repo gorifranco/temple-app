@@ -50,12 +50,11 @@ export default function AlumneScreen() {
         return (<View>Carregant alumne</View>)
     }
 
-
     return (
-        <View>
-            <BackButton href={"../"}/>
+        <View style={{ overflow: 'hidden' }}>
+            <BackButton href={"../"} />
             <Text style={themeStyles.titol1}>{alumne.Nom}</Text>
-            <Calendar 
+            <Calendar
                 firstDay={1}
                 onDayPress={handleDayPress}
                 markedDates={{
@@ -63,7 +62,19 @@ export default function AlumneScreen() {
                 }}
             />
 
-            <Text style={themeStyles.titol1}>Pròxim entreno</Text>
+            <Text style={themeStyles.titol1}>Pròxims entrenos</Text>
+            {!alumne.Entrenos ? (<Text style={themeStyles.text}>No hi ha entrenos pròximament</Text>
+            ) : (
+                alumne.Entrenos.map((entreno) => (
+                    entreno.DiaRutina >= Date.now() && <Text key={entreno.DiaRutina} style={themeStyles.text}>{entreno.Dia_hora.toDateString()}</Text>
+                )))}
+
+            <Text style={themeStyles.titol1}>Reserves pendents</Text>
+            {!alumne.Reserves ? (<Text style={themeStyles.text}>No hi ha reserves pendents d'aprovació</Text>
+            ) : (
+                alumne.Reserves.map((reserva) => (
+                    !reserva.Confirmada && <Text key={reserva.ID} style={themeStyles.text}>{reserva.Hora.toDateString()}</Text>
+                )))}
             <Text style={themeStyles.titol1}>Rutina actual</Text>
         </View>
     )

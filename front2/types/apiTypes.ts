@@ -37,12 +37,21 @@ export interface AlumnesState {
 export interface AlumneType {
   ID: number;
   Nom: string;
-  entrenos: EntrenoType[];
+  Entrenos: EntrenoType[];
+  Reserves: ReservaType[];
 }
 
 export interface EntrenoType {
-  dia_hora: Date;
-  usuari: UsuariType;
+  Dia_hora: Date;
+  Usuari: UsuariType;
   Rutina: RutinaType;
-  diaRutina: number;
+  DiaRutina: number;
+}
+
+export interface ReservaType {
+  ID: number;
+  Hora: Date;
+  Usuari: UsuariType;
+  Entrenador: UsuariType;
+  Confirmada: boolean;
 }

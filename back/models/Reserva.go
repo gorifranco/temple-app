@@ -8,9 +8,9 @@ import (
 type Reserva struct {
 	gorm.Model
 	UsuariID        uint      `gorm:"primaryKey"`
-	SalaID          uint      `gorm:"primaryKey"`
+	EntrenadorID    uint      `gorm:"primaryKey"`
 	Hora            time.Time `gorm:"primaryKey"`
-	UsuariFicticiID uint      `gorm:"primaryKey"`
+	Confirmada      bool
 }
 
 func (Reserva) TableName() string {
