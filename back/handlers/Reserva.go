@@ -3,6 +3,7 @@ package handlers
 import (
 	"net/http"
 	"temple-app/models"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -67,12 +68,24 @@ func (h *Handler) UpdateReserva(c *gin.Context) {
 }
 
 func (h *Handler) DeleteReserva(c *gin.Context) {
-    var reserva models.Reserva
-    if err := h.DB.Where("id = ?", c.Param("id")).First(&reserva).Error; err != nil {
-        c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "record not found"})
-        return
-    }
+	var reserva models.Reserva
+	if err := h.DB.Where("id = ?", c.Param("id")).First(&reserva).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "record not found"})
+		return
+	}
 
-    h.DB.Delete(&reserva)
-    c.JSON(http.StatusOK, gin.H{"data": "success"})
+	h.DB.Delete(&reserva)
+	c.JSON(http.StatusOK, gin.H{"data": "success"})
+}
+
+func (h *Handler) ReservesEntrenador(c *gin.Context) {
+	var reserves []models.Reserva
+	var err error
+
+	if err = h.DB.Where("entrenador_id = ?", c.MustGet("id").(uint)).Where("dia >= ?", time.Now().Truncate(24*time.Hour)).Preload("Usuari").Preload("Reserves").Find(&reserves).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": reserves})
 }

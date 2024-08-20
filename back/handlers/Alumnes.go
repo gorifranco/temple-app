@@ -149,12 +149,11 @@ func (h *Handler) FindAlumneEntrenador(c *gin.Context) {
 		return
 	}
 
-		var resposta = alumneResposta{
-			ID:          alumne.ID,
-			Nom:         alumne.Nom,
-			Reserves:    alumne.Reserves,
-		}
-	
+	var resposta = alumneResposta{
+		ID:       alumne.ID,
+		Nom:      alumne.Nom,
+		Reserves: alumne.Reserves,
+	}
 
 	c.JSON(http.StatusOK, gin.H{"data": resposta})
 }

@@ -25,7 +25,7 @@ export default function Index() {
     const alumnesArray = Object.values(alumnes);
 
     const dispatch = useDispatch();
-    
+
     useEffect(() => {
         getRutines()
         fetchAlumnes()
@@ -54,8 +54,8 @@ export default function Index() {
         const response = await api.get(`/entrenador/alumnes`);
         if (response.status === 200) {
             const fetchedAlumnes: AlumneType[] = response.data.data;
-                dispatch(updateAlumnes({ data: fetchedAlumnes }));
-            
+            dispatch(updateAlumnes({ data: fetchedAlumnes }));
+
         }
     }
 
@@ -120,14 +120,14 @@ export default function Index() {
                 ))}
 
                 {!alumnesArray || alumnesArray.length < 12 && (
-                        <Pressable
-                            style={themeStyles.button1}
-                            onPress={() => {
-                                setAfegirAlumneVisible(true)
-                            }}
-                        >
-                            <Text style={styles.buttonText}>Afegeix un alumne</Text>
-                        </Pressable>
+                    <Pressable
+                        style={themeStyles.button1}
+                        onPress={() => {
+                            setAfegirAlumneVisible(true)
+                        }}
+                    >
+                        <Text style={styles.buttonText}>Afegeix un alumne</Text>
+                    </Pressable>
                 )}
             </View>
 
