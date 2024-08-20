@@ -11,8 +11,12 @@ import { setAlumne, updateAlumne } from '../../store/slices';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Calendar } from 'react-native-calendars';
 import { themeStyles } from '@/themes/theme';
+import { Pressable } from 'react-native';
+import ModalConfirmacio from '@/components/ModalConfirmacio';
+import Toast from 'react-native-toast-message';
 
 export default function AlumneScreen() {
+    const [modalVisible, setModalVisible] = useState(false)
     const { alumneID } = useLocalSearchParams();
     const [selectedDay, setSelectedDay] = useState('');
     const api = useAxios();
@@ -46,6 +50,24 @@ export default function AlumneScreen() {
         }
     }
 
+    async function expulsarUsuari() {
+        const response = await api.get(`/entrenador/expulsarUsuari/${alumne.ID}`);
+
+        if(response.status === 200){
+            Toast.show({
+                type: 'success',
+                text1: 'Usuari eliminat',
+                position: 'top',
+            });
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: 'Error eliminant l\'usuari',
+                position: 'top',
+            });
+        }
+    }
+
     if (!alumne) {
         return (<View>Carregant alumne</View>)
     }
@@ -76,6 +98,17 @@ export default function AlumneScreen() {
                     !reserva.Confirmada && <Text key={reserva.ID} style={themeStyles.text}>{reserva.Hora.toDateString()}</Text>
                 )))}
             <Text style={themeStyles.titol1}>Rutina actual</Text>
+
+            <Pressable style={themeStyles.buttonDanger} onPress={() => {
+
+            }}>
+                <Text style={themeStyles.button1Text}>Expulsar</Text>
+            </Pressable>
+            <ModalConfirmacio
+                missatge={'Segur que vols eliminar l\'usuari?'}
+                modalVisible={modalVisible}
+                closeModal={() => setModalVisible(false)}
+                confirmar={expulsarUsuari}/>
         </View>
     )
 }

@@ -58,7 +58,7 @@ func Routing() *gin.Engine {
 		entrenador.GET("/alumnes/:id", handler.FindAlumneEntrenador)
 		entrenador.POST("/usuarisFicticis", handler.CrearUsuariFictici)
 		entrenador.PUT("/usuarisFicticis/:id", handler.UpdateUsuariFictici)
-		entrenador.DELETE("/usuarisFicticis/:id", handler.DeleteUsuariFictici)
+		entrenador.GET("/expulsarUsuari/:id", handler.ExpulsarUsuari)
 		entrenador.GET("/reserves", handler.ReservesEntrenador)
 	}
 	

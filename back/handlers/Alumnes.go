@@ -103,7 +103,7 @@ func (h *Handler) UpdateUsuariFictici(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": uu})
 }
 
-func (h *Handler) DeleteUsuariFictici(c *gin.Context) {
+func (h *Handler) ExpulsarUsuari(c *gin.Context) {
 	var usuari models.Usuari
 	var err error
 
@@ -113,7 +113,7 @@ func (h *Handler) DeleteUsuariFictici(c *gin.Context) {
 	}
 
 	var entrenador models.Usuari
-	err = h.DB.Where("id = ?", auth.GetUsuari(c)).First(&entrenador).Error
+	err = h.DB.Where("id = ?", c.Copy().MustGet("id").(uint)).First(&entrenador).Error
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
@@ -124,7 +124,13 @@ func (h *Handler) DeleteUsuariFictici(c *gin.Context) {
 		return
 	}
 
-	h.DB.Delete(&usuari)
+	usuari.EntrenadorID = nil
+	h.DB.Save(&usuari)
+
+	if(usuari.TipusUsuari.Nom == "Fictici"){
+		h.DB.Delete(&usuari)
+	}
+
 	c.JSON(http.StatusOK, gin.H{"data": "success"})
 }
 

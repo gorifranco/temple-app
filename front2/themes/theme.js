@@ -33,6 +33,31 @@ export const themeStyles = StyleSheet.create({
     marginTop: 20,
     alignSelf: 'center',
   },
+  buttonDanger: {
+    backgroundColor: '#bf1b1b',
+    padding: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginTop: 20,
+    alignSelf: 'center',
+  },
+  buttonWarning: {
+    backgroundColor: '#f5a623',
+    padding: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginTop: 20,
+    alignSelf: 'center',
+  },
+  buttonSuccess: {
+    backgroundColor: '#00b894',
+    padding: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginTop: 20,
+    alignSelf: 'center',
+  },
+
   button1Text: {
   color: 'white',
   fontSize: 15,
