@@ -9,6 +9,8 @@ import {
   SalesState,
   AlumnesState,
   AlumneType,
+  ReservesState,
+  ReservaType,
 } from "../types/apiTypes";
 
 const alumnesSlice = createSlice({
@@ -30,34 +32,82 @@ const alumnesSlice = createSlice({
       action: PayloadAction<{ data: AlumneType[] }>
     ) {
       const { data } = action.payload;
-    
+
       // Si no hay datos, vaciamos el estado
       if (!data || data.length === 0) {
-        Object.keys(state).forEach(key => {
+        Object.keys(state).forEach((key) => {
           delete state[Number(key)];
         });
       } else {
         // Primero, creamos un nuevo estado basado en los datos recibidos
         const newState: AlumnesState = {};
-    
+
         for (let i = 0; i < data.length; i++) {
           const alumne = data[i];
           newState[alumne.ID] = alumne;
         }
-    
+
         // Reemplazamos el estado anterior con el nuevo
-        Object.keys(state).forEach(key => {
+        Object.keys(state).forEach((key) => {
           const numericKey = Number(key);
           if (!newState[numericKey]) {
             delete state[numericKey];
           }
         });
-    
+
         // Ahora asignamos el nuevo estado (actualizado) al estado actual
         Object.assign(state, newState);
       }
     },
-    
+  },
+});
+
+const reservesSlice = createSlice({
+  name: "reserves",
+  initialState: {} as ReservesState,
+  reducers: {
+    setReserves(state: ReservesState, action: PayloadAction<ReservesState>) {
+      return action.payload;
+    },
+    updateReserva(
+      state: ReservesState,
+      action: PayloadAction<{ id: number; data: ReservaType }>
+    ) {
+      const { id, data } = action.payload;
+      state[id] = data;
+    },
+    updateReserves(
+      state: ReservesState,
+      action: PayloadAction<{ data: ReservaType[] }>
+    ) {
+      const { data } = action.payload;
+
+      // Si no hay datos, vaciamos el estado
+      if (!data || data.length === 0) {
+        Object.keys(state).forEach((key) => {
+          delete state[Number(key)];
+        });
+      } else {
+        // Primero, creamos un nuevo estado basado en los datos recibidos
+        const newState: ReservesState = {};
+
+        for (let i = 0; i < data.length; i++) {
+          const reserva = data[i];
+          newState[reserva.ID] = reserva;
+        }
+
+        // Reemplazamos el estado anterior con el nuevo
+        Object.keys(state).forEach((key) => {
+          const numericKey = Number(key);
+          if (!newState[numericKey]) {
+            delete state[numericKey];
+          }
+        });
+
+        // Ahora asignamos el nuevo estado (actualizado) al estado actual
+        Object.assign(state, newState);
+      }
+    },
   },
 });
 
@@ -80,10 +130,12 @@ const salesSlice = createSlice({
 
 export const { setSales, updateSala } = salesSlice.actions;
 export const { setAlumne, updateAlumne, updateAlumnes } = alumnesSlice.actions;
+export const { setReserves, updateReserva, updateReserves } = reservesSlice.actions;
 
 const rootReducer = combineReducers({
   sales: salesSlice.reducer,
   alumnes: alumnesSlice.reducer,
+  reserves: reservesSlice.reducer,
 });
 
 export default rootReducer;

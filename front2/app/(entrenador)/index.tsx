@@ -11,7 +11,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch } from 'react-redux';
-import { setAlumne, updateAlumnes } from '../../store/slices';
+import { setAlumne, updateAlumnes, setReserves, updateReserves } from '../../store/slices';
 import { AlumneType } from '../../types/apiTypes';
 
 export default function Index() {
@@ -21,6 +21,8 @@ export default function Index() {
     // const [crearSalaVisible, setCrearSalaVisible] = useState(false)
     const [afegirAlumneVisible, setAfegirAlumneVisible] = useState(false)
 
+    const reserves = useSelector((state: RootState) => state.reserves);
+    const reservesArray = Object.values(reserves);
     const alumnes = useSelector((state: RootState) => state.alumnes);
     const alumnesArray = Object.values(alumnes);
 
@@ -30,6 +32,8 @@ export default function Index() {
         getRutines()
         fetchAlumnes()
         fetchAlumnesAPI()
+        fetchReserves()
+        fetchReservesAPI()
     }, [dispatch]);
 
 
@@ -41,6 +45,22 @@ export default function Index() {
     async function getRutines() {
         let response = await api.get('/rutines/rutinesEntrenador')
         setRutines(response.data.data)
+    }
+
+    async function fetchReserves() {
+        const reservesData = await AsyncStorage.getItem('reserves');
+        if (reservesData) {
+            dispatch(setReserves(JSON.parse(reservesData)));
+        }
+    }
+
+    async function fetchReservesAPI() {
+        const response = await api.get(`/entrenador/reserves`);
+        if (response.status === 200) {
+            const fetchedReserves: types.ReservaType[] = response.data.data;
+            dispatch(updateReserves({ data: fetchedReserves }));
+
+        }
     }
 
     async function fetchAlumnes() {
@@ -129,6 +149,31 @@ export default function Index() {
                         <Text style={styles.buttonText}>Afegeix un alumne</Text>
                     </Pressable>
                 )}
+            </View>
+
+            <View
+                style={{
+                    borderBottomColor: 'black',
+                    borderBottomWidth: StyleSheet.hairlineWidth,
+                    width: '80%',
+                    marginTop: 20,
+                    alignSelf: 'center',
+                }}
+            />
+
+            <View>
+                <Text style={themeStyles.titol1}>Entrenos d'avui</Text>
+                {!reserves || reservesArray.length === 0 ? (
+                    <Text style={themeStyles.text}>Avui no tens més entrenos</Text>
+                ) : (
+                    reservesArray.map((reserva) => (
+                        <View key={reserva.ID} style={styles.rutinaContainer}>
+                            <Text>{reserva.Usuari.Nom}</Text>
+                            <Text>{reserva.Hora.toLocaleTimeString()}</Text>
+                        </View>
+                    ))
+                )}
+
             </View>
 
 

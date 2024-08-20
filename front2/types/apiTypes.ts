@@ -34,6 +34,10 @@ export interface AlumnesState {
   [id: number]: AlumneType;
 }
 
+export interface ReservesState {
+  [id: number]: ReservaType;
+}
+
 export interface AlumneType {
   ID: number;
   Nom: string;
@@ -54,4 +58,11 @@ export interface ReservaType {
   Usuari: UsuariType;
   Entrenador: UsuariType;
   Confirmada: boolean;
+}
+
+export interface ReservaType{
+  ID: number;
+  UsuariID: number;
+  Confirmada: boolean;
+  hora: Date;
 }

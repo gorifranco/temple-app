@@ -82,7 +82,7 @@ func (h *Handler) ReservesEntrenador(c *gin.Context) {
 	var reserves []models.Reserva
 	var err error
 
-	if err = h.DB.Where("entrenador_id = ?", c.MustGet("id").(uint)).Where("dia >= ?", time.Now().Truncate(24*time.Hour)).Preload("Usuari").Preload("Reserves").Find(&reserves).Error; err != nil {
+	if err = h.DB.Where("entrenador_id = ?", c.MustGet("id").(uint)).Where("hora >= ?", time.Now().Truncate(24*time.Hour)).Find(&reserves).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
