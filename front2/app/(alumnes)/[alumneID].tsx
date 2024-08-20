@@ -53,7 +53,7 @@ export default function AlumneScreen() {
     async function expulsarUsuari() {
         const response = await api.get(`/entrenador/expulsarUsuari/${alumne.ID}`);
 
-        if(response.status === 200){
+        if (response.status === 200) {
             Toast.show({
                 type: 'success',
                 text1: 'Usuari eliminat',
@@ -100,15 +100,16 @@ export default function AlumneScreen() {
             <Text style={themeStyles.titol1}>Rutina actual</Text>
 
             <Pressable style={themeStyles.buttonDanger} onPress={() => {
-
+                setModalVisible(true)
             }}>
                 <Text style={themeStyles.button1Text}>Expulsar</Text>
             </Pressable>
             <ModalConfirmacio
+                titol={'Expulsar usuari'}
                 missatge={'Segur que vols eliminar l\'usuari?'}
                 modalVisible={modalVisible}
                 closeModal={() => setModalVisible(false)}
-                confirmar={expulsarUsuari}/>
+                confirmar={expulsarUsuari} />
         </View>
     )
 }
