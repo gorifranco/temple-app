@@ -15,7 +15,6 @@ export default function ModalConfirmacio(props: propsType) {
     return (
         <Modal
             style={{ overflow: 'hidden' }}
-            animationType="fade"
             transparent={false}
             visible={modalVisible}
             onRequestClose={() => {

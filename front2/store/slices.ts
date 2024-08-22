@@ -27,6 +27,13 @@ const alumnesSlice = createSlice({
       const { id, data } = action.payload;
       state[id] = data;
     },
+    deleteAlumnne(
+      state: AlumnesState,
+      action: PayloadAction<{ id: number }>
+    ){
+      const { id } = action.payload;
+      delete state[id];
+    },
     updateAlumnes(
       state: AlumnesState,
       action: PayloadAction<{ data: AlumneType[] }>
@@ -129,7 +136,7 @@ const salesSlice = createSlice({
 });
 
 export const { setSales, updateSala } = salesSlice.actions;
-export const { setAlumne, updateAlumne, updateAlumnes } = alumnesSlice.actions;
+export const { setAlumne, updateAlumne, updateAlumnes, deleteAlumnne } = alumnesSlice.actions;
 export const { setReserves, updateReserva, updateReserves } = reservesSlice.actions;
 
 const rootReducer = combineReducers({

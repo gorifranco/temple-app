@@ -7,13 +7,14 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@/store'
 import BackButton from '@/components/BackButton';
 import { useDispatch } from 'react-redux';
-import { setAlumne, updateAlumne } from '../../store/slices';
+import { setAlumne, updateAlumne, deleteAlumnne } from '../../store/slices';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Calendar } from 'react-native-calendars';
 import { themeStyles } from '@/themes/theme';
 import { Pressable } from 'react-native';
 import ModalConfirmacio from '@/components/ModalConfirmacio';
 import Toast from 'react-native-toast-message';
+import { router } from 'expo-router';
 
 export default function AlumneScreen() {
     const [modalVisible, setModalVisible] = useState(false)
@@ -54,6 +55,8 @@ export default function AlumneScreen() {
         const response = await api.get(`/entrenador/expulsarUsuari/${alumne.ID}`);
 
         if (response.status === 200) {
+            dispatch(deleteAlumnne({ id: alumne.ID }))
+            router.replace("../")
             Toast.show({
                 type: 'success',
                 text1: 'Usuari eliminat',
