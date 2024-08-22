@@ -119,7 +119,7 @@ func (h *Handler) ExpulsarUsuari(c *gin.Context) {
 		return
 	}
 
-	if usuari.EntrenadorID != &entrenador.ID || usuari.TipusUsuariID != 4 {
+	if *usuari.EntrenadorID != entrenador.ID {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
