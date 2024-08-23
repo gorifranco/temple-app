@@ -1,5 +1,6 @@
 import { DefaultTheme } from 'react-native-paper'
 import { StyleSheet } from 'react-native'
+import AutocompleteInput from 'react-native-autocomplete-input'
 
 export const theme = {
   ...DefaultTheme,
@@ -59,14 +60,22 @@ export const themeStyles = StyleSheet.create({
   },
 
   button1Text: {
-  color: 'white',
-  fontSize: 15,
-},
-inputContainer: {
-  width: '80%',
-  marginVertical: 12,
-  alignItems: 'center',
-  alignSelf: 'center',
-  marginHorizontal: "auto",
-},
+    color: 'white',
+    fontSize: 15,
+  },
+  inputContainer: {
+    width: '80%',
+    marginVertical: 12,
+    alignItems: 'center',
+    alignSelf: 'center',
+    marginHorizontal: "auto",
+  },
+  autocompleteStyle1: {
+    width: '80%',
+    padding: 0,
+    margin: "auto",
+  },
+  autocompleteDropdown1: {
+    paddingVertical: 8,
+  }
 })

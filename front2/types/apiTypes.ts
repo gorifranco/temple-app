@@ -66,3 +66,15 @@ export interface ReservaType{
   Confirmada: boolean;
   hora: Date;
 }
+
+export interface ExerciciRutinaType {
+  ID: number|null;
+  RutinaID: number|null;
+  ExerciciID: number;
+  Ordre: number;
+  NumSeries: number;
+  NumRepes: number;
+  Cicle: number;
+  PercentatgeRM: number;
+  DiaRutina: number;
+}
