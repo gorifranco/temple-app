@@ -11,7 +11,8 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch } from 'react-redux';
-import { setAlumne, updateAlumnes, setReserves, updateReserves } from '../../store/slices';
+import { setAlumne, updateAlumnes } from '@/store/alumnesSlice';
+import { setReserves, updateReserves } from '@/store/reservesSlice';
 import { AlumneType } from '../../types/apiTypes';
 
 export default function Index() {

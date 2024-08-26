@@ -1,36 +1,41 @@
 import { View, Text } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import SelectExercicis from '@/components/SelectExercicis';
 import { themeStyles } from '@/themes/theme';
 import BackButton from '@/components/BackButton';
 import { ExerciciRutinaType, ExerciciType } from '@/types/apiTypes';
 import { useAxios } from '@/app/api';
 import { Pressable } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { setExercicis } from '@/store/exercicisSlice';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
+import AutocompleteCustom from '@/components/AutocompleteCustom';
 
 
 export default function CrearRutina() {
     const api = useAxios();
-    const [exercicis, setExercicis] = useState<ExerciciType[]>([]);
     const [exercicisElegits, setExercicisElegits] = useState<(ExerciciRutinaType | null)[]>([]);
+    const dispatch = useDispatch();
+
+    const exercicis = useSelector((state: RootState) => state.exercicis);
 
     useEffect(() => {
-        api.get('/exercicis').then((response) => {
-            setExercicis(response.data.data);
-        });
-    }, []);
+        fetchApiExercicis();
+    }, [dispatch]);
+
+    async function fetchApiExercicis() {
+        const response = await api.get(`exercicis`);
+        if (response.status === 200) {
+            const fetchedExercicis: ExerciciType[] = response.data.data;
+            dispatch(setExercicis(fetchedExercicis));
+        }
+    }
 
     return (
         <View>
             <BackButton href={"(entrenador)"} />
             <Text style={themeStyles.titol1}>Creador de rutines</Text>
-            {exercicisElegits.map((key, exercici) => (
-                <SelectExercicis
-                    data={new Map(exercicis.map((item) => [item.ID, item.Nom]))}
-                    dropdownVisible={true}
-                    selectedValue={exercicis.find((item) => item.ID === exercici?.ExerciciID)?.Nom ?? ""}
-                    setSelectedValue={(value: string) => set }
-                />
-            ))}
+            <AutocompleteCustom data={}/>
 
             <Pressable
                 style={themeStyles.button1}
@@ -39,6 +44,7 @@ export default function CrearRutina() {
                         ...exercicisElegits,
                         {
                             ID: null,
+                            Nom: "",
                             RutinaID: null,
                             ExerciciID: 0,
                             Ordre: 0,

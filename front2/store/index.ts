@@ -1,26 +1,19 @@
-import { configureStore, combineReducers } from '@reduxjs/toolkit';
-import { persistStore, persistReducer } from 'redux-persist';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import rootReducer from './slices';
-
-const persistConfig = {
-  key: 'root',
-  storage: AsyncStorage,
-  whitelist: ['alumnes'] // Solo persiste los slices que necesites
-};
-
-const persistedReducer = persistReducer(persistConfig, rootReducer);
+import { configureStore } from '@reduxjs/toolkit';
+import exercicisReducer from './exercicisSlice';
+import alumnesReducer from './alumnesSlice';
+import reservesReducer from './reservesSlice';
+import salesReducer from './salesSlice';
 
 const store = configureStore({
-  reducer: persistedReducer,
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
-      serializableCheck: false,
-    }),
+  reducer: {
+      exercicis: exercicisReducer,
+      alumnes: alumnesReducer,
+      reserves: reservesReducer,
+      sales: salesReducer,
+  },
 });
 
-const persistor = persistStore(store);
-
-export { store, persistor };
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+
+export default store;

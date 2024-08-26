@@ -74,8 +74,10 @@ export const themeStyles = StyleSheet.create({
     width: '80%',
     padding: 0,
     margin: "auto",
+    zIndex: 1000,
   },
   autocompleteDropdown1: {
     paddingVertical: 8,
+    zIndex: 1000,
   }
 })

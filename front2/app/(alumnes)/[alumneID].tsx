@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux'
 import { RootState } from '@/store'
 import BackButton from '@/components/BackButton';
 import { useDispatch } from 'react-redux';
-import { setAlumne, updateAlumne, deleteAlumnne } from '../../store/slices';
+import { setAlumne, updateAlumne, deleteAlumnne } from '../../store/alumnesSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Calendar } from 'react-native-calendars';
 import { themeStyles } from '@/themes/theme';

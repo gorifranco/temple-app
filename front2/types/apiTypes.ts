@@ -38,6 +38,10 @@ export interface ReservesState {
   [id: number]: ReservaType;
 }
 
+export interface ExercicisState {
+  [id: number]: ExerciciType;
+}
+
 export interface AlumneType {
   ID: number;
   Nom: string;
@@ -69,6 +73,7 @@ export interface ReservaType{
 
 export interface ExerciciRutinaType {
   ID: number|null;
+  Nom: string;
   RutinaID: number|null;
   ExerciciID: number;
   Ordre: number;

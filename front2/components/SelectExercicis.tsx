@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import Autocomplete from 'react-native-autocomplete-input';
-import { Text, TouchableOpacity, StyleSheet, View } from 'react-native';
+import { Text, TouchableOpacity, StyleSheet, View, Pressable } from 'react-native';
 import { themeStyles } from '@/themes/theme';
+import { useDispatch } from 'react-redux';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface propsType {
     data: Map<Number, string>,
     selectedValue: string,
     setSelectedValue: Function,
-    dropdownVisible: boolean,
 }
 
 export default function SelectExercicis(props: propsType) {
-    const { data, dropdownVisible, selectedValue, setSelectedValue } = props;
+    const { data, selectedValue, setSelectedValue } = props;
     const [filteredData, setFilteredData] = useState<Map<Number, string>>(data);
+    const [dropdownVisible, setDropdownVisible] = useState(false);
 
 
     const find = (text: string) => {
@@ -26,30 +28,35 @@ export default function SelectExercicis(props: propsType) {
         } else {
             setFilteredData(data);
         }
+        setSelectedValue(text);
     };
 
     return (
         <View style={themeStyles.autocompleteStyle1}>
             <Autocomplete
+                onFocus={() => setDropdownVisible(true)}
+                onBlur={() => setDropdownVisible(false)}
                 hideResults={!dropdownVisible}
                 autoCapitalize="none"
                 autoCorrect={false}
-                data={Array.from(filteredData.values())}
+                data={Array.from(filteredData.values()).sort().slice(0, 7)}
                 defaultValue={selectedValue}
                 onChangeText={(text) => find(text)}
                 placeholder="Exercicis disponibles"
                 flatListProps={{
                     keyExtractor: (item) => item.toString(),
                     renderItem: ({ item }) =>
-                        <TouchableOpacity
-                            style={themeStyles.autocompleteDropdown1}
-                            onPress={() => {
-                                setSelectedValue(item);
-                            }}>
+                        <TouchableOpacity onPress={() => {
+                            console.log("aqui")
+                            console.log(item)
+                        }
+                            
+                        }>
                             <Text style={styles.itemText}>
                                 {item}
                             </Text>
                         </TouchableOpacity>
+
                 }}
             />
         </View>

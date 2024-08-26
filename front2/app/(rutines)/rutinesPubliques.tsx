@@ -6,7 +6,6 @@ import * as types from '../../types/apiTypes';
 import { StyleSheet } from 'react-native'
 import { Checkbox } from 'react-native-paper';
 import BackButton from '../../components/BackButton';
-import { Link } from 'expo-router';
 
 
 export default function RutinesPubliques() {
