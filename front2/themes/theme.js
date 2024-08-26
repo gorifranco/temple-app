@@ -79,5 +79,17 @@ export const themeStyles = StyleSheet.create({
   autocompleteDropdown1: {
     paddingVertical: 8,
     zIndex: 1000,
+  },
+  crearRutinaContainer: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    margin: "auto",
+    width: '100%',
+    borderWidth: 1,
+    borderColor: "black",
+    padding: 10,
+    borderRadius: 10,
+    marginBottom: 10,
   }
 })

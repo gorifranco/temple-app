@@ -13,6 +13,7 @@ import Autocomplete from '@/components/AutocompleteCustom';
 import { TextInput } from 'react-native-paper';
 import { StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import Entypo from '@expo/vector-icons/Entypo';
 
 
 export default function CrearRutina() {
@@ -41,7 +42,8 @@ export default function CrearRutina() {
             <ScrollView>
                 {exercicisElegits.map((exercici, i) => {
                     return (
-                        <View key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: "auto", width: '100%' }}>
+                        <View key={i} style={themeStyles.crearRutinaContainer}>
+                            <Entypo name="menu" size={24} color="black" style={styles.menuIconStyle} />
                             <View style={{ width: '100%', margin: "auto" }}>
                                 <Autocomplete
                                     key={i}
@@ -74,7 +76,7 @@ export default function CrearRutina() {
                                         setExercicisElegits(updatedExercicisElegits);
                                     }} />
                                 <TextInput
-                                    label={"Repeticions"}
+                                    label={"Repes"}
                                     style={{ width: 100 }}
                                     onChangeText={(text: string) => {
                                         const updatedExercicisElegits = [...exercicisElegits];
@@ -120,7 +122,12 @@ export default function CrearRutina() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#f5f5f5', 
+        backgroundColor: '#f5f5f5',
         padding: 16,
     },
+    menuIconStyle: {
+        position: 'absolute',
+        left: 10,
+        top: "45%"
+    }
 });
