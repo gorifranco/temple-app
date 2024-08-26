@@ -9,18 +9,25 @@ const Autocomplete = ({
     onChange: origOnChange,
     style = {},
     menuStyle = {},
-    right = () => { },
-    left = () => { },
+    maxItems,
 }) => {
     const [value, setValue] = useState(origValue);
     const [menuVisible, setMenuVisible] = useState(false);
     const [filteredData, setFilteredData] = useState([]);
 
-    const filterData = (text) => {
-        return data.filter(
+    function changeText(text) {
+        setValue(text)
+        origOnChange(text)
+    }
+
+    function filterData(text) {
+        const filteredData = data.filter(
             (val) => val?.toLowerCase()?.indexOf(text?.toLowerCase()) > -1
         );
+    
+        return filteredData.slice(0, maxItems);
     };
+
     return (
         <View style={[containerStyle]}>
             <TextInput
@@ -29,20 +36,17 @@ const Autocomplete = ({
                         setMenuVisible(true);
                     }
                 }}
-                onBlur={() => setMenuVisible(false)}
+                // onBlur={() => setMenuVisible(false)}
                 label={""}
-                right={right}
-                left={left}
                 style={style}
                 onChangeText={(text) => {
-                    origOnChange(text);
                     if (text && text.length > 0) {
                         setFilteredData(filterData(text));
                     } else if (text && text.length === 0) {
                         setFilteredData(data);
                     }
-                    setMenuVisible(true);
-                    setValue(text);
+                    changeText(text)
+                    setMenuVisible(true)
                 }}
                 value={value}
             />
@@ -62,10 +66,9 @@ const Autocomplete = ({
                         <Menu.Item
                             key={i}
                             style={[{ width: '100%' }, menuStyle]}
-                            onPress={() => {
-                                setValue(datum);
-                                origOnChange(datum);
-                                setMenuVisible(false);
+                            onPress={(e) => {
+                                changeText(datum)
+                                setMenuVisible(false)
                             }}
                             title={datum}
                         />

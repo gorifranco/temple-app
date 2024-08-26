@@ -10,6 +10,9 @@ import { setExercicis } from '@/store/exercicisSlice';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import Autocomplete from '@/components/AutocompleteCustom';
+import { TextInput } from 'react-native-paper';
+import { StyleSheet } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 
 
 export default function CrearRutina() {
@@ -32,52 +35,92 @@ export default function CrearRutina() {
     }
 
     return (
-        <View>
+        <View style={styles.container}>
             <BackButton href={"(entrenador)"} />
             <Text style={themeStyles.titol1}>Creador de rutines</Text>
-            {exercicisElegits.map((exercici, i) => {
-                return (
-                    <Autocomplete
-                        key={i}
-                        value={exercici.Nom}
-                        style={themeStyles.autocompleteStyle1}
-                        containerStyle={themeStyles.autocompleteDropdown1}
-                        data={Object.values(exercicis).map((exercici) => exercici.Nom)}
-                        menuStyle={themeStyles.autocompleteDropdown1}
-                        onChange={(text: string) => {
-                            const updatedExercicisElegits = [...exercicisElegits];
-                            updatedExercicisElegits[i] = {
-                                ...updatedExercicisElegits[i],
-                                Nom: text,
-                            };
-                            setExercicisElegits(updatedExercicisElegits);
-                        }}
-                    />
-                );
-            })}
+            <ScrollView>
+                {exercicisElegits.map((exercici, i) => {
+                    return (
+                        <View key={i} style={{ display: "flex", flexDirection: "column", alignItems: "center", margin: "auto", width: '100%' }}>
+                            <View style={{ width: '100%', margin: "auto" }}>
+                                <Autocomplete
+                                    key={i}
+                                    maxItems={6}
+                                    value={exercici.Nom}
+                                    style={themeStyles.autocompleteStyle1}
+                                    containerStyle={themeStyles.autocompleteDropdown1}
+                                    data={Object.values(exercicis).map((exercici) => exercici.Nom)}
+                                    menuStyle={themeStyles.autocompleteDropdown1}
+                                    onChange={(text: string) => {
+                                        const updatedExercicisElegits = [...exercicisElegits];
+                                        updatedExercicisElegits[i] = {
+                                            ...updatedExercicisElegits[i],
+                                            Nom: text,
+                                        };
+                                        setExercicisElegits(updatedExercicisElegits);
+                                    }}
+                                />
+                            </View>
+                            <View style={{ display: "flex", flexDirection: "row", gap: 25 }}>
+                                <TextInput
+                                    label={"Series"}
+                                    style={{ width: 100 }}
+                                    onChangeText={(text: string) => {
+                                        const updatedExercicisElegits = [...exercicisElegits];
+                                        updatedExercicisElegits[i] = {
+                                            ...updatedExercicisElegits[i],
+                                            NumSeries: Number(text.replace(/[^0-9]/g, '')),
+                                        };
+                                        setExercicisElegits(updatedExercicisElegits);
+                                    }} />
+                                <TextInput
+                                    label={"Repeticions"}
+                                    style={{ width: 100 }}
+                                    onChangeText={(text: string) => {
+                                        const updatedExercicisElegits = [...exercicisElegits];
+                                        updatedExercicisElegits[i] = {
+                                            ...updatedExercicisElegits[i],
+                                            NumRepes: Number(text.replace(/[^0-9]/g, '')),
+                                        };
+                                        setExercicisElegits(updatedExercicisElegits);
+                                    }} />
+                            </View>
+                        </View>
+                    );
+                })}
 
-            <Pressable
-                style={themeStyles.button1}
-                onPress={() => {
-                    setExercicisElegits([
-                        ...exercicisElegits,
-                        {
-                            ID: null,
-                            Nom: "",
-                            RutinaID: null,
-                            ExerciciID: 0,
-                            Ordre: 0,
-                            NumSeries: 0,
-                            NumRepes: 0,
-                            Cicle: 0,
-                            PercentatgeRM: 0,
-                            DiaRutina: 0,
-                        },
-                    ]);
-                }}
-            >
-                <Text style={themeStyles.button1Text}>Afegir exercici</Text>
-            </Pressable>
+
+                <Pressable
+                    style={themeStyles.button1}
+                    onPress={() => {
+                        setExercicisElegits([
+                            ...exercicisElegits,
+                            {
+                                ID: null,
+                                Nom: "",
+                                RutinaID: null,
+                                ExerciciID: 0,
+                                Ordre: 0,
+                                NumSeries: 0,
+                                NumRepes: 0,
+                                Cicle: 0,
+                                PercentatgeRM: 0,
+                                DiaRutina: 0,
+                            },
+                        ]);
+                    }}
+                >
+                    <Text style={themeStyles.button1Text}>Afegir exercici</Text>
+                </Pressable>
+            </ScrollView>
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#f5f5f5', 
+        padding: 16,
+    },
+});
