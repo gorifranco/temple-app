@@ -9,12 +9,12 @@ import { useDispatch } from 'react-redux';
 import { setExercicis } from '@/store/exercicisSlice';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
-import AutocompleteCustom from '@/components/AutocompleteCustom';
+import Autocomplete from '@/components/AutocompleteCustom';
 
 
 export default function CrearRutina() {
     const api = useAxios();
-    const [exercicisElegits, setExercicisElegits] = useState<(ExerciciRutinaType | null)[]>([]);
+    const [exercicisElegits, setExercicisElegits] = useState<(ExerciciRutinaType)[]>([]);
     const dispatch = useDispatch();
 
     const exercicis = useSelector((state: RootState) => state.exercicis);
@@ -35,7 +35,26 @@ export default function CrearRutina() {
         <View>
             <BackButton href={"(entrenador)"} />
             <Text style={themeStyles.titol1}>Creador de rutines</Text>
-            <AutocompleteCustom data={}/>
+            {exercicisElegits.map((exercici, i) => {
+                return (
+                    <Autocomplete
+                        key={i}
+                        value={exercici.Nom}
+                        style={themeStyles.autocompleteStyle1}
+                        containerStyle={themeStyles.autocompleteDropdown1}
+                        data={Object.values(exercicis).map((exercici) => exercici.Nom)}
+                        menuStyle={themeStyles.autocompleteDropdown1}
+                        onChange={(text: string) => {
+                            const updatedExercicisElegits = [...exercicisElegits];
+                            updatedExercicisElegits[i] = {
+                                ...updatedExercicisElegits[i],
+                                Nom: text,
+                            };
+                            setExercicisElegits(updatedExercicisElegits);
+                        }}
+                    />
+                );
+            })}
 
             <Pressable
                 style={themeStyles.button1}
