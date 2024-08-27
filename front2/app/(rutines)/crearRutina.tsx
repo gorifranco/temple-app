@@ -43,49 +43,53 @@ export default function CrearRutina() {
                 {exercicisElegits.map((exercici, i) => {
                     return (
                         <View key={i} style={themeStyles.crearRutinaContainer}>
-                            <Entypo name="menu" size={24} color="black" style={styles.menuIconStyle} />
-                            <View style={{ width: '100%', margin: "auto" }}>
-                                <Autocomplete
-                                    key={i}
-                                    maxItems={6}
-                                    value={exercici.Nom}
-                                    style={themeStyles.autocompleteStyle1}
-                                    containerStyle={themeStyles.autocompleteDropdown1}
-                                    data={Object.values(exercicis).map((exercici) => exercici.Nom)}
-                                    menuStyle={themeStyles.autocompleteDropdown1}
-                                    onChange={(text: string) => {
-                                        const updatedExercicisElegits = [...exercicisElegits];
-                                        updatedExercicisElegits[i] = {
-                                            ...updatedExercicisElegits[i],
-                                            Nom: text,
-                                        };
-                                        setExercicisElegits(updatedExercicisElegits);
-                                    }}
-                                />
+                            <View style={styles.iconContainer}>
+                                <Entypo name="menu" size={24} color="black" style={{paddingLeft: 10}} />
                             </View>
-                            <View style={{ display: "flex", flexDirection: "row", gap: 25 }}>
-                                <TextInput
-                                    label={"Series"}
-                                    style={{ width: 100 }}
-                                    onChangeText={(text: string) => {
-                                        const updatedExercicisElegits = [...exercicisElegits];
-                                        updatedExercicisElegits[i] = {
-                                            ...updatedExercicisElegits[i],
-                                            NumSeries: Number(text.replace(/[^0-9]/g, '')),
-                                        };
-                                        setExercicisElegits(updatedExercicisElegits);
-                                    }} />
-                                <TextInput
-                                    label={"Repes"}
-                                    style={{ width: 100 }}
-                                    onChangeText={(text: string) => {
-                                        const updatedExercicisElegits = [...exercicisElegits];
-                                        updatedExercicisElegits[i] = {
-                                            ...updatedExercicisElegits[i],
-                                            NumRepes: Number(text.replace(/[^0-9]/g, '')),
-                                        };
-                                        setExercicisElegits(updatedExercicisElegits);
-                                    }} />
+                            <View style={{display: "flex", flexDirection: "column", width: "100%", margin: "auto" }}>
+                                <View style={{ width: '100%', margin: "auto" }}>
+                                    <Autocomplete
+                                        key={i}
+                                        maxItems={6}
+                                        value={exercici.Nom}
+                                        style={[themeStyles.autocompleteStyle1, {zIndex: 100}]}
+                                        containerStyle={[themeStyles.autocompleteDropdown1, {zIndex: 100}]}
+                                        data={Object.values(exercicis).map((exercici) => exercici.Nom)}
+                                        menuStyle={themeStyles.autocompleteDropdown1}
+                                        onChange={(text: string) => {
+                                            const updatedExercicisElegits = [...exercicisElegits];
+                                            updatedExercicisElegits[i] = {
+                                                ...updatedExercicisElegits[i],
+                                                Nom: text,
+                                            };
+                                            setExercicisElegits(updatedExercicisElegits);
+                                        }}
+                                    />
+                                </View>
+                                <View style={{ display: "flex", flexDirection: "row", gap: 25, margin: "auto", zIndex: 0 }}>
+                                    <TextInput
+                                        label={"Series"}
+                                        style={{ width: 100, zIndex: 0 }}
+                                        onChangeText={(text: string) => {
+                                            const updatedExercicisElegits = [...exercicisElegits];
+                                            updatedExercicisElegits[i] = {
+                                                ...updatedExercicisElegits[i],
+                                                NumSeries: Number(text.replace(/[^0-9]/g, '')),
+                                            };
+                                            setExercicisElegits(updatedExercicisElegits);
+                                        }} />
+                                    <TextInput
+                                        label={"Repes"}
+                                        style={{ width: 100, zIndex: 0 }}
+                                        onChangeText={(text: string) => {
+                                            const updatedExercicisElegits = [...exercicisElegits];
+                                            updatedExercicisElegits[i] = {
+                                                ...updatedExercicisElegits[i],
+                                                NumRepes: Number(text.replace(/[^0-9]/g, '')),
+                                            };
+                                            setExercicisElegits(updatedExercicisElegits);
+                                        }} />
+                                </View>
                             </View>
                         </View>
                     );
@@ -125,9 +129,11 @@ const styles = StyleSheet.create({
         backgroundColor: '#f5f5f5',
         padding: 16,
     },
-    menuIconStyle: {
-        position: 'absolute',
-        left: 10,
-        top: "45%"
-    }
+    iconContainer: {
+        height: "100%",
+        width: 40,
+        justifyContent: "center",
+        alignItems: "center",
+        flex: 1,
+      },
 });

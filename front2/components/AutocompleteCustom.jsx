@@ -36,7 +36,6 @@ const Autocomplete = ({
                         setMenuVisible(true);
                     }
                 }}
-                // onBlur={() => setMenuVisible(false)}
                 label={""}
                 style={style}
                 onChangeText={(text) => {
@@ -52,20 +51,22 @@ const Autocomplete = ({
             />
             {menuVisible && filteredData && (
                 <View
-                    style={{
-                        margin: "auto",
-                        width: '80%',
-                        flex: 1,
-                        backgroundColor: 'white',
-                        borderWidth: 1,
-                        flexDirection: 'column',
-                        borderColor: 'grey',
-                    }}
+                style={{
+                    position: 'absolute',
+                    top: 63,
+                    left: 36,
+                    right: 0,
+                    width: '80%',
+                    backgroundColor: 'white',
+                    borderWidth: 1,
+                    borderColor: 'grey',
+                    zIndex: "1000 !important",
+                }}
                 >
                     {filteredData.map((datum, i) => (
                         <Menu.Item
                             key={i}
-                            style={[{ width: '100%' }, menuStyle]}
+                            style={[{ width: '100%', zIndex: "1000 !important" }, menuStyle]}
                             onPress={(e) => {
                                 changeText(datum)
                                 setMenuVisible(false)
