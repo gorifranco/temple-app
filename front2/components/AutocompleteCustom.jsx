@@ -1,6 +1,7 @@
 import { View } from "react-native";
 import { Menu, TextInput } from "react-native-paper";
 import React, { useState } from "react";
+import { themeStyles } from '@/themes/theme';
 
 const Autocomplete = ({
     value: origValue,
@@ -8,7 +9,6 @@ const Autocomplete = ({
     containerStyle,
     onChange: origOnChange,
     style = {},
-    menuStyle = {},
     maxItems,
 }) => {
     const [value, setValue] = useState(origValue);
@@ -29,7 +29,7 @@ const Autocomplete = ({
     };
 
     return (
-        <View style={[containerStyle]}>
+        <View style={containerStyle}>
             <TextInput
                 onFocus={() => {
                     if (value.length === 0) {
@@ -50,23 +50,11 @@ const Autocomplete = ({
                 value={value}
             />
             {menuVisible && filteredData && (
-                <View
-                style={{
-                    position: 'absolute',
-                    top: 63,
-                    left: 36,
-                    right: 0,
-                    width: '80%',
-                    backgroundColor: 'white',
-                    borderWidth: 1,
-                    borderColor: 'grey',
-                    zIndex: "1000 !important",
-                }}
-                >
+                <View style={themeStyles.autocompleteItems}>
                     {filteredData.map((datum, i) => (
                         <Menu.Item
                             key={i}
-                            style={[{ width: '100%', zIndex: "1000 !important" }, menuStyle]}
+                            style={themeStyles.autocompleteDivs}
                             onPress={(e) => {
                                 changeText(datum)
                                 setMenuVisible(false)

@@ -70,13 +70,30 @@ export const themeStyles = StyleSheet.create({
     alignSelf: 'center',
     marginHorizontal: "auto",
   },
-  autocompleteStyle1: {
-    width: '80%',
-    padding: 0,
-    margin: "auto",
+  autocompleteDivs: {
+    padding: 10,
+    cursor: "pointer",
+    backgroundColor: "#fff",
+    borderBottom: "1px solid #d4d4d4",
+    zIndex: 100,
   },
-  autocompleteDropdown1: {
-    paddingVertical: 8,
+  autocompleteItems: {
+    width: "100%",
+    position: "absolute",
+    border: "1px solid #d4d4d4",
+    borderBottom: "none",
+    borderTop: "none",
+    zIndex: 100,
+    left: 0,
+    right: 0,
+  },
+  autocompleteContainer: {
+    marginBottom: 10,
+    width: '80%',
+    margin: "auto",
+    position: "relative",
+    display: "inline-block",
+    zIndex: 100,
   },
   crearRutinaContainer: {
     display: "flex",

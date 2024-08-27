@@ -1,6 +1,6 @@
 import { View, Text } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { themeStyles } from '@/themes/theme';
+import { theme, themeStyles } from '@/themes/theme';
 import BackButton from '@/components/BackButton';
 import { ExerciciRutinaType, ExerciciType } from '@/types/apiTypes';
 import { useAxios } from '@/app/api';
@@ -44,32 +44,28 @@ export default function CrearRutina() {
                     return (
                         <View key={i} style={themeStyles.crearRutinaContainer}>
                             <View style={styles.iconContainer}>
-                                <Entypo name="menu" size={24} color="black" style={{paddingLeft: 10}} />
+                                <Entypo name="menu" size={24} color="black" style={{ paddingLeft: 10 }} />
                             </View>
-                            <View style={{display: "flex", flexDirection: "column", width: "100%", margin: "auto" }}>
-                                <View style={{ width: '100%', margin: "auto" }}>
-                                    <Autocomplete
-                                        key={i}
-                                        maxItems={6}
-                                        value={exercici.Nom}
-                                        style={[themeStyles.autocompleteStyle1, {zIndex: 100}]}
-                                        containerStyle={[themeStyles.autocompleteDropdown1, {zIndex: 100}]}
-                                        data={Object.values(exercicis).map((exercici) => exercici.Nom)}
-                                        menuStyle={themeStyles.autocompleteDropdown1}
-                                        onChange={(text: string) => {
-                                            const updatedExercicisElegits = [...exercicisElegits];
-                                            updatedExercicisElegits[i] = {
-                                                ...updatedExercicisElegits[i],
-                                                Nom: text,
-                                            };
-                                            setExercicisElegits(updatedExercicisElegits);
-                                        }}
-                                    />
-                                </View>
-                                <View style={{ display: "flex", flexDirection: "row", gap: 25, margin: "auto", zIndex: 0 }}>
+                            <View style={{ display: "flex", flexDirection: "column", width: "100%", margin: "auto" }}>
+                                <Autocomplete
+                                    key={i}
+                                    maxItems={6}
+                                    value={exercici.Nom}
+                                    containerStyle={themeStyles.autocompleteContainer}
+                                    data={Object.values(exercicis).map((exercici) => exercici.Nom)}
+                                    onChange={(text: string) => {
+                                        const updatedExercicisElegits = [...exercicisElegits];
+                                        updatedExercicisElegits[i] = {
+                                            ...updatedExercicisElegits[i],
+                                            Nom: text,
+                                        };
+                                        setExercicisElegits(updatedExercicisElegits);
+                                    }}
+                                />
+                                <View style={{ display: "flex", flexDirection: "row", gap: 25, margin: "auto" }}>
                                     <TextInput
                                         label={"Series"}
-                                        style={{ width: 100, zIndex: 0 }}
+                                        style={{ width: 100 }}
                                         onChangeText={(text: string) => {
                                             const updatedExercicisElegits = [...exercicisElegits];
                                             updatedExercicisElegits[i] = {
@@ -80,7 +76,7 @@ export default function CrearRutina() {
                                         }} />
                                     <TextInput
                                         label={"Repes"}
-                                        style={{ width: 100, zIndex: 0 }}
+                                        style={{ width: 100 }}
                                         onChangeText={(text: string) => {
                                             const updatedExercicisElegits = [...exercicisElegits];
                                             updatedExercicisElegits[i] = {
@@ -97,7 +93,7 @@ export default function CrearRutina() {
 
 
                 <Pressable
-                    style={themeStyles.button1}
+                    style={[themeStyles.button1, { zIndex: -1 }]}
                     onPress={() => {
                         setExercicisElegits([
                             ...exercicisElegits,
@@ -135,5 +131,5 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         flex: 1,
-      },
+    },
 });

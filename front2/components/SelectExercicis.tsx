@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import Autocomplete from 'react-native-autocomplete-input';
 import { Text, TouchableOpacity, StyleSheet, View, Pressable } from 'react-native';
 import { themeStyles } from '@/themes/theme';
-import { useDispatch } from 'react-redux';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface propsType {
     data: Map<Number, string>,
@@ -52,7 +50,7 @@ export default function SelectExercicis(props: propsType) {
                         }
                             
                         }>
-                            <Text style={styles.itemText}>
+                            <Text style={themeStyles.text}>
                                 {item}
                             </Text>
                         </TouchableOpacity>
@@ -63,9 +61,3 @@ export default function SelectExercicis(props: propsType) {
 
     );
 }
-
-const styles = StyleSheet.create({
-    itemText: {
-        fontSize: 16,
-    },
-});
