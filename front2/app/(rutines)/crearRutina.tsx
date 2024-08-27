@@ -9,21 +9,19 @@ import { useDispatch } from 'react-redux';
 import { setExercicis } from '@/store/exercicisSlice';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
-import { AutocompleteCustom } from '@/components/AutocompleteCustom';
 import { TextInput } from 'react-native-paper';
 import { StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Entypo from '@expo/vector-icons/Entypo';
 import { SafeAreaView } from 'react-native'
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown'
+import AutocompleteExercicis from '@/components/AutocompleteExercicis';
 
 
 export default function CrearRutina() {
     const api = useAxios();
     const [exercicisElegits, setExercicisElegits] = useState<(ExerciciRutinaType)[]>([]);
     const dispatch = useDispatch();
-
-    const exercicis = useSelector((state: RootState) => state.exercicis);
 
     useEffect(() => {
         fetchApiExercicis();
@@ -50,7 +48,18 @@ export default function CrearRutina() {
                                     <Entypo name="menu" size={24} color="black" style={{ paddingLeft: 10 }} />
                                 </View>
                                 <View style={{ display: "flex", flexDirection: "column", width: "100%", margin: "auto" }}>
-                                    <AutocompleteCustom />
+                                    <AutocompleteExercicis
+                                    onSubmit={(id:number) => {
+                                        const updatedExercicisElegits = [...exercicisElegits];
+                                        updatedExercicisElegits[i] = {
+                                            ...updatedExercicisElegits[i],
+                                            ID: id,
+                                        };
+                                        setExercicisElegits(updatedExercicisElegits);
+                                    }}
+                                    selectedValue={exercici.Nom}
+                                    setSelectedValue={(text:string) => console.log(text)}
+                                     />
                                     <View style={{ display: "flex", flexDirection: "row", gap: 25, margin: "auto" }}>
                                         <TextInput
                                             label={"Series"}
