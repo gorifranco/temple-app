@@ -21,6 +21,8 @@ func (Rutina) TableName() string {
 }
 
 type RutinaInput struct {
-	Nom        string `json:"nom"`
-	Descripcio string `json:"descripcio"`
+	Nom        string                `json:"nom"`
+	Descripcio string                `json:"descripcio"`
+	Exercicis  []ExerciciRutinaInput `json:"exercicis"`
+	Cicles     int                   `json:"cicles"`
 }

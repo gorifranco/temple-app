@@ -14,7 +14,6 @@ function AutocompleteExercicis(props) {
     }));
 
     function handleSubmit(id) {
-        console.log(id)
         setSelectedValue(id);
         onSubmit(id)
     }

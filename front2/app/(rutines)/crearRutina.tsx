@@ -1,26 +1,26 @@
-import { View, Text } from 'react-native';
+import { View, Text, Pressable, StyleSheet, SafeAreaView } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { theme, themeStyles } from '@/themes/theme';
+import { themeStyles } from '@/themes/theme';
 import BackButton from '@/components/BackButton';
 import { ExerciciRutinaType, ExerciciType } from '@/types/apiTypes';
 import { useAxios } from '@/app/api';
-import { Pressable } from 'react-native';
 import { useDispatch } from 'react-redux';
 import { setExercicis } from '@/store/exercicisSlice';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store';
 import { TextInput } from 'react-native-paper';
-import { StyleSheet } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Entypo from '@expo/vector-icons/Entypo';
-import { SafeAreaView } from 'react-native'
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown'
 import AutocompleteExercicis from '@/components/AutocompleteExercicis';
+import BarraCicles from '@/components/BarraCicles';
 
 
 export default function CrearRutina() {
     const api = useAxios();
+    const [cicles, setCicles] = useState(1);
+    const [currentCicle, setCurrentCicle] = useState(1);
     const [exercicisElegits, setExercicisElegits] = useState<(ExerciciRutinaType)[]>([]);
+    const [nom, setNom] = useState("");
+    const [descripcio, setDescripcio] = useState("");
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -35,12 +35,40 @@ export default function CrearRutina() {
         }
     }
 
+    function guardarRutina() {
+        console.log(nom)
+    }
+
     return (
         <AutocompleteDropdownContextProvider>
             <SafeAreaView style={styles.container}>
                 <BackButton href={"(entrenador)"} />
                 <Text style={themeStyles.titol1}>Creador de rutines</Text>
                 <ScrollView>
+                    <TextInput 
+                    label={<Text>Nom de la rutina</Text>}
+                    style={themeStyles.inputContainer}
+                    onChangeText={(text: string) => setNom(text)}
+                    value={nom}
+                    />
+
+                    <TextInput
+                    placeholder='Descripció'
+                    style={[themeStyles.inputContainer, {paddingHorizontal: 0}]}
+                    multiline={true}
+                    contentStyle={{ paddingHorizontal: 0, width: 200}}
+                    numberOfLines={4}
+                    maxLength={150}
+                    onChangeText={(text: string) => setDescripcio(text)}
+                    value={descripcio}
+                    />
+
+                    <BarraCicles
+                        cicles={cicles}
+                        afegeixCicle={() => setCicles(cicles + 1)}
+                        canviaCicle={(cicle: number) => setCurrentCicle(cicle)}
+                    />
+                    
                     {exercicisElegits.map((exercici, i) => {
                         return (
                             <View key={i} style={themeStyles.crearRutinaContainer}>
@@ -49,21 +77,23 @@ export default function CrearRutina() {
                                 </View>
                                 <View style={{ display: "flex", flexDirection: "column", width: "100%", margin: "auto" }}>
                                     <AutocompleteExercicis
-                                    onSubmit={(id:number) => {
-                                        const updatedExercicisElegits = [...exercicisElegits];
-                                        updatedExercicisElegits[i] = {
-                                            ...updatedExercicisElegits[i],
-                                            ID: id,
-                                        };
-                                        setExercicisElegits(updatedExercicisElegits);
-                                    }}
-                                    selectedValue={exercici.Nom}
-                                    setSelectedValue={(text:string) => console.log(text)}
-                                     />
+                                        onSubmit={(id: number) => {
+                                            const updatedExercicisElegits = [...exercicisElegits];
+                                            updatedExercicisElegits[i] = {
+                                                ...updatedExercicisElegits[i],
+                                                ID: id,
+                                            };
+                                            setExercicisElegits(updatedExercicisElegits);
+                                        }}
+                                        selectedValue={exercici.Nom}
+                                        setSelectedValue={(text: string) => console.log(text)}
+                                    />
                                     <View style={{ display: "flex", flexDirection: "row", gap: 25, margin: "auto" }}>
                                         <TextInput
-                                            label={"Series"}
-                                            style={{ width: 100 }}
+                                            label={<Text style={{ fontSize: 12 }}>Series</Text>}
+                                            style={{ width: 65 }}
+                                            keyboardType="numeric"
+                                            value={exercici.NumSeries === 0 ? "" : exercici.NumSeries.toString()}
                                             onChangeText={(text: string) => {
                                                 const updatedExercicisElegits = [...exercicisElegits];
                                                 updatedExercicisElegits[i] = {
@@ -73,13 +103,28 @@ export default function CrearRutina() {
                                                 setExercicisElegits(updatedExercicisElegits);
                                             }} />
                                         <TextInput
-                                            label={"Repes"}
-                                            style={{ width: 100 }}
+                                            label={<Text style={{ fontSize: 12 }}>Repes</Text>}
+                                            style={{ width: 65 }}
+                                            keyboardType="numeric"
+                                            value={exercici.NumRepes === 0 ? "" : exercici.NumRepes.toString()}
                                             onChangeText={(text: string) => {
                                                 const updatedExercicisElegits = [...exercicisElegits];
                                                 updatedExercicisElegits[i] = {
                                                     ...updatedExercicisElegits[i],
                                                     NumRepes: Number(text.replace(/[^0-9]/g, '')),
+                                                };
+                                                setExercicisElegits(updatedExercicisElegits);
+                                            }} />
+                                        <TextInput
+                                            label={<Text style={{ fontSize: 12 }}>% RM</Text>}
+                                            keyboardType="numeric"
+                                            style={{ width: 65 }}
+                                            value={exercici.PercentatgeRM === 0 ? "" : exercici.PercentatgeRM.toString()}
+                                            onChangeText={(text: string) => {
+                                                const updatedExercicisElegits = [...exercicisElegits];
+                                                updatedExercicisElegits[i] = {
+                                                    ...updatedExercicisElegits[i],
+                                                    PercentatgeRM: Number(text.replace(/[^0-9]/g, '')),
                                                 };
                                                 setExercicisElegits(updatedExercicisElegits);
                                             }} />
@@ -101,10 +146,10 @@ export default function CrearRutina() {
                                     Nom: "",
                                     RutinaID: null,
                                     ExerciciID: 0,
-                                    Ordre: 0,
+                                    Ordre: exercicisElegits.length,
                                     NumSeries: 0,
                                     NumRepes: 0,
-                                    Cicle: 0,
+                                    Cicle: currentCicle,
                                     PercentatgeRM: 0,
                                     DiaRutina: 0,
                                 },
@@ -113,6 +158,14 @@ export default function CrearRutina() {
                     >
                         <Text style={themeStyles.button1Text}>Afegir exercici</Text>
                     </Pressable>
+
+                    <Pressable
+                        style={[themeStyles.button1, { zIndex: -1 }]}
+                        onPress={() => guardarRutina()}
+                    >
+                        <Text style={themeStyles.button1Text}>Guardar rutina</Text>
+                    </Pressable>
+
                 </ScrollView>
             </SafeAreaView>
         </AutocompleteDropdownContextProvider>
