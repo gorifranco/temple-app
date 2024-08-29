@@ -16,7 +16,7 @@ import BarraDies from '@/components/BarraDies';
 
 export default function CrearRutina() {
     const api = useAxios();
-    const [cicles, setCicles] = useState(null);
+    const [cicles, setCicles] = useState<(Number | null)>(null);
     const [dies, setDies] = useState(1);
     const [currentDia, setCurrentDia] = useState(0);
     const [exercicisElegits, setExercicisElegits] = useState<(ExerciciRutinaType)[]>([]);
@@ -64,12 +64,21 @@ export default function CrearRutina() {
                         value={descripcio}
                     />
 
-                    <View style={{alignContent: "space-between"}}>
-                        <TextInput 
-                        placeholder="Dies"
-                        style={{width: "35%"}}
-                        keyboardType="numeric"
-                        value={dies ? dies.toString() : ""}
+                    <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginHorizontal: "auto", marginBottom: 10, width: "80%" }}>
+                        <TextInput
+                            label="Dies"
+                            keyboardType="numeric"
+                            style={{ width: "47%" }}
+                            value={dies ? dies.toString() : ""}
+                            onChangeText={(text: string) => setDies(Number(text.replace(/[^0-7]/g, '')))}
+                        />
+
+                        <TextInput
+                            label="Cicles"
+                            style={{ width: "47%" }}
+                            keyboardType="numeric"
+                            value={cicles ? cicles.toString() : ""}
+                            onChangeText={(text: string) => setCicles(Number(text.replace(/[^0-9]/g, '')))}
                         />
                     </View>
 

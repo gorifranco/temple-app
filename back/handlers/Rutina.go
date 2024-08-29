@@ -6,6 +6,7 @@ import (
 	"temple-app/models"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func (h *Handler) IndexRutina(c *gin.Context) {
@@ -23,17 +24,31 @@ func (h *Handler) CreateRutina(c *gin.Context) {
 		return
 	}
 
-	rutina := models.Rutina{Nom: input.Nom, Descripcio: input.Descripcio, EntrenadorID: auth.GetUsuari(c)}
+	rutina := models.Rutina{Nom: input.Nom, Descripcio: input.Descripcio, EntrenadorID: c.MustGet("id").(uint), Cicles: input.Cicles}
 
-	err = h.DB.Create(&rutina).Error
+	h.DB.Transaction(func(tx *gorm.DB) error {
+		err = h.DB.Create(&rutina).Error
 
-	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create rutina"})
-		return
-	}
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create rutina"})
+			return err
+		}
+
+		exercicis := input.Exercicis
+
+		for _, exercici := range exercicis {
+			exercici.RutinaID = rutina.ID
+			err = h.DB.Create(&exercici).Error
+			if err != nil {
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create exercici"})
+				return err
+			}
+		}
+		return nil
+	})
 
 	var createdRutina models.Rutina
-	h.DB.First(&createdRutina, rutina.ID)
+	h.DB.First(&createdRutina, rutina.ID).Preload("Exercicis")
 
 	c.JSON(http.StatusOK, gin.H{"data": createdRutina})
 }
@@ -97,7 +112,7 @@ func (h *Handler) CanviarVisibilitat(c *gin.Context) {
 		return
 	}
 
-	if(rutina.EntrenadorID != auth.GetUsuari(c)){
+	if rutina.EntrenadorID != auth.GetUsuari(c) {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
