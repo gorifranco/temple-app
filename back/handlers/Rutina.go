@@ -37,8 +37,10 @@ func (h *Handler) CreateRutina(c *gin.Context) {
 		exercicis := input.Exercicis
 
 		for _, exercici := range exercicis {
-			exercici.RutinaID = rutina.ID
-			err = h.DB.Create(&exercici).Error
+			ex := models.ExerciciRutina{RutinaID: rutina.ID, NumRepes: exercici.NumRepes, NumSeries: exercici.NumSeries,
+				 Cicle: exercici.Cicle, PercentatgeRM: exercici.PercentatgeRM, DiaRutina: exercici.DiaRutina, ExerciciID: exercici.ExerciciID}
+			
+			err = h.DB.Create(&ex).Error
 			if err != nil {
 				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create exercici"})
 				return err
