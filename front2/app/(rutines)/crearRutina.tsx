@@ -11,13 +11,14 @@ import { ScrollView } from 'react-native-gesture-handler';
 import Entypo from '@expo/vector-icons/Entypo';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown'
 import AutocompleteExercicis from '@/components/AutocompleteExercicis';
-import BarraCicles from '@/components/BarraCicles';
+import BarraDies from '@/components/BarraDies';
 
 
 export default function CrearRutina() {
     const api = useAxios();
-    const [cicles, setCicles] = useState(1);
-    const [currentCicle, setCurrentCicle] = useState(0);
+    const [cicles, setCicles] = useState(null);
+    const [dies, setDies] = useState(1);
+    const [currentDia, setCurrentDia] = useState(0);
     const [exercicisElegits, setExercicisElegits] = useState<(ExerciciRutinaType)[]>([]);
     const [nom, setNom] = useState("");
     const [descripcio, setDescripcio] = useState("");
@@ -36,7 +37,7 @@ export default function CrearRutina() {
     }
 
     function guardarRutina() {
-        console.log(nom)
+        console.log("guardar rutina")
     }
 
     return (
@@ -63,15 +64,24 @@ export default function CrearRutina() {
                         value={descripcio}
                     />
 
-                    <BarraCicles
-                        cicles={cicles}
-                        afegeixCicle={() => setCicles(cicles + 1)}
-                        canviaCicle={(cicle: number) => setCurrentCicle(cicle)}
-                        currentCicle={currentCicle}
+                    <View style={{alignContent: "space-between"}}>
+                        <TextInput 
+                        placeholder="Dies"
+                        style={{width: "35%"}}
+                        keyboardType="numeric"
+                        value={dies ? dies.toString() : ""}
+                        />
+                    </View>
+
+                    <BarraDies
+                        dies={dies}
+                        afegeixDia={() => setDies(dies + 1)}
+                        canviaDia={(dia: number) => setCurrentDia(dia)}
+                        currentDia={currentDia}
                     />
 
                     {exercicisElegits.map((exercici, i) => {
-                        if (exercici.Cicle == currentCicle)
+                        if (exercici.DiaRutina == currentDia)
                             return (
                                 <View key={i} style={themeStyles.crearRutinaContainer}>
                                     <View style={styles.iconContainer}>
@@ -151,9 +161,9 @@ export default function CrearRutina() {
                                     Ordre: exercicisElegits.length,
                                     NumSeries: 0,
                                     NumRepes: 0,
-                                    Cicle: currentCicle,
+                                    Cicle: 0,
                                     PercentatgeRM: 0,
-                                    DiaRutina: 0,
+                                    DiaRutina: currentDia,
                                 },
                             ]);
                         }}
