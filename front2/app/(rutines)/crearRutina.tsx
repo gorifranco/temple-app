@@ -12,6 +12,8 @@ import Entypo from '@expo/vector-icons/Entypo';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown'
 import AutocompleteExercicis from '@/components/AutocompleteExercicis';
 import BarraDies from '@/components/BarraDies';
+import { exercicisValidator, nomSalaValidator, descripcioValidator, ciclesValidator, diesValidator } from '@/helpers/validators';
+import { ExerciciErrorType } from '@/types/apiTypes';
 
 
 export default function CrearRutina() {
@@ -23,6 +25,14 @@ export default function CrearRutina() {
     const [nom, setNom] = useState("");
     const [descripcio, setDescripcio] = useState("");
     const dispatch = useDispatch();
+    const [errorsExercicis, setErrorsExercicis] = useState(new Map<number, ExerciciErrorType>());
+    const [errors, setErrors] = useState({
+        Nom: "",
+        Descripcio: "",
+        Dies: "",
+        Cicles: "",
+    })
+
 
     useEffect(() => {
         fetchApiExercicis();
@@ -37,7 +47,25 @@ export default function CrearRutina() {
     }
 
     function guardarRutina() {
-        console.log("guardar rutina")
+        checkErrors()
+
+    }
+
+    function checkErrors() {
+        let error = false;
+        const errors = exercicisValidator(exercicisElegits)
+        const errNom = nomSalaValidator(nom)
+        const errDesc = descripcioValidator(descripcio)
+        const errCicles = ciclesValidator(cicles)
+        const errDies = diesValidator(dies)
+
+        if (errNom != "" || errDesc != "" || errCicles != "" || errDies != "") error = true
+
+        setErrors({ Nom: errNom, Descripcio: errDesc, Cicles: errCicles, Dies: errDies })
+
+        for (const [key, value] of errors) {
+            console.log(key, value)
+        }
     }
 
     return (
@@ -52,6 +80,7 @@ export default function CrearRutina() {
                         onChangeText={(text: string) => setNom(text)}
                         value={nom}
                     />
+                    {nomError ? <Text style={themeStyles.textInputError}>{nomError}</Text> : null}
 
                     <TextInput
                         placeholder='Descripció'
@@ -63,6 +92,7 @@ export default function CrearRutina() {
                         onChangeText={(text: string) => setDescripcio(text)}
                         value={descripcio}
                     />
+                    {descripcioError ? <Text style={themeStyles.textInputError}>{descripcioError}</Text> : null}
 
                     <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginHorizontal: "auto", marginBottom: 10, width: "80%" }}>
                         <TextInput

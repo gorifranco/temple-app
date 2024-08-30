@@ -83,3 +83,10 @@ export interface ExerciciRutinaType {
   PercentatgeRM: number;
   DiaRutina: number;
 }
+
+export interface ExerciciErrorType {
+  Nom: string;
+  PercentatgeRM: string;
+  NumRepes: string;
+  NumSeries: string;
+}
