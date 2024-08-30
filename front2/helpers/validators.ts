@@ -32,21 +32,25 @@ export function exercicisValidator(exercicis: ExerciciRutinaType[]): { error: bo
 
   exercicis.forEach((exercici, index) => {
     const error: ExerciciErrorType = {
-      Nom: "",
+      ExerciciID: "",
       PercentatgeRM: "",
       NumRepes: "",
       NumSeries: "",
     };
 
     // Validaciones
-    validate(exercici.Nom.length === 0, "Nom no pot ser buit.", 'Nom', error);
-    validate(exercici.Nom.length < 2 && exercici.Nom.length > 0, "Nom massa curt.", 'Nom', error);
-    validate(exercici.Nom.length > 15, "Nom massa llarg.", 'Nom', error);
-    validate(exercici.PercentatgeRM < 0 || exercici.PercentatgeRM > 100, "Percentatge RM no pot ser menor a 0 o superior a 100.", 'PercentatgeRM', error);
+    validate(exercici.ExerciciID === -1, "Tria un exercici.", "ExerciciID", error);
+    validate(exercici.PercentatgeRM === 0, "Obligatori", 'PercentatgeRM', error);
+    validate(exercici.PercentatgeRM < 0, "Percentatge RM no pot ser negatiu.", 'PercentatgeRM', error);
+    validate(exercici.PercentatgeRM > 100, "Percentatge RM no pot ser major que 100.", 'PercentatgeRM', error);
     validate(exercici.PercentatgeRM === null, "Percentatge RM no pot ser buit.", 'PercentatgeRM', error);
-    validate(exercici.NumRepes < 0 || exercici.NumRepes > 100, "NumRepes no pot ser menor a 0 o superior a 100.", 'NumRepes', error);
+    validate(exercici.NumRepes === 0, "Obligatori", 'NumRepes', error);
+    validate(exercici.NumRepes < 0, "NumRepes no pot ser negatiu.", 'NumRepes', error);
+    validate(exercici.NumRepes > 100, "NumRepes no pot ser major que 100.", 'NumRepes', error);
     validate(exercici.NumRepes === null, "NumRepes no pot ser buit.", 'NumRepes', error);
-    validate(exercici.NumSeries < 0 || exercici.NumSeries > 100, "NumSeries no pot ser menor a 0 o superior a 100.", 'NumSeries', error);
+    validate(exercici.NumSeries === 0, "Obligatori", 'NumSeries', error);
+    validate(exercici.NumSeries < 0, "NumSeries no pot ser negatiu.", 'NumSeries', error);
+    validate(exercici.NumSeries > 100, "NumSeries no pot ser major que 100.", 'NumSeries', error);
     validate(exercici.NumSeries === null, "NumSeries no pot ser buit.", 'NumSeries', error);
 
     errors.set(index, error);

@@ -85,7 +85,7 @@ export interface ExerciciRutinaType {
 }
 
 export interface ExerciciErrorType {
-  Nom: string;
+  ExerciciID: string;
   PercentatgeRM: string;
   NumRepes: string;
   NumSeries: string;

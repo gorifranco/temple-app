@@ -19,8 +19,9 @@ function AutocompleteExercicis(props) {
     }
 
     return (
-        <View style={{ width: "80%", margin: "auto", marginBottom: 6 }}>
+        <View style={{ width: "80%", margin: "auto", marginBottom: 0 }}>
             <AutocompleteDropdown
+            style={{marginBottom: 0}}
                 clearOnFocus={false}
                 closeOnBlur={true}
                 onSelectItem={(item) => handleSubmit(item?.id)}

@@ -46,27 +46,36 @@ export default function CrearRutina() {
         }
     }
 
-    function guardarRutina() {
-        checkErrors()
+    async function guardarRutina() {
+        let exercicisEnviats = exercicisElegits.filter((exercici) => exercici.DiaRutina <= dies)
+
+        if (!checkErrors(exercicisEnviats)) {
+            const response = await api.post(`/rutines`, {
+                nom: nom,
+                descripcio: descripcio,
+                cicles: cicles,
+                dies: dies,
+                exercicis: exercicisEnviats,
+            })
+
+            console.log(response)
+        }
 
     }
 
-    function checkErrors() {
-        let error = false;
-        const errors = exercicisValidator(exercicisElegits)
+    function checkErrors(exercicis: ExerciciRutinaType[]) {
+        const errors = exercicisValidator(exercicis)
         const errNom = nomSalaValidator(nom)
         const errDesc = descripcioValidator(descripcio)
         const errCicles = ciclesValidator(cicles)
         const errDies = diesValidator(dies)
 
-        if (errNom != "" || errDesc != "" || errCicles != "" || errDies != "") error = true
+        console.log(exercicis)
 
         setErrors({ Nom: errNom, Descripcio: errDesc, Cicles: errCicles, Dies: errDies })
+        setErrorsExercicis(errors.errors)
 
-        for (const [key, value] of errors) {
-            if()
-
-        }
+        return (errNom != "" || errDesc != "" || errCicles != "" || errDies != "" || errors.error)
     }
 
     return (
@@ -76,15 +85,17 @@ export default function CrearRutina() {
                 <Text style={themeStyles.titol1}>Creador de rutines</Text>
                 <ScrollView>
                     <TextInput
+                        error={errors.Nom != ""}
                         label={<Text>Nom de la rutina</Text>}
                         style={themeStyles.inputContainer}
                         onChangeText={(text: string) => setNom(text)}
                         value={nom}
                     />
-                    {errors.Nom && errors.Nom != "" ? <Text style={themeStyles.textInputError}>{errors.Nom}</Text> : null}
+                    {errors.Nom && errors.Nom != "" ? <Text style={themeStyles.textInputError}>* {errors.Nom}</Text> : null}
 
                     <TextInput
                         placeholder='Descripció'
+                        error={errors.Descripcio != ""}
                         style={[themeStyles.inputContainer, { paddingHorizontal: 0 }]}
                         multiline={true}
                         contentStyle={{ paddingHorizontal: 0, width: 200 }}
@@ -93,24 +104,31 @@ export default function CrearRutina() {
                         onChangeText={(text: string) => setDescripcio(text)}
                         value={descripcio}
                     />
-                    {errors.Descripcio && errors.Descripcio != "" ? <Text style={themeStyles.textInputError}>{errors.Descripcio}</Text> : null}
+                    {errors.Descripcio && errors.Descripcio != "" ? <Text style={themeStyles.textInputError}>* {errors.Descripcio}</Text> : null}
 
                     <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginHorizontal: "auto", marginBottom: 10, width: "80%" }}>
-                        <TextInput
-                            label="Dies"
-                            keyboardType="numeric"
-                            style={{ width: "47%" }}
-                            value={dies ? dies.toString() : ""}
-                            onChangeText={(text: string) => setDies(Number(text.replace(/[^0-7]/g, '')))}
-                        />
-
-                        <TextInput
-                            label="Cicles"
-                            style={{ width: "47%" }}
-                            keyboardType="numeric"
-                            value={cicles ? cicles.toString() : ""}
-                            onChangeText={(text: string) => setCicles(Number(text.replace(/[^0-9]/g, '')))}
-                        />
+                        <View style={{ display: "flex", flexDirection: "column", width: "47%" }}>
+                            <TextInput
+                                error={errors.Dies != ""}
+                                label="Dies"
+                                keyboardType="numeric"
+                                style={{ width: "100%" }}
+                                value={dies ? dies.toString() : ""}
+                                onChangeText={(text: string) => setDies(Number(text.replace(/[^0-7]/g, '')))}
+                            />
+                            {errors.Dies && errors.Dies != "" ? <Text style={themeStyles.textInputError}>* {errors.Dies}</Text> : null}
+                        </View>
+                        <View style={{ display: "flex", flexDirection: "column", width: "47%" }}>
+                            <TextInput
+                                error={errors.Cicles != ""}
+                                label="Cicles"
+                                style={{ width: "100%" }}
+                                keyboardType="numeric"
+                                value={cicles ? cicles.toString() : ""}
+                                onChangeText={(text: string) => setCicles(Number(text.replace(/[^0-9]/g, '')))}
+                            />
+                            {errors.Cicles && errors.Cicles != "" ? <Text style={[themeStyles.textInputError, { marginHorizontal: 0 }]}>* {errors.Cicles}</Text> : null}
+                        </View>
                     </View>
 
                     <BarraDies
@@ -133,53 +151,79 @@ export default function CrearRutina() {
                                                 const updatedExercicisElegits = [...exercicisElegits];
                                                 updatedExercicisElegits[i] = {
                                                     ...updatedExercicisElegits[i],
-                                                    ID: id,
+                                                    ExerciciID: id,
                                                 };
                                                 setExercicisElegits(updatedExercicisElegits);
                                             }}
                                             selectedValue={exercici.Nom}
                                             setSelectedValue={(text: string) => console.log(text)}
                                         />
-                                        <View style={{ display: "flex", flexDirection: "row", gap: 25, margin: "auto" }}>
-                                            <TextInput
-                                                label={<Text style={{ fontSize: 12 }}>Series</Text>}
-                                                style={{ width: 65 }}
-                                                keyboardType="numeric"
-                                                value={exercici.NumSeries === 0 ? "" : exercici.NumSeries.toString()}
-                                                onChangeText={(text: string) => {
-                                                    const updatedExercicisElegits = [...exercicisElegits];
-                                                    updatedExercicisElegits[i] = {
-                                                        ...updatedExercicisElegits[i],
-                                                        NumSeries: Number(text.replace(/[^0-9]/g, '')),
-                                                    };
-                                                    setExercicisElegits(updatedExercicisElegits);
-                                                }} />
-                                            <TextInput
-                                                label={<Text style={{ fontSize: 12 }}>Repes</Text>}
-                                                style={{ width: 65 }}
-                                                keyboardType="numeric"
-                                                value={exercici.NumRepes === 0 ? "" : exercici.NumRepes.toString()}
-                                                onChangeText={(text: string) => {
-                                                    const updatedExercicisElegits = [...exercicisElegits];
-                                                    updatedExercicisElegits[i] = {
-                                                        ...updatedExercicisElegits[i],
-                                                        NumRepes: Number(text.replace(/[^0-9]/g, '')),
-                                                    };
-                                                    setExercicisElegits(updatedExercicisElegits);
-                                                }} />
-                                            <TextInput
-                                                label={<Text style={{ fontSize: 12 }}>% RM</Text>}
-                                                keyboardType="numeric"
-                                                style={{ width: 65 }}
-                                                value={exercici.PercentatgeRM === 0 ? "" : exercici.PercentatgeRM.toString()}
-                                                onChangeText={(text: string) => {
-                                                    const updatedExercicisElegits = [...exercicisElegits];
-                                                    updatedExercicisElegits[i] = {
-                                                        ...updatedExercicisElegits[i],
-                                                        PercentatgeRM: Number(text.replace(/[^0-9]/g, '')),
-                                                    };
-                                                    setExercicisElegits(updatedExercicisElegits);
-                                                }} />
+                                        {errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.ExerciciID !== "" ? (
+                                            <Text style={themeStyles.textInputError}>* {errorsExercicis.get(i)!.ExerciciID}</Text>
+                                        ) : null}
+
+                                        <View style={{ display: "flex", flexDirection: "row", gap: 25, margin: "auto", marginTop: 6 }}>
+                                            <View style={styles.container2}>
+                                                <TextInput
+                                                    error={errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.NumSeries !== ""}
+                                                    label={<Text style={{ fontSize: 12 }}>Series</Text>}
+                                                    style={{ width: 65 }}
+                                                    keyboardType="numeric"
+                                                    value={exercici.NumSeries === 0 ? "" : exercici.NumSeries.toString()}
+                                                    onChangeText={(text: string) => {
+                                                        const updatedExercicisElegits = [...exercicisElegits];
+                                                        updatedExercicisElegits[i] = {
+                                                            ...updatedExercicisElegits[i],
+                                                            NumSeries: Number(text.replace(/[^0-9]/g, '')),
+                                                        };
+                                                        setExercicisElegits(updatedExercicisElegits);
+                                                    }} />
+                                                {errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.NumSeries !== "" ? (
+                                                    <Text style={themeStyles.textInputError}>{"(*)"}</Text>
+                                                ) : null}
+                                            </View>
+
+                                            <View style={styles.container2}>
+                                                <TextInput
+                                                    error={errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.NumRepes !== ""}
+                                                    label={<Text style={{ fontSize: 12 }}>Repes</Text>}
+                                                    style={{ width: 65 }}
+                                                    keyboardType="numeric"
+                                                    value={exercici.NumRepes === 0 ? "" : exercici.NumRepes.toString()}
+                                                    onChangeText={(text: string) => {
+                                                        const updatedExercicisElegits = [...exercicisElegits];
+                                                        updatedExercicisElegits[i] = {
+                                                            ...updatedExercicisElegits[i],
+                                                            NumRepes: Number(text.replace(/[^0-9]/g, '')),
+                                                        };
+                                                        setExercicisElegits(updatedExercicisElegits);
+                                                    }} />
+                                                {errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.NumRepes !== "" ? (
+                                                    <Text style={themeStyles.textInputError}>{"(*)"}</Text>
+                                                ) : null}
+                                            </View>
+
+
+                                            <View style={styles.container2}>
+                                                <TextInput
+                                                    error={errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.PercentatgeRM !== ""}
+                                                    label={<Text style={{ fontSize: 12 }}>% RM</Text>}
+                                                    keyboardType="numeric"
+                                                    style={{ width: 65 }}
+                                                    value={exercici.PercentatgeRM === 0 ? "" : exercici.PercentatgeRM.toString()}
+                                                    onChangeText={(text: string) => {
+                                                        const updatedExercicisElegits = [...exercicisElegits];
+                                                        updatedExercicisElegits[i] = {
+                                                            ...updatedExercicisElegits[i],
+                                                            PercentatgeRM: Number(text.replace(/[^0-9]/g, '')),
+                                                        };
+                                                        setExercicisElegits(updatedExercicisElegits);
+                                                    }} />
+                                                {errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.PercentatgeRM !== "" ? (
+                                                    <Text style={themeStyles.textInputError}>{"(*)"}</Text>
+                                                ) : null}
+                                            </View>
+
                                         </View>
                                     </View>
                                 </View>
@@ -197,7 +241,7 @@ export default function CrearRutina() {
                                     ID: null,
                                     Nom: "",
                                     RutinaID: null,
-                                    ExerciciID: 0,
+                                    ExerciciID: -1,
                                     Ordre: exercicisElegits.length,
                                     NumSeries: 0,
                                     NumRepes: 0,
@@ -212,15 +256,14 @@ export default function CrearRutina() {
                     </Pressable>
 
                     <Pressable
-                        style={[themeStyles.button1, { zIndex: -1 }]}
+                        style={[themeStyles.button1, { zIndex: -1, marginBottom: 20 }]}
                         onPress={() => guardarRutina()}
                     >
                         <Text style={themeStyles.button1Text}>Guardar rutina</Text>
                     </Pressable>
-
-                </ScrollView>
-            </SafeAreaView>
-        </AutocompleteDropdownContextProvider>
+                </ScrollView >
+            </SafeAreaView >
+        </AutocompleteDropdownContextProvider >
     )
 }
 
@@ -237,4 +280,9 @@ const styles = StyleSheet.create({
         alignItems: "center",
         flex: 1,
     },
+    container2: {
+        display: "flex",
+        flexDirection: "column",
+        marginHorizontal: "auto",
+    }
 });

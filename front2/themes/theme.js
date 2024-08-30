@@ -65,7 +65,8 @@ export const themeStyles = StyleSheet.create({
   },
   inputContainer: {
     width: '80%',
-    marginVertical: 12,
+    marginTop: 12,
+    marginBottom: 4,
     alignItems: 'center',
     alignSelf: 'center',
     marginHorizontal: "auto",
@@ -85,6 +86,8 @@ export const themeStyles = StyleSheet.create({
   textInputError: {
     fontSize: 13,
     color: theme.colors.error,
-    paddingTop: 8,
+    paddingTop: 0,
+    width: "80%",
+    margin: "auto",
   },
 })
