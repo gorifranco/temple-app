@@ -23,7 +23,7 @@ export interface RutinaType {
   ID: number;
   Nom: string;
   Descripcio: string;
-  Exercicis: ExerciciType[]
+  Exercicis: ExerciciRutinaType[]
 }
 
 export interface SalesState {

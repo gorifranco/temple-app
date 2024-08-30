@@ -6,11 +6,12 @@ interface propsType {
     afegeixDia: Function,
     canviaDia: Function,
     currentDia: number,
+    editable: boolean
 }
 
 
 export default function BarraDies(props: propsType) {
-    const { dies, afegeixDia, canviaDia, currentDia } = props;
+    const { dies, afegeixDia, canviaDia, currentDia, editable } = props;
 
     const screenWidth = Dimensions.get('window').width;
     const pressableWidth = screenWidth * 0.8 / 7; 
@@ -35,7 +36,7 @@ export default function BarraDies(props: propsType) {
                     </Pressable>
                 );
             })}
-            {dies < 7 && (
+            {editable && dies < 7 && (
                 <Pressable
                     key={"afegir"}
                     style={[styles.pressable, { borderRightWidth: 0, width: 45 }]}

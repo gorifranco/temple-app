@@ -14,6 +14,7 @@ import { useDispatch } from 'react-redux';
 import { setAlumne, updateAlumnes } from '@/store/alumnesSlice';
 import { setReserves, updateReserves } from '@/store/reservesSlice';
 import { AlumneType } from '../../types/apiTypes';
+import ViewRutina from '@/components/viewers/ViewRutina';
 
 export default function Index() {
     //const [sales, setSales] = useState<types.SalaType[]>([])
@@ -211,29 +212,26 @@ export default function Index() {
             />
             <Text style={themeStyles.titol1}>Rutines</Text>
 
-            {rutines.length === 0 ? (
-                <View>
-                    <Pressable
-                        style={themeStyles.button1}
-                        onPress={() => {
-                            router.replace("../(rutines)/crearRutina")
-                        }}><Text style={styles.buttonText}>Crea una rutina</Text></Pressable>
-                    <Pressable
-                        style={themeStyles.button1}
-                        onPress={() => {
-                            router.replace("../(rutines)/rutinesPubliques")
-                        }}><Text style={styles.buttonText}>Rutines públiques</Text></Pressable>
-                </View>
-            ) : (
-                <View>
-                    {rutines.map((rutina) => (
-                        <View key={rutina.ID} style={styles.rutinaContainer}>
-                            <Text>{rutina.Nom}</Text>
-                            <Text>{rutina.Descripcio}</Text>
-                        </View>
-                    ))}
-                </View>
-            )}
+            <View>
+                {rutines.map((rutina) => (
+                    <ViewRutina rutina={rutina} key={rutina.ID} />
+                ))}
+            </View>
+
+            <View>
+                <Pressable
+                    style={themeStyles.button1}
+                    onPress={() => {
+                        router.replace("../(rutines)/crearRutina")
+                    }}><Text style={styles.buttonText}>Crea una rutina</Text></Pressable>
+                <Pressable
+                    style={themeStyles.button1}
+                    onPress={() => {
+                        router.replace("../(rutines)/rutinesPubliques")
+                    }}><Text style={styles.buttonText}>Rutines públiques</Text></Pressable>
+            </View>
+
+
 
             <ModalAfegirUsuari
                 modalVisible={afegirAlumneVisible}
@@ -274,11 +272,13 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     rutinaContainer: {
-        margin: 20,
+        marginVertical: 20,
+        marginHorizontal: "auto",
         borderWidth: 1,
         borderColor: "black",
         padding: 10,
         borderRadius: 10,
+        width: '80%',
     },
     modal: {
         padding: 20,
