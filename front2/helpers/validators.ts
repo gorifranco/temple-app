@@ -19,39 +19,54 @@ export function nomRutinaValidator(nom: string) {
   return ''
 }
 
-export function exercicisValidator(exercicis: ExerciciRutinaType[]) {
-  let errors = new Map<number, ExerciciErrorType>()
-  for (let i = 0; i < exercicis.length; i++) {
+export function exercicisValidator(exercicis: ExerciciRutinaType[]): { error: boolean, errors: Map<number, ExerciciErrorType> } {
+  let errorExists = false;
+  let errors = new Map<number, ExerciciErrorType>();
+
+  const validate = (condition: boolean, message: string, field: keyof ExerciciErrorType, errorObj: ExerciciErrorType) => {
+    if (condition) {
+      errorObj[field] = message;
+      errorExists = true;
+    }
+  };
+
+  exercicis.forEach((exercici, index) => {
     const error: ExerciciErrorType = {
       Nom: "",
       PercentatgeRM: "",
       NumRepes: "",
       NumSeries: "",
-    }
+    };
 
-    if (exercicis[i].Nom.length === 0) error.Nom = "Nom no pot ser buit.";
-    if (exercicis[i].Nom.length < 2 && exercicis[i].Nom.length > 0) error.Nom = "Nom massa curt.";
-    if (exercicis[i].Nom.length > 15) error.Nom = "Nom massa llarg.";
-    if (exercicis[i].PercentatgeRM < 0 || exercicis[i].PercentatgeRM > 100) error.PercentatgeRM = "Percentatge RM no pot ser menor a 0 o superior a 100.";
-    if (exercicis[i].PercentatgeRM === null) error.PercentatgeRM = "Percentatge RM no pot ser buit.";
-    if (exercicis[i].NumRepes < 0 || exercicis[i].NumRepes > 100) error.NumRepes = "NumRepes no pot ser menor a 0 o superior a 100.";
-    if (exercicis[i].NumRepes === null) error.NumRepes = "NumRepes no pot ser buit.";
-    if (exercicis[i].NumSeries < 0 || exercicis[i].NumSeries > 100) error.NumSeries = "NumSeries no pot ser menor a 0 o superior a 100.";
-    if (exercicis[i].NumSeries === null) error.NumSeries = "NumSeries no pot ser buit."
+    // Validaciones
+    validate(exercici.Nom.length === 0, "Nom no pot ser buit.", 'Nom', error);
+    validate(exercici.Nom.length < 2 && exercici.Nom.length > 0, "Nom massa curt.", 'Nom', error);
+    validate(exercici.Nom.length > 15, "Nom massa llarg.", 'Nom', error);
+    validate(exercici.PercentatgeRM < 0 || exercici.PercentatgeRM > 100, "Percentatge RM no pot ser menor a 0 o superior a 100.", 'PercentatgeRM', error);
+    validate(exercici.PercentatgeRM === null, "Percentatge RM no pot ser buit.", 'PercentatgeRM', error);
+    validate(exercici.NumRepes < 0 || exercici.NumRepes > 100, "NumRepes no pot ser menor a 0 o superior a 100.", 'NumRepes', error);
+    validate(exercici.NumRepes === null, "NumRepes no pot ser buit.", 'NumRepes', error);
+    validate(exercici.NumSeries < 0 || exercici.NumSeries > 100, "NumSeries no pot ser menor a 0 o superior a 100.", 'NumSeries', error);
+    validate(exercici.NumSeries === null, "NumSeries no pot ser buit.", 'NumSeries', error);
 
-    errors.set(i, error)
-  }
+    errors.set(index, error);
+  });
+
+  return { error: errorExists, errors: errors };
 }
 
-function ciclesValidator(cicles: number) {
-  if (cicles < 1) return "Cicles no pot ser menor que 1"
+
+export function ciclesValidator(cicles: Number|null) {
+  if(!cicles) return "Cicles no pot estar buit"
+  if (cicles = 0) return "Cicles no pot ser 0"
   if (cicles > 100) return "Cicles no pot ser superior a 100."
   return ''
 }
 
-function diesValidator(dies: number) {
-  if (dies < 1) return "Dies no pot ser menor que 1"
-  if (dies > 100) return "Dies no pot ser superior a 100."
+export function diesValidator(dies: Number|null) {
+  if(!dies) return "Dies no pot estar buit"
+  if (dies == 0) return "Dies no pot ser 0"
+  if (dies.valueOf() > 100) return "Dies no pot ser superior a 100."
   return ''
 }
 

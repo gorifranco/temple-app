@@ -64,7 +64,8 @@ export default function CrearRutina() {
         setErrors({ Nom: errNom, Descripcio: errDesc, Cicles: errCicles, Dies: errDies })
 
         for (const [key, value] of errors) {
-            console.log(key, value)
+            if()
+
         }
     }
 
@@ -80,7 +81,7 @@ export default function CrearRutina() {
                         onChangeText={(text: string) => setNom(text)}
                         value={nom}
                     />
-                    {nomError ? <Text style={themeStyles.textInputError}>{nomError}</Text> : null}
+                    {errors.Nom && errors.Nom != "" ? <Text style={themeStyles.textInputError}>{errors.Nom}</Text> : null}
 
                     <TextInput
                         placeholder='Descripció'
@@ -92,7 +93,7 @@ export default function CrearRutina() {
                         onChangeText={(text: string) => setDescripcio(text)}
                         value={descripcio}
                     />
-                    {descripcioError ? <Text style={themeStyles.textInputError}>{descripcioError}</Text> : null}
+                    {errors.Descripcio && errors.Descripcio != "" ? <Text style={themeStyles.textInputError}>{errors.Descripcio}</Text> : null}
 
                     <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginHorizontal: "auto", marginBottom: 10, width: "80%" }}>
                         <TextInput
