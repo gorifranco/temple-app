@@ -26,7 +26,11 @@ export default function ViewRutina(props: propsType) {
             </View>
             {desplegat && (
                 <View>
-                    <BarraDies editable={false}/>
+                    <BarraDies
+                    editable={false}
+                     dies={rutina.DiesDuracio}
+                     canviaDia={() => { }}
+                     currentDia={0} />
                 </View>
             )}
         </View>

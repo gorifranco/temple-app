@@ -24,6 +24,8 @@ export interface RutinaType {
   Nom: string;
   Descripcio: string;
   Exercicis: ExerciciRutinaType[]
+  DiesDuracio: number
+  Cicles: number
 }
 
 export interface SalesState {

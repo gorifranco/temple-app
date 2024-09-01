@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Pressable, Dimensions } from 'react-native';
 
 interface propsType {
     dies: number,
-    afegeixDia: Function,
+    afegeixDia?: Function,
     canviaDia: Function,
     currentDia: number,
     editable: boolean
@@ -14,7 +14,7 @@ export default function BarraDies(props: propsType) {
     const { dies, afegeixDia, canviaDia, currentDia, editable } = props;
 
     const screenWidth = Dimensions.get('window').width;
-    const pressableWidth = screenWidth * 0.8 / 7; 
+    const pressableWidth = editable ? screenWidth * 0.8 / 7 : screenWidth*0.8/dies; 
 
     return (
         <View style={[styles.container, { width: screenWidth * 0.8+1 }]}>

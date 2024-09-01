@@ -54,7 +54,7 @@ export default function CrearRutina() {
                 nom: nom,
                 descripcio: descripcio,
                 cicles: cicles,
-                dies: dies,
+                diesDuracio: dies,
                 exercicis: exercicisEnviats,
             })
 
@@ -136,6 +136,7 @@ export default function CrearRutina() {
                         afegeixDia={() => setDies(dies + 1)}
                         canviaDia={(dia: number) => setCurrentDia(dia)}
                         currentDia={currentDia}
+                        editable={true}
                     />
 
                     {exercicisElegits.map((exercici, i) => {
