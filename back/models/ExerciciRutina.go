@@ -16,13 +16,17 @@ type ExerciciRutina struct {
 	DiaRutina     int `gorm:"not null"`
 }
 
+func (ExerciciRutina) TableName() string {
+	return "exercicis_rutina"
+}
+
+
 type ExerciciRutinaInput struct {
-	RutinaID      uint `json:"rutina_id"`
-	ExerciciID    uint `json:"exercici_id"`
-	Ordre         int  `json:"orden"`
-	NumSeries     int  `json:"num_series"`
-	NumRepes      int  `json:"num_repes"`
+	ExerciciID    uint `json:"exerciciID"`
+	Ordre         int  `json:"ordre"`
+	NumSeries     int  `json:"numSeries"`
+	NumRepes      int  `json:"numRepes"`
 	Cicle         int  `json:"cicle"`
-	PercentatgeRM int  `json:"percentatge_rm"`
-	DiaRutina     int  `json:"dia_rutina"`
+	PercentatgeRM int  `json:"percentatgeRM"`
+	DiaRutina     int  `json:"diaRutina"`
 }

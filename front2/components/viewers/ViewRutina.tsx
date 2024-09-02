@@ -12,6 +12,8 @@ interface propsType {
 export default function ViewRutina(props: propsType) {
     const { rutina } = props
     const [desplegat, setDesplegat] = useState(false)
+    const [dia, setDia] = useState(0)
+    console.log(rutina)
 
     return (
         <View key={rutina.ID} style={styles.rutinaContainer}>
@@ -27,10 +29,27 @@ export default function ViewRutina(props: propsType) {
             {desplegat && (
                 <View>
                     <BarraDies
-                    editable={false}
-                     dies={rutina.DiesDuracio}
-                     canviaDia={() => { }}
-                     currentDia={0} />
+                        editable={false}
+                        dies={rutina.DiesDuracio}
+                        canviaDia={(d: number) => setDia(d)}
+                        currentDia={dia} />
+
+                    <View style={{display: "flex", flexDirection: "row", justifyContent: "space-between", marginTop: 10, width: "95%"}}>
+                        <Text style={{width: "50%"}}>Exercici</Text>
+                        <Text>Repes</Text>
+                        <Text>Series</Text>
+                        <Text>%RM</Text>
+                    </View>
+                    {rutina.Exercicis && rutina.Exercicis.map((exercici, i) => {
+                        return (
+                            <View key={i} style={{display: "flex", flexDirection: "row", justifyContent: "space-between", marginTop: 10, width: "95%"}}>
+                                <Text style={{width: "50%"}}>{exercici.Nom}</Text>
+                                <Text>{exercici.NumRepes}</Text>
+                                <Text>{exercici.NumSeries}</Text>
+                                <Text>{exercici.PercentatgeRM}</Text>
+                            </View>
+                        )
+                    })}
                 </View>
             )}
         </View>

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Pressable, Dimensions } from 'react-native';
 
 interface propsType {
     dies: number,
-    afegeixDia?: Function,
+    afegeixDia?: () => void;
     canviaDia: Function,
     currentDia: number,
     editable: boolean
@@ -41,7 +41,7 @@ export default function BarraDies(props: propsType) {
                     key={"afegir"}
                     style={[styles.pressable, { borderRightWidth: 0, width: 45 }]}
                     onPress={() => {
-                        afegeixDia()
+                        if(afegeixDia) afegeixDia()
                     }}
                 >
                     <Text style={[themeStyles.text, { color: 'gray', fontSize: 25, fontWeight: 'bold' }]}>+</Text>

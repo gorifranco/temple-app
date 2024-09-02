@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"temple-app/auth"
 	"temple-app/models"
@@ -24,37 +25,58 @@ func (h *Handler) CreateRutina(c *gin.Context) {
 		return
 	}
 
-	rutina := models.Rutina{Nom: input.Nom, Descripcio: input.Descripcio, EntrenadorID: c.MustGet("id").(uint), Cicles: input.Cicles}
+	var rutina models.Rutina
 
-	h.DB.Transaction(func(tx *gorm.DB) error {
-		err = h.DB.Create(&rutina).Error
+	err = h.DB.Transaction(func(tx *gorm.DB) error {
+		// Crear la rutina
+		rutina = models.Rutina{
+			Nom:         input.Nom,
+			Descripcio:  input.Descripcio,
+			EntrenadorID: c.MustGet("id").(uint),
+			Cicles:      input.Cicles,
+		}
 
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create rutina"})
+		if err := tx.Create(&rutina).Error; err != nil {
 			return err
 		}
 
-		exercicis := input.Exercicis
+		fmt.Println(input.Exercicis)
 
-		for _, exercici := range exercicis {
-			ex := models.ExerciciRutina{RutinaID: rutina.ID, NumRepes: exercici.NumRepes, NumSeries: exercici.NumSeries,
-				 Cicle: exercici.Cicle, PercentatgeRM: exercici.PercentatgeRM, DiaRutina: exercici.DiaRutina, ExerciciID: exercici.ExerciciID}
-			
-			err = h.DB.Create(&ex).Error
-			if err != nil {
-				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create exercici"})
+		// Crear los ejercicios asociados a la rutina
+		for _, exercici := range input.Exercicis {
+			ex := models.ExerciciRutina{
+				RutinaID:    rutina.ID,
+				NumRepes:    exercici.NumRepes,
+				NumSeries:   exercici.NumSeries,
+				Cicle:       exercici.Cicle,
+				PercentatgeRM: exercici.PercentatgeRM,
+				DiaRutina:   exercici.DiaRutina,
+				ExerciciID:  exercici.ExerciciID,
+			}
+
+			if err := tx.Create(&ex).Error; err != nil {
 				return err
 			}
 		}
+
+		// Si todo fue bien, retornar nil para confirmar la transacción
 		return nil
 	})
 
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create rutina or exercicis", "details": err.Error()})
+		return
+	}
+
+	// Si la transacción fue exitosa, cargar la rutina creada con los ejercicios
 	var createdRutina models.Rutina
-	h.DB.First(&createdRutina, rutina.ID).Preload("Exercicis")
+	if err := h.DB.Preload("ExercicisRutina").First(&createdRutina, rutina.ID).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to load created rutina"})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{"data": createdRutina})
 }
-
 func (h Handler) UpdateRutina(c *gin.Context) {
 	var rutina models.Rutina
 	if err := h.DB.Where("id = ?", c.Param("id")).First(&rutina).Error; err != nil {
@@ -92,7 +114,7 @@ func (h *Handler) DeleteRutina(c *gin.Context) {
 func (h *Handler) RutinesEntrenador(c *gin.Context) {
 	var rutines []models.Rutina
 
-	h.DB.Find(&rutines).Where("entrenador_id = ?", auth.GetUsuari(c)).Preload("Exercicis")
+	h.DB.Find(&rutines).Where("entrenador_id = ?", auth.GetUsuari(c)).Preload("Exercicis").Preload("ExercicisRutina")
 
 	c.JSON(http.StatusOK, gin.H{"data": rutines})
 }

@@ -9,7 +9,7 @@ function AutocompleteExercicis(props) {
     const { onSubmit, setSelectedValue } = props;
     const exercicis = useSelector((state) => state.exercicis);
     const dataSet = exercicis.map((exercici) => ({
-        id: exercici.ID.toString(),
+        id: exercici.ID,
         title: exercici.Nom
     }));
 

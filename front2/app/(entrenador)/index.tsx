@@ -46,6 +46,7 @@ export default function Index() {
 
     async function getRutines() {
         let response = await api.get('/rutines/rutinesEntrenador')
+        console.log(response)
         setRutines(response.data.data)
     }
 
