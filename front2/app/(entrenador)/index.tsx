@@ -15,7 +15,8 @@ import { setAlumne, updateAlumnes } from '@/store/alumnesSlice';
 import { setReserves, updateReserves } from '@/store/reservesSlice';
 import { AlumneType } from '../../types/apiTypes';
 import ViewRutina from '@/components/viewers/ViewRutina';
-import { setRutines } from '@/store/rutinesSlice';
+import { setRutines, updateRutines } from '@/store/rutinesSlice';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default function Index() {
     //const [sales, setSales] = useState<types.SalaType[]>([])
@@ -50,13 +51,18 @@ export default function Index() {
     async function fetchRutines() {
         const rutinesData = await AsyncStorage.getItem('rutines');
         if (rutinesData) {
+            console.log(rutinesData)
             dispatch(setRutines(JSON.parse(rutinesData)));
         }
     }
 
     async function fetchRutinesAPI() {
-        let response = await api.get('/rutines/rutinesEntrenador')
-        setRutines(response.data.data)
+        const response = await api.get('/rutines/rutinesEntrenador')
+        if (response.status === 200) {
+            const fetchedRutines: types.RutinaType[] = response.data.data;
+            dispatch(updateRutines({ data: fetchedRutines }));
+
+        }
     }
 
     async function fetchReserves() {
@@ -140,7 +146,7 @@ export default function Index() {
 
 
     return (
-        <View>
+        <ScrollView>
             <Text style={themeStyles.titol1}>Alumnes ({!alumnesArray ? '0' : alumnesArray.length}/12)</Text>
             <View>
                 {alumnesArray && alumnesArray.map((alumne) => (
@@ -236,7 +242,7 @@ export default function Index() {
                         router.replace("../(rutines)/crearRutina")
                     }}><Text style={styles.buttonText}>Crea una rutina</Text></Pressable>
                 <Pressable
-                    style={themeStyles.button1}
+                    style={[themeStyles.button1, { marginBottom: 20 }]}
                     onPress={() => {
                         router.replace("../(rutines)/rutinesPubliques")
                     }}><Text style={styles.buttonText}>Rutines públiques</Text></Pressable>
@@ -249,7 +255,7 @@ export default function Index() {
                 closeModal={() => setAfegirAlumneVisible(false)}
                 compartir={compartir}
                 crearUsuariFictici={crearUsuariFictici} />
-        </View>
+        </ScrollView>
     )
 }
 
