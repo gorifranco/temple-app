@@ -15,10 +15,12 @@ import { setAlumne, updateAlumnes } from '@/store/alumnesSlice';
 import { setReserves, updateReserves } from '@/store/reservesSlice';
 import { AlumneType } from '../../types/apiTypes';
 import ViewRutina from '@/components/viewers/ViewRutina';
+import { setRutines } from '@/store/rutinesSlice';
 
 export default function Index() {
     //const [sales, setSales] = useState<types.SalaType[]>([])
-    const [rutines, setRutines] = useState<types.RutinaType[]>([])
+    const rutines = useSelector((state: RootState) => state.rutines);
+    const rutinesArray = Object.values(rutines);
     const api = useAxios();
     // const [crearSalaVisible, setCrearSalaVisible] = useState(false)
     const [afegirAlumneVisible, setAfegirAlumneVisible] = useState(false)
@@ -31,7 +33,8 @@ export default function Index() {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        getRutines()
+        fetchRutines()
+        fetchRutinesAPI()
         fetchAlumnes()
         fetchAlumnesAPI()
         fetchReserves()
@@ -44,9 +47,15 @@ export default function Index() {
             setSales(response.data.data)
         } */
 
-    async function getRutines() {
+    async function fetchRutines() {
+        const rutinesData = await AsyncStorage.getItem('rutines');
+        if (rutinesData) {
+            dispatch(setRutines(JSON.parse(rutinesData)));
+        }
+    }
+
+    async function fetchRutinesAPI() {
         let response = await api.get('/rutines/rutinesEntrenador')
-        console.log(response)
         setRutines(response.data.data)
     }
 
@@ -214,7 +223,8 @@ export default function Index() {
             <Text style={themeStyles.titol1}>Rutines</Text>
 
             <View>
-                {rutines.map((rutina) => (
+                {!rutines && <Text style={themeStyles.text}>Encara no tens cap rutina</Text>}
+                {rutinesArray && rutinesArray.map((rutina) => (
                     <ViewRutina rutina={rutina} key={rutina.ID} />
                 ))}
             </View>

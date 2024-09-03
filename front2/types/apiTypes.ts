@@ -44,6 +44,10 @@ export interface ExercicisState {
   [id: number]: ExerciciType;
 }
 
+export interface RutinaState {
+  [id: number]: RutinaType;
+}
+
 export interface AlumneType {
   ID: number;
   Nom: string;

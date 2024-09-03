@@ -14,6 +14,8 @@ import AutocompleteExercicis from '@/components/AutocompleteExercicis';
 import BarraDies from '@/components/BarraDies';
 import { exercicisValidator, nomSalaValidator, descripcioValidator, ciclesValidator, diesValidator } from '@/helpers/validators';
 import { ExerciciErrorType } from '@/types/apiTypes';
+import { router } from 'expo-router';
+import Toast from 'react-native-toast-message';
 
 
 export default function CrearRutina() {
@@ -57,10 +59,21 @@ export default function CrearRutina() {
                 diesDuracio: dies,
                 exercicis: exercicisEnviats,
             })
-
-            console.log(response)
+            if(response.status === 200){
+                Toast.show({
+                    type: 'success',
+                    text1: 'Rutina creada',
+                    position: 'top',
+                });
+                router.replace("/(entrenador)")
+            }else {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error creant la rutina',
+                    position: 'top',
+                });
+            }
         }
-
     }
 
     function checkErrors(exercicis: ExerciciRutinaType[]) {

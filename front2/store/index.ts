@@ -3,6 +3,7 @@ import exercicisReducer from './exercicisSlice';
 import alumnesReducer from './alumnesSlice';
 import reservesReducer from './reservesSlice';
 import salesReducer from './salesSlice';
+import rutinesReducer from './rutinesSlice';
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
       alumnes: alumnesReducer,
       reserves: reservesReducer,
       sales: salesReducer,
+      rutines: rutinesReducer,
   },
 });
 

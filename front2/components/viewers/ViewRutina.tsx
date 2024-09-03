@@ -6,6 +6,11 @@ import FletxaDesplegar from '@/components/icons/FletxaDesplegar'
 import BarraDies from '../BarraDies'
 import { themeStyles } from '@/themes/theme'
 import ModalConfirmacio from '../ModalConfirmacio'
+import { useAxios } from '@/app/api'
+import Toast from 'react-native-toast-message'
+import { deleteRutina } from '@/store/rutinesSlice'
+import { useDispatch } from 'react-redux'
+
 
 interface propsType {
     rutina: RutinaType,
@@ -16,15 +21,29 @@ export default function ViewRutina(props: propsType) {
     const [desplegat, setDesplegat] = useState(false)
     const [dia, setDia] = useState(0)
     const [modalVisible, setModalVisible] = useState(false)
-    const [confirmVisible, setConfirmVisible] = useState(false)
-    const [confirmConfirmar, setConfirmConfirmar] = useState(false)
+    const api = useAxios();
+    const dispatch = useDispatch();
 
     function editarRutina() {
         console.log("editar")
     }
 
-    function eliminarRutina() {
-        console.log("eliminar")
+    async function eliminarRutina() {
+        const response = await api.delete(`/rutines/${rutina.ID}`)
+        if(response.status === 200){
+            Toast.show({
+                type: 'success',
+                text1: 'Rutina eliminada',
+                position: 'top',
+            });
+            dispatch(deleteRutina({ id: rutina.ID }))
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: 'Error eliminant la rutina',
+                position: 'top',
+            });
+        }
     }
 
     return (
@@ -90,10 +109,12 @@ export default function ViewRutina(props: propsType) {
 
 const styles = StyleSheet.create({
     rutinaContainer: {
-        margin: 20,
+        marginVertical: 10,
         borderWidth: 1,
         borderColor: "black",
         padding: 10,
         borderRadius: 10,
+        width: '85%',
+        marginHorizontal: 'auto',
     },
 })

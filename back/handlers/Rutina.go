@@ -121,15 +121,35 @@ func (h Handler) UpdateRutina(c *gin.Context) {
 }
 
 func (h *Handler) DeleteRutina(c *gin.Context) {
-	var rutina models.Rutina
-	if err := h.DB.Where("id = ?", c.Param("id")).First(&rutina).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "record not found"})
-		return
-	}
+    // Iniciar una transacción
+    err := h.DB.Transaction(func(tx *gorm.DB) error {
+        var rutina models.Rutina
+        if err := tx.Where("id = ?", c.Param("id")).First(&rutina).Error; err != nil {
+            return err // Esto provocará un rollback automático
+        }
 
-	h.DB.Delete(&rutina)
-	c.JSON(http.StatusOK, gin.H{"data": "success"})
+        // Eliminar los ejercicios asociados
+        if err := tx.Where("rutina_id = ?", rutina.ID).Delete(&models.ExerciciRutina{}).Error; err != nil {
+            return err // Esto también provocará un rollback si falla
+        }
+
+        // Eliminar la rutina
+        if err := tx.Delete(&rutina).Error; err != nil {
+            return err // Rollback si falla
+        }
+
+        return nil // Si todo va bien, la transacción se compromete automáticamente
+    })
+
+    // Manejo de errores fuera de la transacción
+    if err != nil {
+        c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete rutina and related exercises"})
+        return
+    }
+
+    c.JSON(http.StatusOK, gin.H{"data": "success"})
 }
+
 
 func (h *Handler) RutinesEntrenador(c *gin.Context) {
 	var rutines []models.Rutina
