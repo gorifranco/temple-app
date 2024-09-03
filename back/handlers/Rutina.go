@@ -10,6 +10,25 @@ import (
 	"gorm.io/gorm"
 )
 
+type RutinaResposta struct {
+	ID          uint                     `json:"ID"`
+	Nom         string                   `json:"Nom"`
+	Exercicis   []ExerciciRutinaResposta `json:"Exercicis"`
+	Cicles      int                      `json:"Cicles"`
+	DiesDuracio int                      `json:"DiesDuracio"`
+}
+
+type ExerciciRutinaResposta struct {
+	ID            uint   `json:"ID"`
+	Nom           string `json:"Nom"`
+	Ordre         int    `json:"Ordre"`
+	NumSeries     int    `json:"NumSeries"`
+	NumRepes      int    `json:"NumRepes"`
+	Cicle         int    `json:"Cicle"`
+	PercentatgeRM int    `json:"PercentatgeRM"`
+	DiaRutina     int    `json:"DiaRutina"`
+}
+
 func (h *Handler) IndexRutina(c *gin.Context) {
 	var rutinas []models.Rutina
 	h.DB.Find(&rutinas)
@@ -30,10 +49,11 @@ func (h *Handler) CreateRutina(c *gin.Context) {
 	err = h.DB.Transaction(func(tx *gorm.DB) error {
 		// Crear la rutina
 		rutina = models.Rutina{
-			Nom:         input.Nom,
-			Descripcio:  input.Descripcio,
+			Nom:          input.Nom,
+			Descripcio:   input.Descripcio,
 			EntrenadorID: c.MustGet("id").(uint),
-			Cicles:      input.Cicles,
+			Cicles:       input.Cicles,
+			DiesDuracio:  input.DiesDuracio,
 		}
 
 		if err := tx.Create(&rutina).Error; err != nil {
@@ -45,13 +65,13 @@ func (h *Handler) CreateRutina(c *gin.Context) {
 		// Crear los ejercicios asociados a la rutina
 		for _, exercici := range input.Exercicis {
 			ex := models.ExerciciRutina{
-				RutinaID:    rutina.ID,
-				NumRepes:    exercici.NumRepes,
-				NumSeries:   exercici.NumSeries,
-				Cicle:       exercici.Cicle,
+				RutinaID:      rutina.ID,
+				NumRepes:      exercici.NumRepes,
+				NumSeries:     exercici.NumSeries,
+				Cicle:         exercici.Cicle,
 				PercentatgeRM: exercici.PercentatgeRM,
-				DiaRutina:   exercici.DiaRutina,
-				ExerciciID:  exercici.ExerciciID,
+				DiaRutina:     exercici.DiaRutina,
+				ExerciciID:    exercici.ExerciciID,
 			}
 
 			if err := tx.Create(&ex).Error; err != nil {
@@ -113,10 +133,46 @@ func (h *Handler) DeleteRutina(c *gin.Context) {
 
 func (h *Handler) RutinesEntrenador(c *gin.Context) {
 	var rutines []models.Rutina
+	h.DB.Find(&rutines).Where("entrenador_id = ?", auth.GetUsuari(c))
 
-	h.DB.Find(&rutines).Where("entrenador_id = ?", auth.GetUsuari(c)).Preload("Exercicis").Preload("ExercicisRutina")
+	query := `SELECT exercici_id as ID, ex.nom as nom, ordre as ordre, num_series as numSeries, num_repes as numRepes, cicle as cicle,
+    percentatge_rm as percentatgeRM, dia_rutina as diaRutina FROM exercicis_rutina e 
+    INNER JOIN exercicis ex ON ex.id = e.exercici_id 
+    WHERE e.rutina_id = ? AND e.deleted_at IS NULL`
 
-	c.JSON(http.StatusOK, gin.H{"data": rutines})
+	var rutinesResposta []RutinaResposta
+
+	for _, rutina := range rutines {
+		var ex []ExerciciRutinaResposta
+		rows, err := h.DB.Raw(query, rutina.ID).Rows()
+		if err != nil {
+			fmt.Println("Error executing query:", err)
+			continue
+		}
+		defer rows.Close()
+
+		for rows.Next() {
+			var exercici ExerciciRutinaResposta
+			err := rows.Scan(&exercici.ID, &exercici.Nom, &exercici.Ordre, &exercici.NumSeries, &exercici.NumRepes,
+				&exercici.Cicle, &exercici.PercentatgeRM, &exercici.DiaRutina)
+			if err != nil {
+				fmt.Println("Error scanning row:", err)
+				continue
+			}
+
+			ex = append(ex, exercici)
+		}
+
+		rutinesResposta = append(rutinesResposta, RutinaResposta{
+			ID:          rutina.ID,
+			Nom:         rutina.Nom,
+			Cicles:      rutina.Cicles,
+			DiesDuracio: rutina.DiesDuracio,
+			Exercicis:   ex,
+		})
+	}
+
+	c.JSON(http.StatusOK, gin.H{"data": rutinesResposta})
 }
 
 func (h *Handler) RutinesPubliques(c *gin.Context) {

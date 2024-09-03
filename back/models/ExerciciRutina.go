@@ -8,10 +8,11 @@ type ExerciciRutina struct {
 	gorm.Model
 	RutinaID      uint `gorm:"not null"`
 	ExerciciID    uint `gorm:"not null"`
-	Ordre         int  `gorm:"not null"`
-	NumSeries     int  `gorm:"not null"`
-	NumRepes      int  `gorm:"not null"`
-	Cicle         int  `gorm:"not null"`
+	Exercici      Exercici
+	Ordre         int `gorm:"not null"`
+	NumSeries     int `gorm:"not null"`
+	NumRepes      int `gorm:"not null"`
+	Cicle         int `gorm:"not null"`
 	PercentatgeRM int
 	DiaRutina     int `gorm:"not null"`
 }
@@ -19,7 +20,6 @@ type ExerciciRutina struct {
 func (ExerciciRutina) TableName() string {
 	return "exercicis_rutina"
 }
-
 
 type ExerciciRutinaInput struct {
 	ExerciciID    uint `json:"exerciciID"`

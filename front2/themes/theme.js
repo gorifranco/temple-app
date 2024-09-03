@@ -43,7 +43,7 @@ export const themeStyles = StyleSheet.create({
     alignSelf: 'center',
   },
   buttonWarning: {
-    backgroundColor: '#f5a623',
+    backgroundColor: '#F5A623',
     padding: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
@@ -51,7 +51,7 @@ export const themeStyles = StyleSheet.create({
     alignSelf: 'center',
   },
   buttonSuccess: {
-    backgroundColor: '#00b894',
+    backgroundColor: '#0a822a',
     padding: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
@@ -60,6 +60,7 @@ export const themeStyles = StyleSheet.create({
   },
 
   button1Text: {
+    textAlign: "center",
     color: 'white',
     fontSize: 15,
   },

@@ -9,7 +9,7 @@ type Rutina struct {
 	Nom             string `gorm:"not null;"`
 	EntrenadorID    uint   `gorm:"not null;"`
 	Descripcio      string
-	ExercicisRutina []ExerciciRutina `gorm:"foreignKey:RutinaID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	ExercicisRutina []ExerciciRutina `gorm:"foreignKey:RutinaID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;table:exercicis_rutina"`
 	DiesDuracio     int              `gorm:"not null"`
 	Cicles          int              `gorm:"not null"`
 	Publica         bool             `gorm:"not null:default:false"`
