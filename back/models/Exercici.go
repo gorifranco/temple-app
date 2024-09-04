@@ -7,7 +7,6 @@ import (
 type Exercici struct {
 	gorm.Model
 	Nom             string           `gorm:"not null;"`
-	RutinaID        uint             `gorm:"not null;"`
 	ExercicisRutina []ExerciciRutina `gorm:"foreignKey:ExerciciID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
