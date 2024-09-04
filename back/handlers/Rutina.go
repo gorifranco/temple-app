@@ -228,3 +228,51 @@ func (h *Handler) CanviarVisibilitat(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": rutina})
 }
+
+func (h *Handler) AcabarRutina(rutinaID uint) {
+}
+
+func (h *Handler) AssignarRutina(c *gin.Context) {
+	var rutina models.Rutina
+	var alumne models.Usuari
+	var err error
+
+	type input struct {
+		AlumneID uint `json:"alumneID"`
+		RutinaID uint `json:"rutinaID"`
+	}
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err = h.DB.Where("id = ?", c.Param("id")).First(&rutina).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "record not found"})
+		return
+	}
+
+	if err = h.DB.Where("id = ?", input.AlumneID).First(&alumne).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "record not found"})
+		return
+	}
+
+	if rutina.EntrenadorID != c.MustGet("id").(uint) {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	if(alumne.EntrenadorID != c.MustGet("id").(uint)){
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	var r models.UsuariRutina
+	err = h.DB.Where("acabada = ? and usuari_id = ?", false, alumne.ID).First(&r).Error
+	if( err != nil){
+		r.DataFinalitzacio = time.Now()
+		h.DB.Save(&r)
+	}
+
+	
+	

@@ -15,6 +15,7 @@ import { Pressable } from 'react-native';
 import ModalConfirmacio from '@/components/ModalConfirmacio';
 import Toast from 'react-native-toast-message';
 import { router } from 'expo-router';
+import ViewRutina from '@/components/viewers/ViewRutina';
 
 export default function AlumneScreen() {
     const [modalVisible, setModalVisible] = useState(false)
@@ -94,13 +95,9 @@ export default function AlumneScreen() {
                     entreno.DiaRutina >= Date.now() && <Text key={entreno.DiaRutina} style={themeStyles.text}>{entreno.Dia_hora.toDateString()}</Text>
                 )))}
 
-            <Text style={themeStyles.titol1}>Reserves pendents</Text>
-            {!alumne.Reserves ? (<Text style={themeStyles.text}>No hi ha reserves pendents d'aprovació</Text>
-            ) : (
-                alumne.Reserves.map((reserva) => (
-                    !reserva.Confirmada && <Text key={reserva.ID} style={themeStyles.text}>{reserva.Hora.toDateString()}</Text>
-                )))}
             <Text style={themeStyles.titol1}>Rutina actual</Text>
+            <ViewRutina />
+
 
             <Pressable style={themeStyles.buttonDanger} onPress={() => {
                 setModalVisible(true)
