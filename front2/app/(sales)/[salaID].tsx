@@ -10,7 +10,7 @@ import { RootState } from '../../store'
 import { SalaType, UsuariType } from '../../types/apiTypes'
 import BackButton from '@/components/BackButton'
 import { Pressable } from 'react-native'
-import ModalAfegirUsuari from '@/components/ModalAfegirUsuari'
+import ModalAfegirUsuari from '@/components/modals/ModalAfegirUsuari'
 import { StyleSheet } from 'react-native'
 import Toast from 'react-native-toast-message';
 

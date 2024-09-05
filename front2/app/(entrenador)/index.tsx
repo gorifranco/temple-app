@@ -5,7 +5,7 @@ import { useAxios } from '../api';
 import * as types from '../../types/apiTypes';
 import { router } from 'expo-router';
 import { themeStyles } from '@/themes/theme';
-import ModalAfegirUsuari from '@/components/ModalAfegirUsuari';
+import ModalAfegirUsuari from '@/components/modals/ModalAfegirUsuari';
 import Toast from 'react-native-toast-message';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
@@ -231,7 +231,7 @@ export default function Index() {
             <View>
                 {!rutines && <Text style={themeStyles.text}>Encara no tens cap rutina</Text>}
                 {rutinesArray && rutinesArray.map((rutina) => (
-                    <ViewRutina rutina={rutina} key={rutina.ID} />
+                    <ViewRutina rutinaID={rutina.ID} key={rutina.ID} />
                 ))}
             </View>
 

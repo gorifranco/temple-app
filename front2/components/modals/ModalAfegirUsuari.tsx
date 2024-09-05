@@ -1,14 +1,10 @@
-import { Pressable, View, Text } from 'react-native'
-import { Modal } from 'react-native'
-import { AntDesign } from '@expo/vector-icons'
-import { EvilIcons } from '@expo/vector-icons'
+import { Pressable, View, Text, Modal, StyleSheet } from 'react-native'
+import { AntDesign, EvilIcons } from '@expo/vector-icons'
 import { themeStyles } from '@/themes/theme'
-import { StyleSheet } from 'react-native'
-import { useState } from 'react'
-import TextInput from './TextInput'
-import { nameValidator } from '../helpers/nameValidator'
-import { useContext } from 'react'
-import AuthContext, { AuthContextType } from '../app/AuthContext'
+import { useState, useContext } from 'react'
+import TextInput from '@/components/inputs/TextInput'
+import { nameValidator } from '@/helpers/nameValidator'
+import AuthContext, { AuthContextType } from '@/app/AuthContext'
 import { Redirect } from 'expo-router';
 
 interface propsType {

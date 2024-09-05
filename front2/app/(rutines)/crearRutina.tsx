@@ -10,7 +10,7 @@ import { TextInput } from 'react-native-paper';
 import { ScrollView } from 'react-native-gesture-handler';
 import Entypo from '@expo/vector-icons/Entypo';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown'
-import AutocompleteExercicis from '@/components/AutocompleteExercicis';
+import AutocompleteExercicis from '@/components/inputs/selects/AutocompleteExercicis';
 import BarraDies from '@/components/BarraDies';
 import { exercicisValidator, nomSalaValidator, descripcioValidator, ciclesValidator, diesValidator } from '@/helpers/validators';
 import { ExerciciErrorType } from '@/types/apiTypes';

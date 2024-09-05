@@ -1,14 +1,16 @@
 import React, { useState } from 'react'
-import Background from '../../components/Background'
-import BackButton from '../../components/BackButton'
-import Logo from '../../components/Logo'
-import Header from '../../components/Header'
-import TextInput from '../../components/TextInput'
-import Button from '../../components/Button'
-import { emailValidator } from '../../helpers/emailValidator'
+import Background from '@/components/Background'
+import BackButton from '@/components/BackButton'
+import Logo from '@/components/Logo'
+import Header from '@/components/Header'
+import TextInput from '@/components/inputs/TextInput'
+import Button from '@/components/Button'
+import { emailValidator } from '@/helpers/emailValidator'
+import { router } from 'expo-router'
 
 export default function ResetPasswordScreen() {
   const [email, setEmail] = useState({ value: '', error: '' })
+  
 
 
   const sendResetPasswordEmail = () => {
@@ -17,7 +19,7 @@ export default function ResetPasswordScreen() {
       setEmail({ ...email, error: emailError })
       return
     }
-    navigation.navigate('LoginScreen')
+    router.navigate('..')
   }
 
   return (
@@ -29,7 +31,7 @@ export default function ResetPasswordScreen() {
         label="E-mail address"
         returnKeyType="done"
         value={email.value}
-        onChangeText={(text) => setEmail({ value: text, error: '' })}
+        onChangeText={(text:string) => setEmail({ value: text, error: '' })}
         error={!!email.error}
         errorText={email.error}
         autoCapitalize="none"

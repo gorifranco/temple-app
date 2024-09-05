@@ -2,20 +2,19 @@ import React, { useState, useContext } from 'react'
 import { StyleSheet, View } from 'react-native'
 import { Text } from 'react-native-paper'
 import { Link, router } from 'expo-router';
-import { useNavigation } from 'expo-router';
 import AuthContext from '../AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Button } from 'react-native-paper';
-import { emailValidator } from '../../helpers/emailValidator';
-import { passwordValidator } from '../../helpers/passwordValidator';
-import Background from '../../components/Background';
-import Logo from '../../components/Logo';
-import Header from '../../components/Header';
-import TextInput from '../../components/TextInput';
+import { emailValidator } from '@/helpers/emailValidator';
+import { passwordValidator } from '@/helpers/passwordValidator';
+import Background from '@/components/Background';
+import Logo from '@/components/Logo';
+import Header from '@/components/Header';
+import TextInput from '@/components/inputs/TextInput';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { theme } from '../../themes/theme';
+import { theme } from '@/themes/theme';
 import { AuthContextType } from '../AuthContext';
-import { useAxios } from '../api';
+import { useAxios } from '@/app/api';
 
 
 export default function Index() {

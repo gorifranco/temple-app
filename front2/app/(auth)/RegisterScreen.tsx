@@ -1,21 +1,21 @@
 import React, { useState } from 'react'
 import { View, StyleSheet } from 'react-native'
 import { Text } from 'react-native-paper'
-import Background from '../../components/Background'
-import Logo from '../../components/Logo'
-import Header from '../../components/Header'
-import Button from '../../components/Button'
-import TextInput from '../../components/TextInput'
-import BackButton from '../../components/BackButton'
-import { theme } from '../../themes/theme'
-import { emailValidator } from '../../helpers/emailValidator'
-import { passwordValidator } from '../../helpers/passwordValidator'
-import { nameValidator } from '../../helpers/nameValidator'
-import { Link } from 'expo-router';
-import api from '../api'; 
-import { router } from 'expo-router'
+import Background from '@/components/Background'
+import Logo from '@/components/Logo'
+import Header from '@/components/Header'
+import Button from '@/components/Button'
+import TextInput from '@/components/inputs/TextInput'
+import BackButton from '@/components/BackButton'
+import { theme } from '@/themes/theme'
+import { emailValidator } from '@/helpers/emailValidator' 
+import { passwordValidator } from '@/helpers/passwordValidator'
+import { nameValidator } from '@/helpers/nameValidator'
+import { Link, router } from 'expo-router';
+import { useAxios } from '@/app/api'
 
 export default function RegisterScreen() {
+  const api = useAxios();
   const [nom, setNom] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -58,7 +58,7 @@ export default function RegisterScreen() {
         label="Name"
         returnKeyType="next"
         value={nom}
-        onChangeText={(text) => setNom(text)}
+        onChangeText={(text:string) => setNom(text)}
         error={!!errors.nom}
         errorText={errors.nom}
       />
@@ -66,7 +66,7 @@ export default function RegisterScreen() {
         label="Email"
         returnKeyType="next"
         value={email}
-        onChangeText={(text) => setEmail(text)}
+        onChangeText={(text:string) => setEmail(text)}
         error={!!errors.email}
         errorText={errors.email}
         autoCapitalize="none"
@@ -78,7 +78,7 @@ export default function RegisterScreen() {
         label="Password"
         returnKeyType="done"
         value={password}
-        onChangeText={(text) => setPassword(text)}
+        onChangeText={(text:string) => setPassword(text)}
         error={!!errors.password}
         errorText={errors.password} 
         secureTextEntry
