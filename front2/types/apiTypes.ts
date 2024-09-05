@@ -53,6 +53,7 @@ export interface AlumneType {
   Nom: string;
   Entrenos: EntrenoType[];
   Reserves: ReservaType[];
+  RutinaAssignada: number|null;
 }
 
 export interface EntrenoType {

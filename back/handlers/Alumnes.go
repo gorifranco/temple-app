@@ -9,11 +9,12 @@ import (
 )
 
 type alumneResposta struct {
-	ID          uint             `json:"ID"`
-	Nom         string           `json:"Nom"`
-	Alumnes     []models.Usuari  `json:"Alumnes"`
-	TipusUsuari string           `json:"TipusUsuari"`
-	Reserves    []models.Reserva `json:"Reserves"`
+	ID           uint             `json:"ID"`
+	Nom          string           `json:"Nom"`
+	Alumnes      []models.Usuari  `json:"Alumnes"`
+	TipusUsuari  string           `json:"TipusUsuari"`
+	Reserves     []models.Reserva `json:"Reserves"`
+	RutinaActual uint             `json:"RutinaActual"`
 }
 
 func (h *Handler) AlumnesEntrenador(c *gin.Context) {
@@ -127,7 +128,7 @@ func (h *Handler) ExpulsarUsuari(c *gin.Context) {
 	usuari.EntrenadorID = nil
 	h.DB.Save(&usuari)
 
-	if(usuari.TipusUsuari.Nom == "Fictici"){
+	if usuari.TipusUsuari.Nom == "Fictici" {
 		h.DB.Delete(&usuari)
 	}
 
@@ -155,10 +156,15 @@ func (h *Handler) FindAlumneEntrenador(c *gin.Context) {
 		return
 	}
 
+	var rutina models.UsuariRutina
+
+	h.DB.Where("UsuariID = ? and data_finalitzacio is null", alumne.ID).First(&rutina)
+
 	var resposta = alumneResposta{
-		ID:       alumne.ID,
-		Nom:      alumne.Nom,
-		Reserves: alumne.Reserves,
+		ID:           alumne.ID,
+		Nom:          alumne.Nom,
+		Reserves:     alumne.Reserves,
+		RutinaActual: rutina.RutinaID,
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": resposta})

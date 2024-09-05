@@ -17,3 +17,8 @@ type UsuariRutina struct {
 func (UsuariRutina) TableName() string {
 	return "usuari_rutina"
 }
+
+type UsuariRutinaInput struct {
+	AlumneID uint `json:"alumneID"`
+	RutinaID uint `json:"rutinaID"`
+}

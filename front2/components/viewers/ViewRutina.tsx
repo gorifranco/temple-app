@@ -10,17 +10,20 @@ import { useAxios } from '@/app/api'
 import Toast from 'react-native-toast-message'
 import { deleteRutina } from '@/store/rutinesSlice'
 import { useDispatch } from 'react-redux'
+import { RootState } from '@/store'
+import { useSelector } from 'react-redux'
 
 
 interface propsType {
-    rutina: RutinaType,
+    rutinaID: number,
 }
 
 export default function ViewRutina(props: propsType) {
-    const { rutina } = props
+    const { rutinaID } = props
     const [desplegat, setDesplegat] = useState(false)
     const [dia, setDia] = useState(0)
     const [modalVisible, setModalVisible] = useState(false)
+    const rutina = useSelector((state: RootState) => state.rutines[rutinaID])
     const api = useAxios();
     const dispatch = useDispatch();
 

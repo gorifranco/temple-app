@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"temple-app/auth"
 	"temple-app/models"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -237,17 +238,14 @@ func (h *Handler) AssignarRutina(c *gin.Context) {
 	var alumne models.Usuari
 	var err error
 
-	type input struct {
-		AlumneID uint `json:"alumneID"`
-		RutinaID uint `json:"rutinaID"`
-	}
+	var input models.UsuariRutinaInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err = h.DB.Where("id = ?", c.Param("id")).First(&rutina).Error; err != nil {
+	if err = h.DB.Where("id = ?", input.RutinaID).First(&rutina).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "record not found"})
 		return
 	}
@@ -262,17 +260,23 @@ func (h *Handler) AssignarRutina(c *gin.Context) {
 		return
 	}
 
-	if(alumne.EntrenadorID != c.MustGet("id").(uint)){
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-
 	var r models.UsuariRutina
-	err = h.DB.Where("acabada = ? and usuari_id = ?", false, alumne.ID).First(&r).Error
+	err = h.DB.Where("data_finalitzacio is null and usuari_id = ?", alumne.ID).First(&r).Error
 	if( err != nil){
 		r.DataFinalitzacio = time.Now()
 		h.DB.Save(&r)
 	}
+
+	var nova = models.UsuariRutina{UsuariID: alumne.ID, RutinaID: rutina.ID, DataInici: time.Now()}
+	err = h.DB.Create(&nova).Error
+
+	if(err != nil){
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create new user rutina"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"status": "success"})
+}
 
 	
 	

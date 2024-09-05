@@ -72,6 +72,10 @@ export default function AlumneScreen() {
         }
     }
 
+    function assignarRutina() {
+        router.push({ pathname: `../(alumnes)/${alumneID}/assignarRutina` })
+    }
+
     if (!alumne) {
         return (<View>Carregant alumne</View>)
     }
@@ -88,6 +92,7 @@ export default function AlumneScreen() {
                 }}
             />
 
+            {/* Entrenos */}
             <Text style={themeStyles.titol1}>Pròxims entrenos</Text>
             {!alumne.Entrenos ? (<Text style={themeStyles.text}>No hi ha entrenos pròximament</Text>
             ) : (
@@ -95,8 +100,20 @@ export default function AlumneScreen() {
                     entreno.DiaRutina >= Date.now() && <Text key={entreno.DiaRutina} style={themeStyles.text}>{entreno.Dia_hora.toDateString()}</Text>
                 )))}
 
+            {/* Rutina */}
             <Text style={themeStyles.titol1}>Rutina actual</Text>
-            <ViewRutina />
+            {alumne.RutinaAssignada ?
+                (<ViewRutina rutinaID={alumne.RutinaAssignada} />)
+                : (
+                    <View>
+                        <Text style={themeStyles.text}>No té cap rutina assignada</Text>
+                        <Pressable style={themeStyles.button1} onPress={() => {
+                            assignarRutina()
+                        }}>
+                            <Text style={themeStyles.button1Text}>Assignar rutina</Text>
+                        </Pressable>
+                    </View>
+                )}
 
 
             <Pressable style={themeStyles.buttonDanger} onPress={() => {
