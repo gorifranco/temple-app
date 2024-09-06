@@ -7,6 +7,10 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setRutines } from '@/store/rutinesSlice'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RootState } from '@/store'
+import { useAxios } from '@/app/api'
+import { updateRutines } from '@/store/rutinesSlice'
+import { RutinaType } from '@/types/apiTypes'
+
 
 interface propsType {
     onSubmit: Function
@@ -15,6 +19,7 @@ interface propsType {
 
 function AutocompleteRutines(props: propsType) {
     const { onSubmit } = props;
+    const api = useAxios();
     const dispatch = useDispatch();
     const rutines = useSelector((state: RootState) => state.rutines);
     const rutinesArray = Object.values(rutines);
@@ -39,14 +44,13 @@ function AutocompleteRutines(props: propsType) {
     }
 
     return (
-        <View style={{ width: "80%", margin: "auto", marginBottom: 0 }}>
+        <View style={{ width: "80%", marginHorizontal: "auto", marginVertical: 0 }}>
             <AutocompleteDropdown
-            style={{marginBottom: 0}}
                 clearOnFocus={false}
                 closeOnBlur={true}
                 onSelectItem={(item) => {
                     if (item && item.id !== undefined) {
-                        handleSubmit(item.id);
+                        handleSubmit(Number(item.id));
                     }
                 }}
                 dataSet={dataSet}

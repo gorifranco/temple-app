@@ -28,7 +28,7 @@ export const themeStyles = StyleSheet.create({
   },
   button1: {
     backgroundColor: theme.colors.primary,
-    padding: 10,
+    paddingVertical: 10,
     paddingHorizontal: 20,
     borderRadius: 10,
     marginTop: 20,

@@ -17,20 +17,17 @@ import { AlumneType } from '../../types/apiTypes';
 import ViewRutina from '@/components/viewers/ViewRutina';
 import { setRutines, updateRutines } from '@/store/rutinesSlice';
 import { ScrollView } from 'react-native-gesture-handler';
+import { RutinaType } from '@/types/apiTypes';
 
 export default function Index() {
-    //const [sales, setSales] = useState<types.SalaType[]>([])
     const rutines = useSelector((state: RootState) => state.rutines);
     const rutinesArray = Object.values(rutines);
     const api = useAxios();
-    // const [crearSalaVisible, setCrearSalaVisible] = useState(false)
     const [afegirAlumneVisible, setAfegirAlumneVisible] = useState(false)
-
     const reserves = useSelector((state: RootState) => state.reserves);
     const reservesArray = Object.values(reserves);
     const alumnes = useSelector((state: RootState) => state.alumnes);
     const alumnesArray = Object.values(alumnes);
-
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -42,28 +39,27 @@ export default function Index() {
         fetchReservesAPI()
     }, [dispatch]);
 
-
-    /*     async function getSales() {
-            let response = await api.get('/sales/salesEntrenador')
-            setSales(response.data.data)
-        } */
-
     async function fetchRutines() {
         const rutinesData = await AsyncStorage.getItem('rutines');
         if (rutinesData) {
-            console.log(rutinesData)
             dispatch(setRutines(JSON.parse(rutinesData)));
+        } else {
+            // Si no hay rutinas en AsyncStorage, cargarlas desde la API
+            await fetchRutinesAPI();
         }
     }
 
     async function fetchRutinesAPI() {
-        const response = await api.get('/rutines/rutinesEntrenador')
+        const response = await api.get('/rutines/rutinesEntrenador');
         if (response.status === 200) {
-            const fetchedRutines: types.RutinaType[] = response.data.data;
+            const fetchedRutines: RutinaType[] = response.data.data;
+
+            await AsyncStorage.setItem('rutines', JSON.stringify(fetchedRutines));
             dispatch(updateRutines({ data: fetchedRutines }));
 
         }
     }
+
 
     async function fetchReserves() {
         const reservesData = await AsyncStorage.getItem('reserves');
@@ -227,10 +223,9 @@ export default function Index() {
                 }}
             />
             <Text style={themeStyles.titol1}>Rutines</Text>
-
             <View>
-                {!rutines && <Text style={themeStyles.text}>Encara no tens cap rutina</Text>}
-                {rutinesArray && rutinesArray.map((rutina) => (
+                {rutinesArray.length === 0 && <Text style={themeStyles.text}>Encara no tens cap rutina</Text>}
+                {rutinesArray.length > 0 && rutinesArray.map((rutina) => (
                     <ViewRutina rutinaID={rutina.ID} key={rutina.ID} />
                 ))}
             </View>
@@ -247,8 +242,6 @@ export default function Index() {
                         router.replace("../(rutines)/rutinesPubliques")
                     }}><Text style={styles.buttonText}>Rutines públiques</Text></Pressable>
             </View>
-
-
 
             <ModalAfegirUsuari
                 modalVisible={afegirAlumneVisible}

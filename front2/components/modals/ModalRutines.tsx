@@ -1,12 +1,7 @@
 import { View, Text, Modal, Pressable, StyleSheet } from 'react-native'
-import { useEffect, useState } from 'react'
-import { RootState } from '@/store'
-import { useSelector, useDispatch } from 'react-redux'
+import { useState } from 'react'
 import { themeStyles } from '@/themes/theme'
-import { setRutines } from '@/store/rutinesSlice'
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import AutocompleteRutines from '@/components/inputs/selects/AutocompleteRutines'
-import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown'
 import { AntDesign } from '@expo/vector-icons'
 
 
@@ -25,15 +20,14 @@ export default function ModalRutines(props: propsType) {
 
 
     return (
-        <AutocompleteDropdownContextProvider>
             <Modal
-                style={{ overflow: 'hidden' }}
                 animationType="fade"
                 transparent={false}
                 visible={modalVisible}
                 onRequestClose={() => {
                     closeModal()
                 }}>
+                    <Text style={[themeStyles.titol1, { marginTop: 75 }]}>Assignar rutina</Text>
                 <View style={styles.closeButton}>
                     <Pressable
                         onPress={() => {
@@ -42,18 +36,21 @@ export default function ModalRutines(props: propsType) {
                         <AntDesign name="close" size={24} color="black" />
                     </Pressable>
                 </View>
-                <AutocompleteRutines
-                    onSubmit={(id: number) => setRutinaSeleccionada(id)}
-                />
+                <View
+                style= {{marginTop: 15}}>
+                    <AutocompleteRutines
+                        onSubmit={(id: number) => setRutinaSeleccionada(id)}
+                    />
+                </View>
+
                 <Pressable
                     style={themeStyles.button1}
                     onPress={() => {
                         closeModal()
                     }}>
-                    <Text style={themeStyles.titol1}>Assignar rutina</Text>
+                    <Text style={themeStyles.button1Text}>Assignar rutina</Text>
                 </Pressable>
             </Modal>
-        </AutocompleteDropdownContextProvider>
     )
 }
 
