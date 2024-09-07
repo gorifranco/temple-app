@@ -14,6 +14,13 @@ RutinaType
         setRutines(state: RutinaState, action: PayloadAction<RutinaState>) {
           return action.payload;
         },
+        afegirRutina(
+          state: RutinaState,
+          action: PayloadAction<{ id: number; data: RutinaType }>
+        ) {
+          const { id, data } = action.payload;
+          state[id] = data;
+        },
         updateRutines(
           state: RutinaState,
           action: PayloadAction<{ data: RutinaType[] }>
@@ -56,5 +63,5 @@ RutinaType
       },
     });
     
-    export const { setRutines, updateRutines, deleteRutina } = rutinesSlice.actions;
+    export const { setRutines, afegirRutina, updateRutines, deleteRutina } = rutinesSlice.actions;
     export default rutinesSlice.reducer;

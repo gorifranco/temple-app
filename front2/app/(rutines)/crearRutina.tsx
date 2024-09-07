@@ -13,9 +13,10 @@ import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-d
 import AutocompleteExercicis from '@/components/inputs/selects/AutocompleteExercicis';
 import BarraDies from '@/components/BarraDies';
 import { exercicisValidator, nomSalaValidator, descripcioValidator, ciclesValidator, diesValidator } from '@/helpers/validators';
-import { ExerciciErrorType } from '@/types/apiTypes';
+import { ExerciciErrorType, RutinaType } from '@/types/apiTypes';
 import { router } from 'expo-router';
 import Toast from 'react-native-toast-message';
+import { afegirRutina } from '@/store/rutinesSlice';
 
 
 export default function CrearRutina() {
@@ -52,21 +53,25 @@ export default function CrearRutina() {
         let exercicisEnviats = exercicisElegits.filter((exercici) => exercici.DiaRutina <= dies)
 
         if (!checkErrors(exercicisEnviats)) {
-            const response = await api.post(`/rutines`, {
-                nom: nom,
-                descripcio: descripcio,
-                cicles: cicles,
-                diesDuracio: dies,
-                exercicis: exercicisEnviats,
-            })
-            if(response.status === 200){
+            const dataRutina: RutinaType = {
+                ID: -1,
+                Nom: nom,
+                Descripcio: descripcio,
+                Cicles: Number(cicles) ?? -1,
+                DiesDuracio: dies,
+                Exercicis: exercicisEnviats,
+            }
+            const response = await api.post(`/rutines`, dataRutina)
+            if (response.status === 200) {
                 Toast.show({
                     type: 'success',
                     text1: 'Rutina creada',
                     position: 'top',
                 });
+                dataRutina.ID = response.data.data.ID
+                dispatch(afegirRutina({ id: response.data.data.ID, data: dataRutina }))
                 router.replace("/(entrenador)")
-            }else {
+            } else {
                 Toast.show({
                     type: 'error',
                     text1: 'Error creant la rutina',
@@ -82,8 +87,6 @@ export default function CrearRutina() {
         const errDesc = descripcioValidator(descripcio)
         const errCicles = ciclesValidator(cicles)
         const errDies = diesValidator(dies)
-
-        console.log(exercicis)
 
         setErrors({ Nom: errNom, Descripcio: errDesc, Cicles: errCicles, Dies: errDies })
         setErrorsExercicis(errors.errors)

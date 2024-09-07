@@ -3,17 +3,16 @@ import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown'
 import { themeStyles } from '@/themes/theme';
 import { View, Dimensions, Text } from 'react-native';
 import { useSelector } from 'react-redux'
-import { RootState } from '@/store'
 
 
 function AutocompleteRutines(props) {
     const { onSubmit } = props;
-    const rutines = useSelector((state) => state.rutines);
-    const dataSet = rutines.map((rutina) => ({
+    const rutinesArray = Object.values(useSelector((state) => state.rutines));
+    const dataSet = rutinesArray.map((rutina) => ({
         id: rutina.ID,
         title: rutina.Nom
     }));
-    console.log(rutines)
+    console.log(dataSet)
 
     function handleSubmit(id) {
         onSubmit(id)

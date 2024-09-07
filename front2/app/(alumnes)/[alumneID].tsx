@@ -15,6 +15,7 @@ import Toast from 'react-native-toast-message';
 import ViewRutina from '@/components/viewers/ViewRutina';
 import ModalRutines from '@/components/modals/ModalRutines';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown'
+import AutocompleteRutines from '@/components/inputs/selects/AutocompleteRutines';
 
 export default function AlumneScreen() {
     const [modalVisible, setModalVisible] = useState(false)
@@ -108,6 +109,7 @@ export default function AlumneScreen() {
                     : (
                         <View>
                             <Text style={themeStyles.text}>No té cap rutina assignada</Text>
+                            <AutocompleteRutines onSubmit={(id: number) => console.log(id)} />
                             <Pressable style={themeStyles.button1} onPress={() => {
                                 setModalRutinaVisible(true)
                             }}>

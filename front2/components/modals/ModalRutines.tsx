@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { themeStyles } from '@/themes/theme'
 import AutocompleteRutines from '@/components/inputs/selects/AutocompleteRutines'
 import { AntDesign } from '@expo/vector-icons'
+import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown'
 
 
 interface propsType {
@@ -20,7 +21,9 @@ export default function ModalRutines(props: propsType) {
 
 
     return (
+        <AutocompleteDropdownContextProvider>
             <Modal
+            style={{height: '100%'}}
                 animationType="fade"
                 transparent={false}
                 visible={modalVisible}
@@ -51,6 +54,7 @@ export default function ModalRutines(props: propsType) {
                     <Text style={themeStyles.button1Text}>Assignar rutina</Text>
                 </Pressable>
             </Modal>
+            </AutocompleteDropdownContextProvider>
     )
 }
 

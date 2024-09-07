@@ -12,7 +12,7 @@ function AutocompleteExercicis(props) {
         id: exercici.ID,
         title: exercici.Nom
     }));
-    console.log(exercicis)
+    console.log(dataSet)
 
     function handleSubmit(id) {
         setSelectedValue(id);
