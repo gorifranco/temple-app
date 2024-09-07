@@ -24,7 +24,6 @@ export default function ViewRutina(props: propsType) {
     const [dia, setDia] = useState(0)
     const [modalVisible, setModalVisible] = useState(false)
     const rutina = useSelector((state: RootState) => state.rutines[rutinaID])
-    console.log(rutina)
     const api = useAxios();
     const dispatch = useDispatch();
 

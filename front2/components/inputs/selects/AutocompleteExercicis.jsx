@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react'
+import React, { memo } from 'react'
 import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown'
 import { useSelector } from 'react-redux'
 import { themeStyles } from '@/themes/theme';
@@ -12,6 +12,7 @@ function AutocompleteExercicis(props) {
         id: exercici.ID,
         title: exercici.Nom
     }));
+    console.log(exercicis)
 
     function handleSubmit(id) {
         setSelectedValue(id);

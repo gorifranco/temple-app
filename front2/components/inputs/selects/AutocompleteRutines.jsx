@@ -1,30 +1,21 @@
-import React, { memo, useState } from 'react'
+import React, { memo } from 'react'
 import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown'
 import { themeStyles } from '@/themes/theme';
 import { View, Dimensions, Text } from 'react-native';
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux'
-import { setRutines } from '@/store/rutinesSlice'
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useSelector } from 'react-redux'
 import { RootState } from '@/store'
-import { useAxios } from '@/app/api'
 
 
-interface propsType {
-    onSubmit: Function
-}
-
-
-function AutocompleteRutines(props: propsType) {
+function AutocompleteRutines(props) {
     const { onSubmit } = props;
-    const rutines = useSelector((state: RootState) => state.rutines);
-    const rutinesArray = Object.values(rutines);
-    const dataSet = rutinesArray.map((rutina) => ({
+    const rutines = useSelector((state) => state.rutines);
+    const dataSet = rutines.map((rutina) => ({
         id: rutina.ID,
         title: rutina.Nom
     }));
+    console.log(rutines)
 
-    function handleSubmit(id: number) {
+    function handleSubmit(id) {
         onSubmit(id)
     }
 
@@ -33,11 +24,7 @@ function AutocompleteRutines(props: propsType) {
             <AutocompleteDropdown
                 clearOnFocus={false}
                 closeOnBlur={true}
-                onSelectItem={(item) => {
-                    if (item && item.id !== undefined) {
-                        handleSubmit(Number(item.id));
-                    }
-                }}
+                onSelectItem={(item) => handleSubmit(item?.id)}
                 dataSet={dataSet}
                 suggestionsListMaxHeight={Dimensions.get('window').height * 0.3}
                 inputContainerStyle={{ backgroundColor: "#e7e0ec", paddingVertical: 5 }}
