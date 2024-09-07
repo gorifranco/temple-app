@@ -11,6 +11,8 @@ import AuthContext, { AuthContextType } from './AuthContext';
 import Toast from 'react-native-toast-message';
 import { Provider } from 'react-redux';
 import store from '../store';
+import { persistor } from '../store';
+import { PersistGate } from 'redux-persist/integration/react';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -74,7 +76,9 @@ export default function RootLayout() {
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <AuthProvider>
         <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
           <StackLayout />
+          </PersistGate>
           <Toast />
         </Provider>
       </AuthProvider>

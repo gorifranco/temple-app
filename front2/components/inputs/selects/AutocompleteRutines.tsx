@@ -8,8 +8,6 @@ import { setRutines } from '@/store/rutinesSlice'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { RootState } from '@/store'
 import { useAxios } from '@/app/api'
-import { updateRutines } from '@/store/rutinesSlice'
-import { RutinaType } from '@/types/apiTypes'
 
 
 interface propsType {
@@ -19,25 +17,12 @@ interface propsType {
 
 function AutocompleteRutines(props: propsType) {
     const { onSubmit } = props;
-    const api = useAxios();
-    const dispatch = useDispatch();
     const rutines = useSelector((state: RootState) => state.rutines);
     const rutinesArray = Object.values(rutines);
     const dataSet = rutinesArray.map((rutina) => ({
         id: rutina.ID,
         title: rutina.Nom
     }));
-
-    useEffect(() => {
-        fetchRutines()
-    }, [dispatch])
-
-    async function fetchRutines() {
-        const rutinesData = await AsyncStorage.getItem('rutines');
-        if (rutinesData) {
-            dispatch(setRutines(JSON.parse(rutinesData)));
-        }
-    }
 
     function handleSubmit(id: number) {
         onSubmit(id)

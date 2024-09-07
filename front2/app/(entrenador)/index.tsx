@@ -31,32 +31,21 @@ export default function Index() {
     const dispatch = useDispatch();
 
     useEffect(() => {
-        fetchRutines()
-        fetchRutinesAPI()
-        fetchAlumnes()
-        fetchAlumnesAPI()
+        if (rutinesArray.length === 0) {
+            fetchRutinesAPI()
+        }
+        if(alumnesArray.length === 0){
+            fetchAlumnesAPI()
+        }
         fetchReserves()
         fetchReservesAPI()
     }, [dispatch]);
-
-    async function fetchRutines() {
-        const rutinesData = await AsyncStorage.getItem('rutines');
-        if (rutinesData) {
-            dispatch(setRutines(JSON.parse(rutinesData)));
-        } else {
-            // Si no hay rutinas en AsyncStorage, cargarlas desde la API
-            await fetchRutinesAPI();
-        }
-    }
 
     async function fetchRutinesAPI() {
         const response = await api.get('/rutines/rutinesEntrenador');
         if (response.status === 200) {
             const fetchedRutines: RutinaType[] = response.data.data;
-
-            await AsyncStorage.setItem('rutines', JSON.stringify(fetchedRutines));
             dispatch(updateRutines({ data: fetchedRutines }));
-
         }
     }
 
@@ -77,12 +66,6 @@ export default function Index() {
         }
     }
 
-    async function fetchAlumnes() {
-        const alumnesData = await AsyncStorage.getItem('alumnes');
-        if (alumnesData) {
-            dispatch(setAlumne(JSON.parse(alumnesData)));
-        }
-    }
 
     async function fetchAlumnesAPI() {
         const response = await api.get(`/entrenador/alumnes`);
