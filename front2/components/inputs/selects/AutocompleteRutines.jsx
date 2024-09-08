@@ -19,8 +19,8 @@ function AutocompleteRutines(props) {
     }
 
     return (
-        <View style={{ width: "80%", marginHorizontal: "auto", marginVertical: 0 }}>
             <AutocompleteDropdown
+            rightButtonsContainerStyle={{paddingRight: 10}}
                 clearOnFocus={false}
                 closeOnBlur={true}
                 onSelectItem={(item) => handleSubmit(item?.id)}
@@ -33,7 +33,6 @@ function AutocompleteRutines(props) {
                     </Text>
                 )}
             />
-        </View>
     )
 }
 

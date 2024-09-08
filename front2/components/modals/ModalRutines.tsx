@@ -1,4 +1,4 @@
-import { View, Text, Modal, Pressable, StyleSheet } from 'react-native'
+import { View, Text, Modal, Pressable, StyleSheet, ScrollView } from 'react-native'
 import { useState } from 'react'
 import { themeStyles } from '@/themes/theme'
 import AutocompleteRutines from '@/components/inputs/selects/AutocompleteRutines'
@@ -23,6 +23,7 @@ export default function ModalRutines(props: propsType) {
     return (
         <AutocompleteDropdownContextProvider>
             <Modal
+              presentationStyle="overFullScreen"
             style={{height: '100%'}}
                 animationType="fade"
                 transparent={false}
@@ -39,12 +40,11 @@ export default function ModalRutines(props: propsType) {
                         <AntDesign name="close" size={24} color="black" />
                     </Pressable>
                 </View>
-                <View
-                style= {{marginTop: 15}}>
+                <ScrollView style={{marginTop: 15, width: "80%", marginHorizontal: "auto", marginVertical: 0 }} keyboardShouldPersistTaps="handled">
                     <AutocompleteRutines
                         onSubmit={(id: number) => setRutinaSeleccionada(id)}
                     />
-                </View>
+                </ScrollView>
 
                 <Pressable
                     style={themeStyles.button1}

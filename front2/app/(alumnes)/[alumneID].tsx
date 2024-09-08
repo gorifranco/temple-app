@@ -1,4 +1,4 @@
-import { View, Text, Pressable, SafeAreaView } from 'react-native';
+import { View, Text, Pressable, SafeAreaView, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams, router } from 'expo-router'
 import { useAxios } from '../api';
@@ -83,7 +83,8 @@ export default function AlumneScreen() {
 
     return (
         <AutocompleteDropdownContextProvider>
-            <SafeAreaView>
+            <ScrollView
+            keyboardShouldPersistTaps="handled">
                 <BackButton href={"../"} />
                 <Text style={themeStyles.titol1}>{alumne.Nom}</Text>
                 <Calendar
@@ -109,7 +110,6 @@ export default function AlumneScreen() {
                     : (
                         <View>
                             <Text style={themeStyles.text}>No té cap rutina assignada</Text>
-                            <AutocompleteRutines onSubmit={(id: number) => console.log(id)} />
                             <Pressable style={themeStyles.button1} onPress={() => {
                                 setModalRutinaVisible(true)
                             }}>
@@ -134,7 +134,7 @@ export default function AlumneScreen() {
                     modalVisible={modalRutinaVisible}
                     closeModal={() => setModalRutinaVisible(false)}
                 />
-            </SafeAreaView>
+            </ScrollView>
         </AutocompleteDropdownContextProvider>
     )
 }
