@@ -83,8 +83,7 @@ export default function AlumneScreen() {
 
     return (
         <AutocompleteDropdownContextProvider>
-            <ScrollView
-            keyboardShouldPersistTaps="handled">
+            <ScrollView>
                 <BackButton href={"../"} />
                 <Text style={themeStyles.titol1}>{alumne.Nom}</Text>
                 <Calendar
@@ -110,8 +109,12 @@ export default function AlumneScreen() {
                     : (
                         <View>
                             <Text style={themeStyles.text}>No té cap rutina assignada</Text>
+                            <View style={{marginHorizontal: "auto", marginVertical: 10, width: "80%"}}>
+                                <AutocompleteRutines onSubmit={(id: number) => console.log(id)} />
+
+                                </View>
                             <Pressable style={themeStyles.button1} onPress={() => {
-                                setModalRutinaVisible(true)
+                                // setModalRutinaVisible(true)
                             }}>
                                 <Text style={themeStyles.button1Text}>Assignar rutina</Text>
                             </Pressable>

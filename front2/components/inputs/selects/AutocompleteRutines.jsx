@@ -20,7 +20,7 @@ function AutocompleteRutines(props) {
 
     return (
             <AutocompleteDropdown
-            rightButtonsContainerStyle={{paddingRight: 10}}
+                rightButtonsContainerStyle={{paddingRight: 20}}
                 clearOnFocus={false}
                 closeOnBlur={true}
                 onSelectItem={(item) => handleSubmit(item?.id)}

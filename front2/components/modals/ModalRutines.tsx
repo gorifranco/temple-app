@@ -21,17 +21,14 @@ export default function ModalRutines(props: propsType) {
 
 
     return (
-        <AutocompleteDropdownContextProvider>
             <Modal
-              presentationStyle="overFullScreen"
-            style={{height: '100%'}}
                 animationType="fade"
                 transparent={false}
                 visible={modalVisible}
                 onRequestClose={() => {
                     closeModal()
                 }}>
-                    <Text style={[themeStyles.titol1, { marginTop: 75 }]}>Assignar rutina</Text>
+                <Text style={[themeStyles.titol1, { marginTop: 75 }]}>Assignar rutina</Text>
                 <View style={styles.closeButton}>
                     <Pressable
                         onPress={() => {
@@ -40,7 +37,7 @@ export default function ModalRutines(props: propsType) {
                         <AntDesign name="close" size={24} color="black" />
                     </Pressable>
                 </View>
-                <ScrollView style={{marginTop: 15, width: "80%", marginHorizontal: "auto", marginVertical: 0 }} keyboardShouldPersistTaps="handled">
+                <ScrollView style={{ marginTop: 15, width: "80%", marginHorizontal: "auto", marginVertical: 0 }} keyboardShouldPersistTaps="handled">
                     <AutocompleteRutines
                         onSubmit={(id: number) => setRutinaSeleccionada(id)}
                     />
@@ -54,7 +51,6 @@ export default function ModalRutines(props: propsType) {
                     <Text style={themeStyles.button1Text}>Assignar rutina</Text>
                 </Pressable>
             </Modal>
-            </AutocompleteDropdownContextProvider>
     )
 }
 
