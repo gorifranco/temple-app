@@ -6,13 +6,12 @@ import { useSelector } from 'react-redux'
 
 
 function AutocompleteRutines(props) {
-    const { onSubmit } = props;
+    const { onSubmit, error } = props;
     const rutinesArray = Object.values(useSelector((state) => state.rutines));
     const dataSet = rutinesArray.map((rutina) => ({
         id: rutina.ID,
         title: rutina.Nom
     }));
-    console.log(dataSet)
 
     function handleSubmit(id) {
         onSubmit(id)
@@ -20,7 +19,7 @@ function AutocompleteRutines(props) {
 
     return (
             <AutocompleteDropdown
-                rightButtonsContainerStyle={{paddingRight: 20}}
+                rightButtonsContainerStyle={[{paddingRight: 20}, error && error !== "" ? {borderColor: "red"} : {}]}
                 clearOnFocus={false}
                 closeOnBlur={true}
                 onSelectItem={(item) => handleSubmit(item?.id)}

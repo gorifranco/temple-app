@@ -19,7 +19,9 @@ import AutocompleteRutines from '@/components/inputs/selects/AutocompleteRutines
 
 export default function AlumneScreen() {
     const [modalVisible, setModalVisible] = useState(false)
-    const [modalRutinaVisible, setModalRutinaVisible] = useState(false)
+    // const [modalRutinaVisible, setModalRutinaVisible] = useState(false)
+    const [assignarRutinaID, setAssignarRutinaID] = useState<number | null>(null)
+    const [autocompleteRutinaError, setAutocompleteRutinaError] = useState("")
     const { alumneID } = useLocalSearchParams();
     const [selectedDay, setSelectedDay] = useState('');
     const api = useAxios();
@@ -74,6 +76,14 @@ export default function AlumneScreen() {
     }
 
     function assignarRutina() {
+        if(assignarRutinaID == null){
+            setAutocompleteRutinaError("Selecciona una rutina")
+            return
+        }else {
+            setAutocompleteRutinaError("")
+            api.post(`/entrenador/assignRutina`, { rutinaID: assignarRutinaID, alumneID: alumne.ID })
+        }
+
 
     }
 
@@ -109,12 +119,14 @@ export default function AlumneScreen() {
                     : (
                         <View>
                             <Text style={themeStyles.text}>No té cap rutina assignada</Text>
-                            <View style={{marginHorizontal: "auto", marginVertical: 10, width: "80%"}}>
-                                <AutocompleteRutines onSubmit={(id: number) => console.log(id)} />
-
-                                </View>
+                            <View style={{ marginHorizontal: "auto", marginVertical: 10, width: "80%" }}>
+                                <AutocompleteRutines
+                                onSubmit={(id: number) => setAssignarRutinaID(id)}
+                                error={autocompleteRutinaError} />
+                            </View>
                             <Pressable style={themeStyles.button1} onPress={() => {
                                 // setModalRutinaVisible(true)
+                                assignarRutina()
                             }}>
                                 <Text style={themeStyles.button1Text}>Assignar rutina</Text>
                             </Pressable>
@@ -133,10 +145,10 @@ export default function AlumneScreen() {
                     modalVisible={modalVisible}
                     closeModal={() => setModalVisible(false)}
                     confirmar={expulsarUsuari} />
-                <ModalRutines
+                {/* <ModalRutines
                     modalVisible={modalRutinaVisible}
                     closeModal={() => setModalRutinaVisible(false)}
-                />
+                /> */}
             </ScrollView>
         </AutocompleteDropdownContextProvider>
     )
