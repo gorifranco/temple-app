@@ -2,6 +2,8 @@ import { View, Text, Pressable } from 'react-native';
 import React from 'react';
 import { useContext } from 'react';
 import AuthContext, { AuthContextType } from '../AuthContext';
+import { theme, themeStyles } from '@/themes/theme';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Index() {
   const authContext = useContext<AuthContextType | undefined>(AuthContext);
@@ -11,10 +13,21 @@ export default function Index() {
   }
   const { logout } = authContext;
 
+  function borrarStorage() {
+    AsyncStorage.clear();
+  }
+
   return (
     <View>
-      <Pressable onPress={() => logout()}>
-        <Text style={{ color: 'black' }}>Logout</Text>
+      <Pressable
+      style={themeStyles.button1}
+      onPress={() => logout()}>
+        <Text style={themeStyles.button1Text}>Logout</Text>
+        </Pressable>
+        <Pressable
+        style={themeStyles.button1}
+        onPress={() => borrarStorage()}> 
+        <Text style={themeStyles.button1Text}>Borrar async storage</Text>
         </Pressable>
     </View>
   );

@@ -13,7 +13,6 @@ import { themeStyles } from '@/themes/theme';
 import ModalConfirmacio from '@/components/modals/ModalConfirmacio';
 import Toast from 'react-native-toast-message';
 import ViewRutina from '@/components/viewers/ViewRutina';
-import ModalRutines from '@/components/modals/ModalRutines';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown'
 import AutocompleteRutines from '@/components/inputs/selects/AutocompleteRutines';
 
@@ -75,16 +74,29 @@ export default function AlumneScreen() {
         }
     }
 
-    function assignarRutina() {
-        if(assignarRutinaID == null){
+    async function assignarRutina() {
+        if (assignarRutinaID == null) {
             setAutocompleteRutinaError("Selecciona una rutina")
             return
-        }else {
+        } else {
             setAutocompleteRutinaError("")
-            api.post(`/entrenador/assignRutina`, { rutinaID: assignarRutinaID, alumneID: alumne.ID })
+            const response = await api.post(`/entrenador/assignarRutina`, { rutinaID: assignarRutinaID, alumneID: alumne.ID })
+            if(response.status === 200){
+                Toast.show({
+                    type: 'success',
+                    text1: 'Rutina assignada',
+                    position: 'top',
+                });
+                alumne.RutinaAssignada = assignarRutinaID
+                dispatch(updateAlumne({ id: alumne.ID, data: alumne }))
+            }else {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error assignant la rutina',
+                    position: 'top',
+                });
+            }
         }
-
-
     }
 
     if (!alumne) {
@@ -114,18 +126,16 @@ export default function AlumneScreen() {
 
                 {/* Rutina */}
                 <Text style={themeStyles.titol1}>Rutina actual</Text>
-                {alumne.RutinaAssignada ?
-                    (<ViewRutina rutinaID={alumne.RutinaAssignada} />)
-                    : (
+                {alumne.RutinaAssignada ? (<ViewRutina rutinaID={alumne.RutinaAssignada} />
+                ) : (
                         <View>
                             <Text style={themeStyles.text}>No té cap rutina assignada</Text>
                             <View style={{ marginHorizontal: "auto", marginVertical: 10, width: "80%" }}>
                                 <AutocompleteRutines
-                                onSubmit={(id: number) => setAssignarRutinaID(id)}
-                                error={autocompleteRutinaError} />
+                                    onSubmit={(id: number) => setAssignarRutinaID(id)}
+                                    error={autocompleteRutinaError} />
                             </View>
                             <Pressable style={themeStyles.button1} onPress={() => {
-                                // setModalRutinaVisible(true)
                                 assignarRutina()
                             }}>
                                 <Text style={themeStyles.button1Text}>Assignar rutina</Text>

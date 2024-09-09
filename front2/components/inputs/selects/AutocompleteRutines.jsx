@@ -17,21 +17,30 @@ function AutocompleteRutines(props) {
         onSubmit(id)
     }
 
+    const errorStyle = {
+        ...(error ? { borderColor: 'red' } : {borderColor: 'transparent'}),
+        boxSizing: 'border-box',
+        borderWidth: 1,
+        borderRadius: 5
+    };
+
+
     return (
-            <AutocompleteDropdown
-                rightButtonsContainerStyle={[{paddingRight: 20}, error && error !== "" ? {borderColor: "red"} : {}]}
-                clearOnFocus={false}
-                closeOnBlur={true}
-                onSelectItem={(item) => handleSubmit(item?.id)}
-                dataSet={dataSet}
-                suggestionsListMaxHeight={Dimensions.get('window').height * 0.3}
-                inputContainerStyle={{ backgroundColor: "#e7e0ec", paddingVertical: 5 }}
-                renderItem={(item, text) => (
-                    <Text style={[themeStyles.text, { padding: 15 }]}>
-                        {item.title}
-                    </Text>
-                )}
-            />
+        <AutocompleteDropdown
+            containerStyle={errorStyle}
+            rightButtonsContainerStyle={{ paddingRight: 20 }}
+            clearOnFocus={false}
+            closeOnBlur={true}
+            onSelectItem={(item) => handleSubmit(item?.id)}
+            dataSet={dataSet}
+            suggestionsListMaxHeight={Dimensions.get('window').height * 0.3}
+            inputContainerStyle={{ backgroundColor: "#e7e0ec", paddingVertical: 5 }}
+            renderItem={(item, text) => (
+                <Text style={[themeStyles.text, { padding: 15 }]}>
+                    {item.title}
+                </Text>
+            )}
+        />
     )
 }
 
