@@ -34,9 +34,7 @@ export default function Index() {
         if (rutinesArray.length === 0) {
             fetchRutinesAPI()
         }
-        if(alumnesArray.length === 0){
             fetchAlumnesAPI()
-        }
         fetchReserves()
         fetchReservesAPI()
     }, [dispatch]);
@@ -70,9 +68,19 @@ export default function Index() {
     async function fetchAlumnesAPI() {
         const response = await api.get(`/entrenador/alumnes`);
         if (response.status === 200) {
-            const fetchedAlumnes: AlumneType[] = response.data.data;
-            dispatch(updateAlumnes({ data: fetchedAlumnes }));
+            const fetchedAlumnes = response.data.data;
+            let alumnesArray: AlumneType[] = [];
+            fetchedAlumnes.forEach((alumne:any) => {
+                alumnesArray.push({
+                    ID: alumne.ID,
+                    Nom: alumne.Nom,
+                    Entrenos: alumne.Entrenos,
+                    Reserves: alumne.Reserves,
+                    RutinaAssignada: alumne.RutinaActual
+                })
+            });
 
+            dispatch(updateAlumnes({ data: alumnesArray }));
         }
     }
 

@@ -30,7 +30,6 @@ export default function AlumneScreen() {
     console.log(alumne)
 
     useEffect(() => {
-/*         fetchAlumne(); */
 /*         fetchApi(); */
     }, [dispatch, alumneID]);
 
@@ -40,6 +39,13 @@ export default function AlumneScreen() {
 
     async function fetchApi() {
         const response = await api.get(`entrenador/alumnes/${alumneID}`);
+        const a:AlumneType = {
+            ID: response.data.data.ID,
+            Nom: response.data.data.Nom,
+            Entrenos: [],
+            Reserves: [],            
+            RutinaAssignada: response.data.data.RutinaAssignada
+        }
         if (response.status === 200) {
             const fetchedAlumne: AlumneType = response.data.data;
             if (!alumne || alumne !== fetchedAlumne) {

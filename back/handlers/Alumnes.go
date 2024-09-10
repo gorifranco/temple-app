@@ -28,13 +28,21 @@ func (h *Handler) AlumnesEntrenador(c *gin.Context) {
 
 	var resposta []alumneResposta
 	for _, alumne := range alumnes {
-		resposta = append(resposta, alumneResposta{
-			ID:          alumne.ID,
-			Nom:         alumne.Nom,
-			Alumnes:     alumne.Alumnes,
-			TipusUsuari: alumne.TipusUsuari.Nom,
-			Reserves:    alumne.Reserves,
-		})
+		var rutina models.UsuariRutina
+		err = h.DB.Where("usuari_id = ? and data_finalitzacio is null", alumne.ID).First(&rutina).Error
+		var tmp = alumneResposta{
+			ID:           alumne.ID,
+			Nom:          alumne.Nom,
+			Alumnes:      alumne.Alumnes,
+			TipusUsuari:  alumne.TipusUsuari.Nom,
+			Reserves:     alumne.Reserves,
+		}
+		if err == nil {
+			tmp.RutinaActual = rutina.RutinaID
+		}else {
+			tmp.RutinaActual = 0
+		}
+		resposta = append(resposta, tmp)
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": resposta})
