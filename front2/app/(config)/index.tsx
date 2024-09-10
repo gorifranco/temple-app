@@ -15,6 +15,7 @@ export default function Index() {
 
   function borrarStorage() {
     AsyncStorage.clear();
+    console.log("assync storage borrat")
   }
 
   return (

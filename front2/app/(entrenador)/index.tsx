@@ -11,11 +11,11 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useDispatch } from 'react-redux';
-import { setAlumne, updateAlumnes } from '@/store/alumnesSlice';
+import { addAlumne, updateAlumnes } from '@/store/alumnesSlice';
 import { setReserves, updateReserves } from '@/store/reservesSlice';
 import { AlumneType } from '../../types/apiTypes';
 import ViewRutina from '@/components/viewers/ViewRutina';
-import { setRutines, updateRutines } from '@/store/rutinesSlice';
+import { updateRutines } from '@/store/rutinesSlice';
 import { ScrollView } from 'react-native-gesture-handler';
 import { RutinaType } from '@/types/apiTypes';
 
@@ -83,12 +83,19 @@ export default function Index() {
     async function crearUsuariFictici(nom: string) {
         const response = await api.post(`/entrenador/usuarisFicticis`, { nom });
         if (response.status === 200) {
-            fetchAlumnesAPI()
             Toast.show({
                 type: 'success',
                 text1: 'Usuari creat',
                 position: 'top',
             });
+            const alumne: AlumneType = {
+                ID: response.data.data.ID,
+                Nom: response.data.data.Nom,
+                Entrenos: [],
+                Reserves: [],
+                RutinaAssignada: null
+            }
+            dispatch(addAlumne({ id: alumne.ID, data: alumne }))
         } else {
             Toast.show({
                 type: 'error',

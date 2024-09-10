@@ -263,7 +263,8 @@ func (h *Handler) AssignarRutina(c *gin.Context) {
 	var r models.UsuariRutina
 	err = h.DB.Where("data_finalitzacio is null and usuari_id = ?", alumne.ID).First(&r).Error
 	if( err != nil){
-		r.DataFinalitzacio = time.Now()
+		var now = time.Now()
+		r.DataFinalitzacio = &now
 		h.DB.Save(&r)
 	}
 
