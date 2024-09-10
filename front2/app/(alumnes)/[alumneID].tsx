@@ -27,18 +27,12 @@ export default function AlumneScreen() {
     const dispatch = useDispatch();
 
     const alumne = useSelector((state: RootState) => state.alumnes[Number(alumneID)]);
+    console.log(alumne)
 
     useEffect(() => {
-        fetchAlumne();
-        fetchApi();
+/*         fetchAlumne(); */
+/*         fetchApi(); */
     }, [dispatch, alumneID]);
-
-    async function fetchAlumne() {
-        const alumnesData = await AsyncStorage.getItem('alumnes');
-        if (alumnesData) {
-            dispatch(setAlumne(JSON.parse(alumnesData)));
-        }
-    }
 
     function handleDayPress(day: { dateString: React.SetStateAction<string>; }) {
         setSelectedDay(day.dateString);
@@ -87,8 +81,11 @@ export default function AlumneScreen() {
                     text1: 'Rutina assignada',
                     position: 'top',
                 });
-                alumne.RutinaAssignada = assignarRutinaID
-                dispatch(updateAlumne({ id: alumne.ID, data: alumne }))
+                const updatedAlumne = {
+                    ...alumne,
+                    RutinaAssignada: assignarRutinaID
+                };
+                dispatch(updateAlumne({ id: alumne.ID, data: updatedAlumne }))
             }else {
                 Toast.show({
                     type: 'error',
