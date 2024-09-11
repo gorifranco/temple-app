@@ -122,35 +122,34 @@ func (h Handler) UpdateRutina(c *gin.Context) {
 }
 
 func (h *Handler) DeleteRutina(c *gin.Context) {
-    // Iniciar una transacción
-    err := h.DB.Transaction(func(tx *gorm.DB) error {
-        var rutina models.Rutina
-        if err := tx.Where("id = ?", c.Param("id")).First(&rutina).Error; err != nil {
-            return err // Esto provocará un rollback automático
-        }
+	// Iniciar una transacción
+	err := h.DB.Transaction(func(tx *gorm.DB) error {
+		var rutina models.Rutina
+		if err := tx.Where("id = ?", c.Param("id")).First(&rutina).Error; err != nil {
+			return err // Esto provocará un rollback automático
+		}
 
-        // Eliminar los ejercicios asociados
-        if err := tx.Where("rutina_id = ?", rutina.ID).Delete(&models.ExerciciRutina{}).Error; err != nil {
-            return err // Esto también provocará un rollback si falla
-        }
+		// Eliminar los ejercicios asociados
+		if err := tx.Where("rutina_id = ?", rutina.ID).Delete(&models.ExerciciRutina{}).Error; err != nil {
+			return err // Esto también provocará un rollback si falla
+		}
 
-        // Eliminar la rutina
-        if err := tx.Delete(&rutina).Error; err != nil {
-            return err // Rollback si falla
-        }
+		// Eliminar la rutina
+		if err := tx.Delete(&rutina).Error; err != nil {
+			return err // Rollback si falla
+		}
 
-        return nil // Si todo va bien, la transacción se compromete automáticamente
-    })
+		return nil // Si todo va bien, la transacción se compromete automáticamente
+	})
 
-    // Manejo de errores fuera de la transacción
-    if err != nil {
-        c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete rutina and related exercises"})
-        return
-    }
+	// Manejo de errores fuera de la transacción
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete rutina and related exercises"})
+		return
+	}
 
-    c.JSON(http.StatusOK, gin.H{"data": "success"})
+	c.JSON(http.StatusOK, gin.H{"data": "success"})
 }
-
 
 func (h *Handler) RutinesEntrenador(c *gin.Context) {
 	var rutines []models.Rutina
@@ -230,7 +229,46 @@ func (h *Handler) CanviarVisibilitat(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": rutina})
 }
 
-func (h *Handler) AcabarRutina(rutinaID uint) {
+func (h *Handler) AcabarRutina(c *gin.Context) {
+
+	type inputStruct struct {
+		UsuariID uint `json:"rutinaID"`
+	}
+	var input inputStruct
+	var rutina models.UsuariRutina
+	var user models.Usuari
+	var err error
+
+	if err = c.ShouldBindJSON(&input); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err = h.DB.Where("id = ?", input.UsuariID).First(&user).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "record not found"})
+		return
+	}
+
+	userEntrenador := c.MustGet("id").(uint)
+	fmt.Println(userEntrenador)
+	fmt.Println(user)
+
+	if user.EntrenadorID == nil || *user.EntrenadorID != userEntrenador {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	if err = h.DB.Where("usuari_id = ? and data_finalitzacio is null", user.ID).First(&rutina).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "record not found"})
+		return
+	}
+
+	var now = time.Now()
+
+	rutina.DataFinalitzacio = &now
+	h.DB.Save(&rutina)
+
+	c.JSON(http.StatusOK, gin.H{"status": "success"})
 }
 
 func (h *Handler) AssignarRutina(c *gin.Context) {
@@ -262,7 +300,7 @@ func (h *Handler) AssignarRutina(c *gin.Context) {
 
 	var r models.UsuariRutina
 	err = h.DB.Where("data_finalitzacio is null and usuari_id = ?", alumne.ID).First(&r).Error
-	if( err != nil){
+	if err != nil {
 		var now = time.Now()
 		r.DataFinalitzacio = &now
 		h.DB.Save(&r)
@@ -271,13 +309,10 @@ func (h *Handler) AssignarRutina(c *gin.Context) {
 	var nova = models.UsuariRutina{UsuariID: alumne.ID, RutinaID: rutina.ID, DataInici: time.Now()}
 	err = h.DB.Create(&nova).Error
 
-	if(err != nil){
+	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create new user rutina"})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"status": "success"})
 }
-
-	
-	

@@ -16,10 +16,11 @@ import { useSelector } from 'react-redux'
 
 interface propsType {
     rutinaID: number,
+    versio?: number
 }
 
 export default function ViewRutina(props: propsType) {
-    const { rutinaID } = props
+    const { rutinaID, versio = 0 } = props
     const [desplegat, setDesplegat] = useState(false)
     const [dia, setDia] = useState(0)
     const [modalVisible, setModalVisible] = useState(false)
@@ -31,9 +32,17 @@ export default function ViewRutina(props: propsType) {
         console.log("editar")
     }
 
+    function acabarRutina() {
+        api.post(`/entrenador/acabarRutina`, { rutinaID: rutina.ID })
+    }
+
+    function canviarRutina() {
+        console.log("canviar")
+    }
+
     async function eliminarRutina() {
         const response = await api.delete(`/rutines/${rutina.ID}`)
-        if(response.status === 200){
+        if (response.status === 200) {
             Toast.show({
                 type: 'success',
                 text1: 'Rutina eliminada',
@@ -89,13 +98,22 @@ export default function ViewRutina(props: propsType) {
                     <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginTop: 10, width: "90%", margin: "auto" }}>
                         <Pressable
                             style={[themeStyles.buttonDanger, { width: "40%" }]}
-                            onPress={() => setModalVisible(true)}>
-                            <Text style={themeStyles.button1Text}>Eliminar</Text>
+                            onPress={() => {
+                                    setModalVisible(true)
+                            }}>
+                            <Text style={themeStyles.button1Text}>{versio == 0 ? "Eliminar" : "Acabar"}</Text>
                         </Pressable>
                         <Pressable
                             style={[themeStyles.button1, { width: "40%" }]}
-                            onPress={() => editarRutina()}>
-                            <Text style={themeStyles.button1Text}>Editar</Text>
+                            onPress={() => {
+                                if (versio == 0) {
+                                    editarRutina()
+                                }
+                                else {
+                                    canviarRutina()
+                                }
+                            }}>
+                            <Text style={themeStyles.button1Text}>{versio == 0 ? "Editar" : "Canviar"}</Text>
                         </Pressable>
                     </View>
                 </View>
@@ -103,9 +121,9 @@ export default function ViewRutina(props: propsType) {
             <ModalConfirmacio
                 modalVisible={modalVisible}
                 closeModal={() => setModalVisible(false)}
-                missatge="Estàs segur que vols eliminar la rutina?"
-                titol='Eliminar rutina'
-                confirmar={() => eliminarRutina()} />
+                missatge={versio == 0 ? "Estàs segur que vols eliminar la rutina?" : "Es donarà per finalitzada la rutina"}
+                titol={versio == 0 ? 'Eliminar rutina' : 'Acabar rutina'}
+                confirmar={() => {versio == 0 ? eliminarRutina() : acabarRutina()}} />
         </View>
     )
 }

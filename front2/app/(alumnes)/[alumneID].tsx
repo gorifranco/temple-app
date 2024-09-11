@@ -129,7 +129,7 @@ export default function AlumneScreen() {
 
                 {/* Rutina */}
                 <Text style={themeStyles.titol1}>Rutina actual</Text>
-                {alumne.RutinaAssignada ? (<ViewRutina rutinaID={alumne.RutinaAssignada} />
+                {alumne.RutinaAssignada ? (<ViewRutina rutinaID={alumne.RutinaAssignada} versio={1}/>
                 ) : (
                         <View>
                             <Text style={themeStyles.text}>No té cap rutina assignada</Text>
