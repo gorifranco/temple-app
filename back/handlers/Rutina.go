@@ -232,7 +232,7 @@ func (h *Handler) CanviarVisibilitat(c *gin.Context) {
 func (h *Handler) AcabarRutina(c *gin.Context) {
 
 	type inputStruct struct {
-		UsuariID uint `json:"rutinaID"`
+		UsuariID uint `json:"usuariID"`
 	}
 	var input inputStruct
 	var rutina models.UsuariRutina
@@ -249,11 +249,7 @@ func (h *Handler) AcabarRutina(c *gin.Context) {
 		return
 	}
 
-	userEntrenador := c.MustGet("id").(uint)
-	fmt.Println(userEntrenador)
-	fmt.Println(user)
-
-	if user.EntrenadorID == nil || *user.EntrenadorID != userEntrenador {
+	if user.EntrenadorID != nil && *user.EntrenadorID != c.MustGet("id").(uint) {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}

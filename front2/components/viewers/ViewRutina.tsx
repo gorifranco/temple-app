@@ -12,15 +12,17 @@ import { deleteRutina } from '@/store/rutinesSlice'
 import { useDispatch } from 'react-redux'
 import { RootState } from '@/store'
 import { useSelector } from 'react-redux'
+import { router } from 'expo-router'
 
 
 interface propsType {
     rutinaID: number,
     versio?: number
+    acabarRutina?: Function
 }
 
 export default function ViewRutina(props: propsType) {
-    const { rutinaID, versio = 0 } = props
+    const { rutinaID, versio = 0, acabarRutina } = props
     const [desplegat, setDesplegat] = useState(false)
     const [dia, setDia] = useState(0)
     const [modalVisible, setModalVisible] = useState(false)
@@ -32,12 +34,16 @@ export default function ViewRutina(props: propsType) {
         console.log("editar")
     }
 
-    function acabarRutina() {
-        api.post(`/entrenador/acabarRutina`, { rutinaID: rutina.ID })
-    }
-
     function canviarRutina() {
         console.log("canviar")
+    }
+
+    function handleAcabar(){
+        if(!acabarRutina){
+            router.replace("..")
+        } else {
+            acabarRutina()
+        }
     }
 
     async function eliminarRutina() {
@@ -123,7 +129,7 @@ export default function ViewRutina(props: propsType) {
                 closeModal={() => setModalVisible(false)}
                 missatge={versio == 0 ? "Estàs segur que vols eliminar la rutina?" : "Es donarà per finalitzada la rutina"}
                 titol={versio == 0 ? 'Eliminar rutina' : 'Acabar rutina'}
-                confirmar={() => {versio == 0 ? eliminarRutina() : acabarRutina()}} />
+                confirmar={() => {versio == 0 ? eliminarRutina() : handleAcabar()}} />
         </View>
     )
 }

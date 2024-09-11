@@ -70,7 +70,7 @@ export default function AlumneScreen() {
                 type: 'error',
                 text1: 'Error eliminant l\'usuari',
                 position: 'top',
-            });
+            })
         }
     }
 
@@ -102,6 +102,28 @@ export default function AlumneScreen() {
         }
     }
 
+    async function acabarRutina() {
+        const response = await api.post(`/entrenador/acabarRutina`, { usuariID: alumne.ID })
+        if(response.status === 200){
+            Toast.show({
+                type: 'success',
+                text1: 'Rutina acabada',
+                position: 'top',
+            });
+            let alumneUpdated = {
+                ...alumne,
+                RutinaAssignada: null
+            }
+            dispatch(updateAlumne({ id: alumne.ID, data: alumneUpdated }))
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: 'Error acabant la rutina',
+                position: 'top',
+            });
+        }
+    }
+
     if (!alumne) {
         return (<View>Carregant alumne</View>)
     }
@@ -129,7 +151,7 @@ export default function AlumneScreen() {
 
                 {/* Rutina */}
                 <Text style={themeStyles.titol1}>Rutina actual</Text>
-                {alumne.RutinaAssignada ? (<ViewRutina rutinaID={alumne.RutinaAssignada} versio={1}/>
+                {alumne.RutinaAssignada ? (<ViewRutina rutinaID={alumne.RutinaAssignada} versio={1} acabarRutina={acabarRutina}/>
                 ) : (
                         <View>
                             <Text style={themeStyles.text}>No té cap rutina assignada</Text>
