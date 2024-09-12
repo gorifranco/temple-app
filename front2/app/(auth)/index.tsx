@@ -48,9 +48,6 @@ export default function Index() {
       // Lógica de autenticación aquí
       const response = await api.post('/login', { email, password });
 
-      // Guarda el token en AsyncStorage
-      await AsyncStorage.setItem('user', response.data.data);
-
       login(response.data.user);
       router.replace('/');
       

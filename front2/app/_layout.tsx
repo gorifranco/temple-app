@@ -13,6 +13,7 @@ import { Provider } from 'react-redux';
 import store from '../store';
 import { persistor } from '../store';
 import { PersistGate } from 'redux-persist/integration/react';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -73,6 +74,7 @@ export default function RootLayout() {
   }
 
   return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <AuthProvider>
         <Provider store={store}>
@@ -83,6 +85,7 @@ export default function RootLayout() {
         </Provider>
       </AuthProvider>
     </ThemeProvider>
+    </GestureHandlerRootView>
   );
 }
 

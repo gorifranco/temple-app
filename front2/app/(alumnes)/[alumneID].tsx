@@ -6,8 +6,7 @@ import { AlumneType } from '@/types/apiTypes'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/store'
 import BackButton from '@/components/BackButton';
-import { setAlumne, updateAlumne, deleteAlumnne } from '../../store/alumnesSlice';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { updateAlumne, deleteAlumnne } from '../../store/alumnesSlice';
 import { Calendar } from 'react-native-calendars';
 import { themeStyles } from '@/themes/theme';
 import ModalConfirmacio from '@/components/modals/ModalConfirmacio';
@@ -15,6 +14,7 @@ import Toast from 'react-native-toast-message';
 import ViewRutina from '@/components/viewers/ViewRutina';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown'
 import AutocompleteRutines from '@/components/inputs/selects/AutocompleteRutines';
+import RNDateTimePicker from '@react-native-community/datetimepicker';
 
 export default function AlumneScreen() {
     const [modalVisible, setModalVisible] = useState(false)
@@ -25,12 +25,12 @@ export default function AlumneScreen() {
     const [selectedDay, setSelectedDay] = useState('');
     const api = useAxios();
     const dispatch = useDispatch();
+    const [selectedTime, setSelectedTime] = useState<Date>(new Date())
 
     const alumne = useSelector((state: RootState) => state.alumnes[Number(alumneID)]);
-    console.log(alumne)
 
     useEffect(() => {
-/*         fetchApi(); */
+        /*         fetchApi(); */
     }, [dispatch, alumneID]);
 
     function handleDayPress(day: { dateString: React.SetStateAction<string>; }) {
@@ -39,11 +39,11 @@ export default function AlumneScreen() {
 
     async function fetchApi() {
         const response = await api.get(`entrenador/alumnes/${alumneID}`);
-        const a:AlumneType = {
+        const a: AlumneType = {
             ID: response.data.data.ID,
             Nom: response.data.data.Nom,
             Entrenos: [],
-            Reserves: [],            
+            Reserves: [],
             RutinaAssignada: response.data.data.RutinaAssignada
         }
         if (response.status === 200) {
@@ -81,7 +81,7 @@ export default function AlumneScreen() {
         } else {
             setAutocompleteRutinaError("")
             const response = await api.post(`/entrenador/assignarRutina`, { rutinaID: assignarRutinaID, alumneID: alumne.ID })
-            if(response.status === 200){
+            if (response.status === 200) {
                 Toast.show({
                     type: 'success',
                     text1: 'Rutina assignada',
@@ -92,7 +92,7 @@ export default function AlumneScreen() {
                     RutinaAssignada: assignarRutinaID
                 };
                 dispatch(updateAlumne({ id: alumne.ID, data: updatedAlumne }))
-            }else {
+            } else {
                 Toast.show({
                     type: 'error',
                     text1: 'Error assignant la rutina',
@@ -104,7 +104,7 @@ export default function AlumneScreen() {
 
     async function acabarRutina() {
         const response = await api.post(`/entrenador/acabarRutina`, { usuariID: alumne.ID })
-        if(response.status === 200){
+        if (response.status === 200) {
             Toast.show({
                 type: 'success',
                 text1: 'Rutina acabada',
@@ -141,6 +141,16 @@ export default function AlumneScreen() {
                     }}
                 />
 
+                <View style={{height: "auto"}}>
+                    <RNDateTimePicker
+                        mode='time'
+                        display="spinner"
+                        is24Hour={true}
+                        value={selectedTime}
+                        onChange={(e) => console.log(e)} />
+                </View>
+
+
                 {/* Entrenos */}
                 <Text style={themeStyles.titol1}>Pròxims entrenos</Text>
                 {!alumne.Entrenos ? (<Text style={themeStyles.text}>No hi ha entrenos pròximament</Text>
@@ -151,25 +161,25 @@ export default function AlumneScreen() {
 
                 {/* Rutina */}
                 <Text style={themeStyles.titol1}>Rutina actual</Text>
-                {alumne.RutinaAssignada ? (<ViewRutina rutinaID={alumne.RutinaAssignada} versio={1} acabarRutina={acabarRutina}/>
+                {alumne.RutinaAssignada ? (<ViewRutina rutinaID={alumne.RutinaAssignada} versio={1} acabarRutina={acabarRutina} />
                 ) : (
-                        <View>
-                            <Text style={themeStyles.text}>No té cap rutina assignada</Text>
-                            <View style={{ marginHorizontal: "auto", marginVertical: 10, width: "80%" }}>
-                                <AutocompleteRutines
-                                    onSubmit={(id: number) => setAssignarRutinaID(id)}
-                                    error={autocompleteRutinaError} />
-                            </View>
-                            <Pressable style={themeStyles.button1} onPress={() => {
-                                assignarRutina()
-                            }}>
-                                <Text style={themeStyles.button1Text}>Assignar rutina</Text>
-                            </Pressable>
+                    <View>
+                        <Text style={themeStyles.text}>No té cap rutina assignada</Text>
+                        <View style={{ marginHorizontal: "auto", marginVertical: 10, width: "80%" }}>
+                            <AutocompleteRutines
+                                onSubmit={(id: number) => setAssignarRutinaID(id)}
+                                error={autocompleteRutinaError} />
                         </View>
-                    )}
+                        <Pressable style={themeStyles.button1} onPress={() => {
+                            assignarRutina()
+                        }}>
+                            <Text style={themeStyles.button1Text}>Assignar rutina</Text>
+                        </Pressable>
+                    </View>
+                )}
 
 
-                <Pressable style={themeStyles.buttonDanger} onPress={() => {
+                <Pressable style={[themeStyles.buttonDanger, { marginBottom: 30 }]} onPress={() => {
                     setModalVisible(true)
                 }}>
                     <Text style={themeStyles.button1Text}>Expulsar</Text>
