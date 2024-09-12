@@ -18,6 +18,7 @@ import ViewRutina from '@/components/viewers/ViewRutina';
 import { updateRutines } from '@/store/rutinesSlice';
 import { ScrollView } from 'react-native-gesture-handler';
 import { RutinaType } from '@/types/apiTypes';
+import { useColorScheme } from 'react-native';
 
 export default function Index() {
     const rutines = useSelector((state: RootState) => state.rutines);
@@ -29,6 +30,7 @@ export default function Index() {
     const alumnes = useSelector((state: RootState) => state.alumnes);
     const alumnesArray = Object.values(alumnes);
     const dispatch = useDispatch();
+    const colorScheme = useColorScheme();
 
     useEffect(() => {
         if (rutinesArray.length === 0) {
@@ -147,7 +149,7 @@ export default function Index() {
                     <Pressable key={alumne.ID} style={styles.salaContainer} onPress={() => {
                         router.push({ pathname: `../(alumnes)/${alumne.ID}` })
                     }}>
-                        <Text style={styles.text}>{alumne.Nom}</Text>
+                        <Text style={themeStyles.text}>{alumne.Nom}</Text>
                     </Pressable>
                 ))}
 
@@ -158,7 +160,7 @@ export default function Index() {
                             setAfegirAlumneVisible(true)
                         }}
                     >
-                        <Text style={styles.buttonText}>Afegeix un alumne</Text>
+                        <Text style={themeStyles.button1Text}>Afegeix un alumne</Text>
                     </Pressable>
                 )}
             </View>
@@ -233,12 +235,12 @@ export default function Index() {
                     style={themeStyles.button1}
                     onPress={() => {
                         router.replace("../(rutines)/crearRutina")
-                    }}><Text style={styles.buttonText}>Crea una rutina</Text></Pressable>
+                    }}><Text style={themeStyles.button1Text}>Crea una rutina</Text></Pressable>
                 <Pressable
                     style={[themeStyles.button1, { marginBottom: 20 }]}
                     onPress={() => {
                         router.replace("../(rutines)/rutinesPubliques")
-                    }}><Text style={styles.buttonText}>Rutines públiques</Text></Pressable>
+                    }}><Text style={themeStyles.button1Text}>Rutines públiques</Text></Pressable>
             </View>
 
             <ModalAfegirUsuari
@@ -252,26 +254,6 @@ export default function Index() {
 
 
 const styles = StyleSheet.create({
-    primeraSala: {
-        fontSize: 20,
-        marginTop: 20,
-        color: 'black',
-        textAlign: 'center',
-    },
-    salaInput: {
-        width: '80%',
-        margin: "auto",
-    },
-    buttonText: {
-        color: 'white',
-        fontSize: 15,
-    },
-    text: {
-        fontSize: 15,
-        lineHeight: 21,
-        textAlign: 'center',
-        color: "black",
-    },
     salaContainer: {
         margin: 20,
         borderWidth: 1,

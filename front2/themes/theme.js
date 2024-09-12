@@ -2,6 +2,7 @@ import { DefaultTheme } from 'react-native-paper'
 import { StyleSheet } from 'react-native'
 import AutocompleteInput from 'react-native-autocomplete-input'
 
+
 export const theme = {
   ...DefaultTheme,
   colors: {
