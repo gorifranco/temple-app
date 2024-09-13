@@ -1,5 +1,5 @@
-import { themeStyles } from '@/themes/theme';
 import { View, Text, StyleSheet, Pressable, Dimensions } from 'react-native';
+import { useThemeStyles } from '@/themes/theme';
 
 interface propsType {
     dies: number,
@@ -12,12 +12,12 @@ interface propsType {
 
 export default function BarraDies(props: propsType) {
     const { dies, afegeixDia, canviaDia, currentDia, editable } = props;
-
+    const themeStyles = useThemeStyles()
     const screenWidth = Dimensions.get('window').width;
-    const pressableWidth = editable ? screenWidth * 0.8 / 7 : screenWidth*0.8/dies; 
+    const pressableWidth = editable ? screenWidth * 0.8 / 7 : screenWidth*0.75/dies; 
 
     return (
-        <View style={[styles.container, { width: screenWidth * 0.8+2 }]}>
+        <View style={[styles.container, { width: screenWidth * 0.75+2 }]}>
             {Array.from({ length: dies }, (_, i) => {
                 const letter = String.fromCharCode(65 + i);
                 return (

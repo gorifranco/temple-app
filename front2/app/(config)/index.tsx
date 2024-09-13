@@ -2,10 +2,11 @@ import { View, Text, Pressable } from 'react-native';
 import React from 'react';
 import { useContext } from 'react';
 import AuthContext, { AuthContextType } from '../AuthContext';
-import { theme, themeStyles } from '@/themes/theme';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useThemeStyles } from '@/themes/theme';
 
 export default function Index() {
+  const themeStyles = useThemeStyles();
   const authContext = useContext<AuthContextType | undefined>(AuthContext);
 
   if (!authContext) {

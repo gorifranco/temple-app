@@ -1,6 +1,8 @@
 import { View, Text, Pressable } from 'react-native'
 import React from 'react'
 import AntDesign from '@expo/vector-icons/AntDesign';
+import { useAppTheme } from '@/themes/theme';
+
 
 interface propsType {
     amunt: boolean,
@@ -12,6 +14,7 @@ interface propsType {
 export default function FletxaDesplegar(props: propsType) {
     const { amunt, onPress, size, containerStyle } = props;
     const [amuntState, setAmuntState] = React.useState(amunt);
+    const themeStyles = useAppTheme();
 
     function handlePress() {
         setAmuntState(!amuntState);
@@ -21,7 +24,7 @@ export default function FletxaDesplegar(props: propsType) {
     return (
         <View style={containerStyle}>
             <Pressable onPress={handlePress} style={{ width: size, height: size }}>
-                <AntDesign name={amuntState ? "up" : "down"} size={size} color="black" />
+                <AntDesign name={amuntState ? "up" : "down"} size={size} color={themeStyles.colors.text} />
             </Pressable>
         </View>
     );

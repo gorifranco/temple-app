@@ -4,7 +4,6 @@ import React, { useState } from 'react'
 import { StyleSheet } from 'react-native'
 import FletxaDesplegar from '@/components/icons/FletxaDesplegar'
 import BarraDies from '../BarraDies'
-import { themeStyles } from '@/themes/theme'
 import ModalConfirmacio from '../modals/ModalConfirmacio'
 import { useAxios } from '@/app/api'
 import Toast from 'react-native-toast-message'
@@ -13,6 +12,7 @@ import { useDispatch } from 'react-redux'
 import { RootState } from '@/store'
 import { useSelector } from 'react-redux'
 import { router } from 'expo-router'
+import { useThemeStyles } from '@/themes/theme'
 
 
 interface propsType {
@@ -22,6 +22,7 @@ interface propsType {
 }
 
 export default function ViewRutina(props: propsType) {
+    const themeStyles = useThemeStyles()
     const { rutinaID, versio = 0, acabarRutina } = props
     const [desplegat, setDesplegat] = useState(false)
     const [dia, setDia] = useState(0)
@@ -65,13 +66,13 @@ export default function ViewRutina(props: propsType) {
     }
 
     return (
-        <View key={rutina.ID} style={styles.rutinaContainer}>
+        <View key={rutina.ID} style={themeStyles.mainContainer1}>
             <View style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", position: "relative" }}>
-                <Text>{rutina.Nom}</Text>
-                <Text>{rutina.Descripcio}</Text>
+                <Text style={themeStyles.text}>{rutina.Nom}</Text>
+                <Text style={themeStyles.text}>{rutina.Descripcio}</Text>
                 <FletxaDesplegar
                     amunt={desplegat}
-                    containerStyle={{ position: "absolute", right: 0, top: 0 }}
+                    containerStyle={{ position: "absolute", right: 0, top: 0}}
                     size={24}
                     onPress={() => setDesplegat(!desplegat)} />
             </View>
@@ -84,19 +85,19 @@ export default function ViewRutina(props: propsType) {
                         currentDia={dia} />
 
                     <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginTop: 10, width: "95%" }}>
-                        <Text style={{ width: "50%", fontWeight: "bold" }}>Exercici</Text>
-                        <Text style={{ fontWeight: "bold" }}>Repes</Text>
-                        <Text style={{ fontWeight: "bold" }}>Series</Text>
-                        <Text style={{ fontWeight: "bold" }}>%RM</Text>
+                        <Text style={[ themeStyles.text, { width: "50%", fontWeight: "bold" }]}>Exercici</Text>
+                        <Text style={[ themeStyles.text, { fontWeight: "bold" }]}>Repes</Text>
+                        <Text style={[ themeStyles.text, { fontWeight: "bold" }]}>Series</Text>
+                        <Text style={[ themeStyles.text, { fontWeight: "bold" }]}>%RM</Text>
                     </View>
                     {rutina.Exercicis && rutina.Exercicis.map((exercici, i) => {
                         if (exercici.DiaRutina == dia) {
                             return (
                                 <View key={i} style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginTop: 10, width: "95%" }}>
-                                    <Text style={{ width: "50%" }}>{exercici.Nom}</Text>
-                                    <Text>{exercici.NumRepes}</Text>
-                                    <Text>{exercici.NumSeries}</Text>
-                                    <Text>{exercici.PercentatgeRM}</Text>
+                                    <Text style={[ themeStyles.text, { width: "50%" }]}>{exercici.Nom}</Text>
+                                    <Text style={[ themeStyles.text ]}>{exercici.NumRepes}</Text>
+                                    <Text style={[ themeStyles.text ]}>{exercici.NumSeries}</Text>
+                                    <Text style={[ themeStyles.text ]}>{exercici.PercentatgeRM}</Text>
                                 </View>
                             )
                         }
@@ -133,15 +134,3 @@ export default function ViewRutina(props: propsType) {
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    rutinaContainer: {
-        marginVertical: 10,
-        borderWidth: 1,
-        borderColor: "black",
-        padding: 10,
-        borderRadius: 10,
-        width: '85%',
-        marginHorizontal: 'auto',
-    },
-})

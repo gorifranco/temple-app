@@ -1,6 +1,5 @@
 import { View, Text, Pressable, StyleSheet, SafeAreaView } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { themeStyles } from '@/themes/theme';
 import BackButton from '@/components/BackButton';
 import { ExerciciRutinaType, ExerciciType } from '@/types/apiTypes';
 import { useAxios } from '@/app/api';
@@ -17,9 +16,11 @@ import { ExerciciErrorType, RutinaType } from '@/types/apiTypes';
 import { router } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import { afegirRutina } from '@/store/rutinesSlice';
+import { useThemeStyles } from '@/themes/theme';
 
 
 export default function CrearRutina() {
+    const themeStyles = useThemeStyles();
     const api = useAxios();
     const [cicles, setCicles] = useState<(Number | null)>(null);
     const [dies, setDies] = useState(1);

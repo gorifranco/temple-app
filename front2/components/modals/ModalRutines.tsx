@@ -1,10 +1,8 @@
 import { View, Text, Modal, Pressable, StyleSheet, ScrollView } from 'react-native'
 import { useState } from 'react'
-import { themeStyles } from '@/themes/theme'
 import AutocompleteRutines from '@/components/inputs/selects/AutocompleteRutines'
 import { AntDesign } from '@expo/vector-icons'
-import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown'
-
+import { useThemeStyles } from '@/themes/theme'
 
 interface propsType {
     modalVisible: boolean
@@ -12,6 +10,7 @@ interface propsType {
 }
 
 export default function ModalRutines(props: propsType) {
+    const themeStyles = useThemeStyles()
     const { modalVisible, closeModal } = props
     const [rutinaSeleccionada, setRutinaSeleccionada] = useState<number | null>(null)
 

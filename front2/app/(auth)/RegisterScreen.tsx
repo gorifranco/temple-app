@@ -7,14 +7,15 @@ import Header from '@/components/Header'
 import Button from '@/components/Button'
 import TextInput from '@/components/inputs/TextInput'
 import BackButton from '@/components/BackButton'
-import { theme } from '@/themes/theme'
 import { emailValidator } from '@/helpers/emailValidator' 
 import { passwordValidator } from '@/helpers/passwordValidator'
 import { nameValidator } from '@/helpers/nameValidator'
 import { Link, router } from 'expo-router';
 import { useAxios } from '@/app/api'
+import { useThemeStyles } from '@/themes/theme'
 
 export default function RegisterScreen() {
+  const themeStyles = useThemeStyles()
   const api = useAxios();
   const [nom, setNom] = useState('')
   const [email, setEmail] = useState('')
@@ -90,21 +91,10 @@ export default function RegisterScreen() {
       >
         Sign Up
       </Button>
-      <View style={styles.row}>
+      <View style={themeStyles.row}>
         <Text>Already have an account? </Text>
-        <Link href={'/'} style={styles.link}>Sign in</Link>
+        <Link href={'/'} style={themeStyles.link}>Sign in</Link>
       </View>
     </Background>
   )
 }
-
-const styles = StyleSheet.create({
-  row: {
-    flexDirection: 'row',
-    marginTop: 4,
-  },
-  link: {
-    fontWeight: 'bold',
-    color: theme.colors.primary,
-  },
-})

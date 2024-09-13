@@ -8,15 +8,16 @@ import { RootState } from '@/store'
 import BackButton from '@/components/BackButton';
 import { updateAlumne, deleteAlumnne } from '../../store/alumnesSlice';
 import { Calendar } from 'react-native-calendars';
-import { themeStyles } from '@/themes/theme';
 import ModalConfirmacio from '@/components/modals/ModalConfirmacio';
 import Toast from 'react-native-toast-message';
 import ViewRutina from '@/components/viewers/ViewRutina';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown'
 import AutocompleteRutines from '@/components/inputs/selects/AutocompleteRutines';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
+import { useThemeStyles } from '@/themes/theme';
 
 export default function AlumneScreen() {
+    const themeStyles = useThemeStyles()
     const [modalVisible, setModalVisible] = useState(false)
     // const [modalRutinaVisible, setModalRutinaVisible] = useState(false)
     const [assignarRutinaID, setAssignarRutinaID] = useState<number | null>(null)
@@ -130,7 +131,7 @@ export default function AlumneScreen() {
 
     return (
         <AutocompleteDropdownContextProvider>
-            <ScrollView>
+            <ScrollView style={themeStyles.background}>
                 <BackButton href={"../"} />
                 <Text style={themeStyles.titol1}>{alumne.Nom}</Text>
                 <Calendar

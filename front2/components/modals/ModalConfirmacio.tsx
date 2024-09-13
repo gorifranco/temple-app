@@ -1,5 +1,5 @@
-import { themeStyles } from '@/themes/theme'
 import { View, Text, Modal, Pressable } from 'react-native'
+import { useThemeStyles } from '@/themes/theme'
 
 interface propsType {
     titol: string
@@ -11,6 +11,7 @@ interface propsType {
 
 export default function ModalConfirmacio(props: propsType) {
     const { modalVisible, closeModal, missatge, confirmar, titol } = props
+    const themeStyles = useThemeStyles()
 
     return (
         <Modal

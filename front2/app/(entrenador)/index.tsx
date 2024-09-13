@@ -1,26 +1,21 @@
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native'
 import { useAxios } from '../api';
-import * as types from '../../types/apiTypes';
 import { router } from 'expo-router';
-import { themeStyles } from '@/themes/theme';
 import ModalAfegirUsuari from '@/components/modals/ModalAfegirUsuari';
 import Toast from 'react-native-toast-message';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useDispatch } from 'react-redux';
 import { addAlumne, updateAlumnes } from '@/store/alumnesSlice';
 import { setReserves, updateReserves } from '@/store/reservesSlice';
-import { AlumneType } from '../../types/apiTypes';
 import ViewRutina from '@/components/viewers/ViewRutina';
 import { updateRutines } from '@/store/rutinesSlice';
 import { ScrollView } from 'react-native-gesture-handler';
-import { RutinaType } from '@/types/apiTypes';
-import { useColorScheme } from 'react-native';
+import { RutinaType, ReservaType, AlumneType } from '@/types/apiTypes';
+import { useThemeStyles } from '@/themes/theme';
 
 export default function Index() {
+    const themeStyles = useThemeStyles();
     const rutines = useSelector((state: RootState) => state.rutines);
     const rutinesArray = Object.values(rutines);
     const api = useAxios();
@@ -30,14 +25,12 @@ export default function Index() {
     const alumnes = useSelector((state: RootState) => state.alumnes);
     const alumnesArray = Object.values(alumnes);
     const dispatch = useDispatch();
-    const colorScheme = useColorScheme();
 
     useEffect(() => {
         if (rutinesArray.length === 0) {
             fetchRutinesAPI()
         }
             fetchAlumnesAPI()
-        fetchReserves()
         fetchReservesAPI()
     }, [dispatch]);
 
@@ -50,17 +43,10 @@ export default function Index() {
     }
 
 
-    async function fetchReserves() {
-        const reservesData = await AsyncStorage.getItem('reserves');
-        if (reservesData) {
-            dispatch(setReserves(JSON.parse(reservesData)));
-        }
-    }
-
     async function fetchReservesAPI() {
         const response = await api.get(`/entrenador/reserves`);
         if (response.status === 200) {
-            const fetchedReserves: types.ReservaType[] = response.data.data;
+            const fetchedReserves: ReservaType[] = response.data.data;
             dispatch(updateReserves({ data: fetchedReserves }));
 
         }
@@ -142,11 +128,11 @@ export default function Index() {
 
 
     return (
-        <ScrollView>
+        <ScrollView style={themeStyles.background}>
             <Text style={themeStyles.titol1}>Alumnes ({!alumnesArray ? '0' : alumnesArray.length}/12)</Text>
             <View>
                 {alumnesArray && alumnesArray.map((alumne) => (
-                    <Pressable key={alumne.ID} style={styles.salaContainer} onPress={() => {
+                    <Pressable key={alumne.ID} style={themeStyles.mainContainer1} onPress={() => {
                         router.push({ pathname: `../(alumnes)/${alumne.ID}` })
                     }}>
                         <Text style={themeStyles.text}>{alumne.Nom}</Text>
@@ -165,15 +151,7 @@ export default function Index() {
                 )}
             </View>
 
-            <View
-                style={{
-                    borderBottomColor: 'black',
-                    borderBottomWidth: StyleSheet.hairlineWidth,
-                    width: '80%',
-                    marginTop: 20,
-                    alignSelf: 'center',
-                }}
-            />
+            <View style={themeStyles.hr} />
 
             <View>
                 <Text style={themeStyles.titol1}>Entrenos d'avui</Text>
@@ -181,7 +159,7 @@ export default function Index() {
                     <Text style={themeStyles.text}>Avui no tens més entrenos</Text>
                 ) : (
                     reservesArray.map((reserva) => (
-                        <View key={reserva.ID} style={styles.rutinaContainer}>
+                        <View key={reserva.ID} style={themeStyles.mainContainer1}>
                             <Text>{reserva.Usuari.Nom}</Text>
                             <Text>{reserva.Hora.toLocaleTimeString()}</Text>
                         </View>
@@ -213,15 +191,7 @@ export default function Index() {
             </View>
              */}
 
-            <View
-                style={{
-                    borderBottomColor: 'black',
-                    borderBottomWidth: StyleSheet.hairlineWidth,
-                    width: '80%',
-                    marginTop: 20,
-                    alignSelf: 'center',
-                }}
-            />
+            <View style={themeStyles.hr} />
             <Text style={themeStyles.titol1}>Rutines</Text>
             <View>
                 {rutinesArray.length === 0 && <Text style={themeStyles.text}>Encara no tens cap rutina</Text>}
@@ -237,7 +207,7 @@ export default function Index() {
                         router.replace("../(rutines)/crearRutina")
                     }}><Text style={themeStyles.button1Text}>Crea una rutina</Text></Pressable>
                 <Pressable
-                    style={[themeStyles.button1, { marginBottom: 20 }]}
+                    style={[themeStyles.button1, { marginBottom: 60 }]}
                     onPress={() => {
                         router.replace("../(rutines)/rutinesPubliques")
                     }}><Text style={themeStyles.button1Text}>Rutines públiques</Text></Pressable>
@@ -251,29 +221,3 @@ export default function Index() {
         </ScrollView>
     )
 }
-
-
-const styles = StyleSheet.create({
-    salaContainer: {
-        margin: 20,
-        borderWidth: 1,
-        borderColor: "black",
-        padding: 10,
-        borderRadius: 10,
-    },
-    rutinaContainer: {
-        marginVertical: 20,
-        marginHorizontal: "auto",
-        borderWidth: 1,
-        borderColor: "black",
-        padding: 10,
-        borderRadius: 10,
-        width: '80%',
-    },
-    modal: {
-        padding: 20,
-        alignSelf: 'center',
-        alignItems: 'center',
-        justifyContent: 'center',
-    }
-})

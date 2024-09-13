@@ -12,12 +12,12 @@ import Logo from '@/components/Logo';
 import Header from '@/components/Header';
 import TextInput from '@/components/inputs/TextInput';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import { theme } from '@/themes/theme';
 import { AuthContextType } from '../AuthContext';
 import { useAxios } from '@/app/api';
-
+import { useThemeStyles } from '@/themes/theme';
 
 export default function Index() {
+  const themeStyles = useThemeStyles();
   const api = useAxios();
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -81,40 +81,20 @@ export default function Index() {
         errorText={errors.password}
         secureTextEntry
       />
-      <View style={styles.forgotPassword}>
+      <View>
         <TouchableOpacity
           onPress={() => router.replace('/ResetPasswordScreen')}
         >
-          <Text style={styles.forgot}>Forgot your password?</Text>
+          <Text style={{width: "100%", marginBottom: 24, alignItems: "flex-end"}}>Forgot your password?</Text>
         </TouchableOpacity>
       </View>
       <Button mode="contained" onPress={onLoginPressed}>
         Login
       </Button>
-      <View style={styles.row}>
+      <View style={themeStyles.row}>
         <Text>Don’t have an account? </Text>
-        <Link href={{ pathname: '/RegisterScreen' }} style={styles.link}>Sign up</Link>
+        <Link href={{ pathname: '/RegisterScreen' }} style={themeStyles.link}>Sign up</Link>
       </View>
     </Background>
   )
 }
-
-const styles = StyleSheet.create({
-  forgotPassword: {
-    width: '100%',
-    alignItems: 'flex-end',
-    marginBottom: 24,
-  },
-  row: {
-    flexDirection: 'row',
-    marginTop: 4,
-  },
-  forgot: {
-    fontSize: 13,
-    color: theme.colors.secondary,
-  },
-  link: {
-    fontWeight: 'bold',
-    color: theme.colors.primary,
-  },
-})

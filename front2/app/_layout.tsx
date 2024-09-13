@@ -1,12 +1,9 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
 import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, useContext } from 'react';
 import 'react-native-reanimated';
-import { useColorScheme } from '@/hooks/useColorScheme';
 import { AuthProvider } from './AuthContext'
-import { useContext } from 'react';
 import AuthContext, { AuthContextType } from './AuthContext';
 import Toast from 'react-native-toast-message';
 import { Provider } from 'react-redux';
@@ -14,6 +11,8 @@ import store from '../store';
 import { persistor } from '../store';
 import { PersistGate } from 'redux-persist/integration/react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { PaperProvider } from 'react-native-paper';
+import { useAppTheme } from '@/themes/theme';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -43,7 +42,7 @@ export default function RootLayout() {
     }, [user]);
 
     return (
-      <Stack>
+      <Stack screenOptions={{ navigationBarHidden: true }}>
         <Stack.Screen name="(admin)" options={{ headerShown: false }} />
         <Stack.Screen name="(auth)" options={{ headerShown: false }} />
         <Stack.Screen name="(basic)" options={{ headerShown: false }} />
@@ -57,7 +56,7 @@ export default function RootLayout() {
     );
   };
 
-  const colorScheme = useColorScheme();
+  const theme = useAppTheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -75,16 +74,16 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AuthProvider>
-        <Provider store={store}>
-        <PersistGate loading={null} persistor={persistor}>
-          <StackLayout />
-          </PersistGate>
-          <Toast />
-        </Provider>
-      </AuthProvider>
-    </ThemeProvider>
+      <PaperProvider theme={theme}>
+        <AuthProvider>
+          <Provider store={store}>
+            <PersistGate loading={null} persistor={persistor}>
+              <StackLayout />
+            </PersistGate>
+            <Toast />
+          </Provider>
+        </AuthProvider>
+      </PaperProvider>
     </GestureHandlerRootView>
   );
 }

@@ -1,11 +1,11 @@
 import { Pressable, View, Text, Modal, StyleSheet } from 'react-native'
 import { AntDesign, EvilIcons } from '@expo/vector-icons'
-import { themeStyles } from '@/themes/theme'
 import { useState, useContext } from 'react'
 import TextInput from '@/components/inputs/TextInput'
 import { nameValidator } from '@/helpers/nameValidator'
 import AuthContext, { AuthContextType } from '@/app/AuthContext'
 import { Redirect } from 'expo-router';
+import { useThemeStyles } from '@/themes/theme'
 
 interface propsType {
     modalVisible: boolean
@@ -15,6 +15,7 @@ interface propsType {
 }
 
 export default function ModalAfegirUsuari(props: propsType) {
+    const themeStyles = useThemeStyles()
     const { modalVisible, closeModal, compartir, crearUsuariFictici } = props
     const [crearFictici, setCrearFictici] = useState(false)
     const [nom, setNom] = useState('')
