@@ -1,8 +1,7 @@
 import React, { memo } from 'react'
 import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown'
 import { useSelector } from 'react-redux'
-import { themeStyles } from '@/themes/theme';
-import { View, Dimensions, Text } from 'react-native';
+import { Dimensions, Text } from 'react-native';
 import { useThemeStyles } from '@/themes/theme';
 
 

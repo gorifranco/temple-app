@@ -10,8 +10,16 @@ import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-d
 export default function Index() {
     const api = useAxios();
     const themeStyles = useThemeStyles();
-    const [exerciciSeleccionat, setExerciciSeleccionat] = React.useState<number | null>(null);
+    const [exerciciSeleccionat, setExerciciSeleccionat] = React.useState<number>(1);
 
+    async function fetchStatsAPI() {
+    const response = await api.get(`/stats/exercicis/${exerciciSeleccionat}`);
+    if (response.status === 200) {
+        console.log("okey")
+    } else {
+        console.log("Error")
+    }
+}
 
 
     return (
