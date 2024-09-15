@@ -8,9 +8,10 @@ export default function TextInput({ errorText, ...props }) {
   const theme = useAppTheme();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, props.containerStyle]}>
       <Input
-        style={styles.input}
+        maxLength={props.maxLength}
+        style={[styles.input, props.inputStyle]}
         selectionColor={theme.colors.primary}
         underlineColor="transparent"
         mode="outlined"

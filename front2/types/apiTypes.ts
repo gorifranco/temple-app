@@ -97,3 +97,9 @@ export interface ExerciciErrorType {
   NumRepes: string;
   NumSeries: string;
 }
+
+export interface ConfigType {
+  duracioSessions: number;
+  maxAlumnesPerSessio: number;
+
+}
