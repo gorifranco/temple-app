@@ -8,6 +8,7 @@ import { Redirect } from 'expo-router';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from './index';
 import ConfigScreen from '../(config)/index';
+import StatsScreen from "../(stats)/index";
 
 
 const Tabs = createBottomTabNavigator();
@@ -42,6 +43,12 @@ export default function EntrenadorLayout({ children }: { children: React.ReactNo
             ),
           }}
         />
+        <Tabs.Screen name="Stats" component={StatsScreen} options={{
+          title: 'Stats',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'bar-chart' : 'bar-chart-outline'} color={color} />
+          ),
+        }} />
         <Tabs.Screen
           name="Config"
           component={ConfigScreen}

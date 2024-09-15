@@ -3,24 +3,23 @@ import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown'
 import { useSelector } from 'react-redux'
 import { themeStyles } from '@/themes/theme';
 import { View, Dimensions, Text } from 'react-native';
+import { useThemeStyles } from '@/themes/theme';
 
 
 function AutocompleteExercicis(props) {
-    const { onSubmit, setSelectedValue } = props;
+    const { onSubmit } = props;
+    const themeStyles = useThemeStyles();
     const exercicis = useSelector((state) => state.exercicis);
     const dataSet = exercicis.map((exercici) => ({
         id: exercici.ID,
         title: exercici.Nom
     }));
-    console.log(dataSet)
 
     function handleSubmit(id) {
-        setSelectedValue(id);
         onSubmit(id)
     }
 
     return (
-        <View style={{ width: "80%", margin: "auto", marginBottom: 0 }}>
             <AutocompleteDropdown
             style={{marginBottom: 0}}
                 clearOnFocus={false}
@@ -35,7 +34,6 @@ function AutocompleteExercicis(props) {
                     </Text>
                 )}
             />
-        </View>
     )
 }
 
