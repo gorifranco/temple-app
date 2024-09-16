@@ -101,5 +101,12 @@ export interface ExerciciErrorType {
 export interface ConfigType {
   duracioSessions: number;
   maxAlumnesPerSessio: number;
+  horariEntrenador: HorariType[];
+}
 
+export interface HorariType {
+  ID: number;
+  DiaSetmana: number;
+  Desde: Date;
+  Fins: Date;
 }
