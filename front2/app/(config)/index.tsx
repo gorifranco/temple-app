@@ -4,15 +4,13 @@ import AuthContext, { AuthContextType } from '../AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useThemeStyles } from '@/themes/theme';
 import TextInput from '@/components/inputs/TextInput';
-import { ConfigType } from '@/types/apiTypes';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 
 export default function Index() {
     const themeStyles = useThemeStyles();
     const authContext = useContext<AuthContextType | undefined>(AuthContext);
-    const [config, setConfig] = useState<ConfigType>({
-        duracioSessions: 60,
-        maxAlumnesPerSessio: 1
-    });
+    const config = useSelector((state: RootState) => state.config);
     const [errors, setErrors] = useState({
         duracioSessions: "",
         maxAlumnesPerSessio: ""

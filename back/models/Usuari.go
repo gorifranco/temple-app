@@ -21,6 +21,8 @@ type Usuari struct {
 	Entrenador               *Usuari                   `gorm:"foreignKey:EntrenadorID"`
 	Alumnes                  []Usuari                  `gorm:"foreignKey:EntrenadorID"`
 	SolicitudsUnioEntrenador []SolicitudUnioEntrenador `gorm:"foreignKey:EntrenadorID"`
+	ConfiguracioEntrenador   ConfiguracioEntrenador    `gorm:"foreignKey:EntrenadorID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
+	HorarisEntrenador        []HorarisEntrenador       `gorm:"foreignKey:EntrenadorID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"`
 }
 
 func (Usuari) TableName() string {
@@ -34,5 +36,5 @@ type UsuariInput struct {
 }
 
 type UsuariFicticiInput struct {
-	Nom                      string
+	Nom string
 }

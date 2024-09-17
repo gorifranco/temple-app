@@ -6,8 +6,7 @@ import (
 
 type ConfiguracioEntrenador struct {
 	gorm.Model
-	EntrenadorID        uint   `gorm:"primaryKey"`
-	Usuari              Usuari `gorm:"foreignKey:EntrenadorID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	EntrenadorID        uint
 	DuracioSessions     uint   `gorm:"not null;default:60"`
 	MaxAlumnesPerSessio uint   `gorm:"not null;default:0"`
 }

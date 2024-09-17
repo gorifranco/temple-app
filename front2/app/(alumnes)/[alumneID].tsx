@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/store'
 import BackButton from '@/components/BackButton';
 import { updateAlumne, deleteAlumnne } from '../../store/alumnesSlice';
-import { Calendar } from 'react-native-calendars';
+import { Calendar, DateData } from 'react-native-calendars';
 import ModalConfirmacio from '@/components/modals/ModalConfirmacio';
 import Toast from 'react-native-toast-message';
 import ViewRutina from '@/components/viewers/ViewRutina';
@@ -19,24 +19,26 @@ import { useThemeStyles } from '@/themes/theme';
 export default function AlumneScreen() {
     const themeStyles = useThemeStyles()
     const [modalVisible, setModalVisible] = useState(false)
-    // const [modalRutinaVisible, setModalRutinaVisible] = useState(false)
     const [assignarRutinaID, setAssignarRutinaID] = useState<number | null>(null)
     const [autocompleteRutinaError, setAutocompleteRutinaError] = useState("")
     const { alumneID } = useLocalSearchParams();
-    const [selectedDay, setSelectedDay] = useState('');
+    const [selectedDay, setSelectedDay] = useState<DateData>();
     const api = useAxios();
     const dispatch = useDispatch();
-    const [selectedTime, setSelectedTime] = useState<Date>(new Date())
+    const [modalReservarVisible, setModalReservarVisible] = useState(false)
 
     const alumne = useSelector((state: RootState) => state.alumnes[Number(alumneID)]);
 
     useEffect(() => {
-        /*         fetchApi(); */
     }, [dispatch, alumneID]);
 
-    function handleDayPress(day: { dateString: React.SetStateAction<string>; }) {
-        setSelectedDay(day.dateString);
+    function handleDayPress(day: DateData) {
+        setSelectedDay(day);
     }
+
+    const formatDate = (date:Date) => {
+        return date.toISOString().split('T')[0];
+      };
 
     async function fetchApi() {
         const response = await api.get(`entrenador/alumnes/${alumneID}`);
@@ -136,20 +138,19 @@ export default function AlumneScreen() {
                 <Text style={themeStyles.titol1}>{alumne.Nom}</Text>
                 <Calendar
                     firstDay={1}
-                    onDayPress={handleDayPress}
-                    markedDates={{
-                        [selectedDay]: { selected: true, marked: true, selectedColor: 'blue' }
+                    onDayPress={(day: DateData) => handleDayPress(day)}
+                    markedDates={
+                        selectedDay && {
+                        [selectedDay.dateString]: { selected: true, marked: true, selectedColor: 'blue' }
                     }}
                 />
 
-                <View style={{height: "auto"}}>
-                    <RNDateTimePicker
-                        mode='time'
-                        display="spinner"
-                        is24Hour={true}
-                        value={selectedTime}
-                        onChange={(e) => console.log(e)} />
-                </View>
+                {selectedDay && selectedDay.dateString >= formatDate(new Date()) && <View>
+                    <Pressable style={themeStyles.button1} onPress={() => {
+                    }}>
+                        <Text style={themeStyles.button1Text}>Reservar</Text>
+                    </Pressable>
+                </View>}
 
 
                 {/* Entrenos */}
@@ -191,10 +192,6 @@ export default function AlumneScreen() {
                     modalVisible={modalVisible}
                     closeModal={() => setModalVisible(false)}
                     confirmar={expulsarUsuari} />
-                {/* <ModalRutines
-                    modalVisible={modalRutinaVisible}
-                    closeModal={() => setModalRutinaVisible(false)}
-                /> */}
             </ScrollView>
         </AutocompleteDropdownContextProvider>
     )

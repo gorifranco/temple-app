@@ -57,6 +57,7 @@ export default function Index() {
         const response = await api.get(`/entrenador/alumnes`);
         if (response.status === 200) {
             const fetchedAlumnes = response.data.data;
+            if (fetchedAlumnes && fetchedAlumnes.length > 0) {
             let alumnesArray: AlumneType[] = [];
             fetchedAlumnes.forEach((alumne:any) => {
                 alumnesArray.push({
@@ -66,8 +67,7 @@ export default function Index() {
                     Reserves: alumne.Reserves,
                     RutinaAssignada: alumne.RutinaActual
                 })
-            });
-
+            })}
             dispatch(updateAlumnes({ data: alumnesArray }));
         }
     }

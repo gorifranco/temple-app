@@ -7,8 +7,7 @@ import (
 
 type HorarisEntrenador struct {
 	gorm.Model
-	EntrenadorID uint      `gorm:"primaryKey"`
-	Usuari       Usuari    `gorm:"foreignKey:EntrenadorID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	EntrenadorID uint
 	DiaSetmana   int       `gorm:"not null;check:dia_setmana >= 0 AND dia_setmana <= 6"`
 	Desde        time.Time `gorm:"not null"`
 	Fins         time.Time `gorm:"not null"`
