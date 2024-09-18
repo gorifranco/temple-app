@@ -7,6 +7,7 @@ import alumnesReducer from './alumnesSlice';
 import reservesReducer from './reservesSlice';
 import salesReducer from './salesSlice';
 import rutinesReducer from './rutinesSlice';
+import configReducer from './configSlice';
 
 // Configuración de persistencia
 const persistConfig = {
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
   reserves: reservesReducer,
   sales: salesReducer,
   rutines: rutinesReducer,
+  config: configReducer,
 });
 
 // Aplica persistencia a los reducers

@@ -48,6 +48,12 @@ export interface RutinaState {
   [id: number]: RutinaType;
 }
 
+export interface ConfigState {
+  duracioSessions: number;
+  maxAlumnesPerSessio: number;
+  horariEntrenador: HorariType[];
+}
+
 export interface AlumneType {
   ID: number;
   Nom: string;
