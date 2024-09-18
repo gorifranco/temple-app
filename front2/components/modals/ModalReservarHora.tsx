@@ -1,6 +1,8 @@
 import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker'
 import React, { useState } from 'react'
-import { View, Text, Modal } from 'react-native'
+import { View, Text, Modal, Pressable } from 'react-native'
+import { useThemeStyles } from '@/themes/theme'
+import CloseButton from '@/components/buttons/CloseButton'
 
 interface propsType {
     modalVisible: boolean
@@ -9,11 +11,12 @@ interface propsType {
 }
 
 export default function ModalReservarHora(props: propsType) {
+    const themeStyles = useThemeStyles()
     const { modalVisible, closeModal, onSubmit } = props
     const [selectedTime, setSelectedTime] = useState<Date>(new Date())
 
     function handleSubmit() {
-
+        onSubmit(selectedTime)
     }
 
     return (
@@ -24,17 +27,22 @@ export default function ModalReservarHora(props: propsType) {
             onRequestClose={() => {
                 closeModal()
             }}>
-
-                <RNDateTimePicker
+            <CloseButton onPress={() => closeModal()} />
+            <RNDateTimePicker
                 mode='time'
                 display="spinner"
                 is24Hour={true}
                 value={selectedTime}
-                onChange={(e:DateTimePickerEvent, time:Date|undefined) => {
+                minuteInterval={30}
+                onChange={(e: DateTimePickerEvent, time: Date | undefined) => {
                     time && setSelectedTime(time)
                 }} />
-        
-            <Text>Reservar hora</Text>
+
+            <Pressable style={themeStyles.button1} onPress={() => {
+                handleSubmit()
+            }}>
+                <Text style={themeStyles.button1Text}>Reservar</Text>
+            </Pressable>
         </Modal>
     )
 }

@@ -13,11 +13,11 @@ type Reserva struct {
 	Confirmada   bool
 }
 
-
 func (Reserva) TableName() string {
 	return "reserves"
 }
 
 type ReservaInput struct {
-	Hora time.Time `json:"hora"`
+	Hora   time.Time `json:"hora"`
+	Usuari *uint      `json:"usuari"`
 }

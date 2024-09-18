@@ -13,8 +13,8 @@ import Toast from 'react-native-toast-message';
 import ViewRutina from '@/components/viewers/ViewRutina';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown'
 import AutocompleteRutines from '@/components/inputs/selects/AutocompleteRutines';
-import RNDateTimePicker from '@react-native-community/datetimepicker';
 import { useThemeStyles } from '@/themes/theme';
+import ModalReservarHora from '@/components/modals/ModalReservarHora';
 
 export default function AlumneScreen() {
     const themeStyles = useThemeStyles()
@@ -36,9 +36,13 @@ export default function AlumneScreen() {
         setSelectedDay(day);
     }
 
-    const formatDate = (date:Date) => {
+    function formatDate(date: Date) {
         return date.toISOString().split('T')[0];
-      };
+    };
+
+    function reservar() {
+        const response = await api.post(`/reserves`, { hora: selectedTime })
+    }
 
     async function fetchApi() {
         const response = await api.get(`entrenador/alumnes/${alumneID}`);
@@ -141,13 +145,12 @@ export default function AlumneScreen() {
                     onDayPress={(day: DateData) => handleDayPress(day)}
                     markedDates={
                         selectedDay && {
-                        [selectedDay.dateString]: { selected: true, marked: true, selectedColor: 'blue' }
-                    }}
+                            [selectedDay.dateString]: { selected: true, marked: true, selectedColor: 'blue' }
+                        }}
                 />
 
                 {selectedDay && selectedDay.dateString >= formatDate(new Date()) && <View>
-                    <Pressable style={themeStyles.button1} onPress={() => {
-                    }}>
+                    <Pressable style={themeStyles.button1} onPress={() => setModalReservarVisible(true)}>
                         <Text style={themeStyles.button1Text}>Reservar</Text>
                     </Pressable>
                 </View>}
@@ -192,6 +195,12 @@ export default function AlumneScreen() {
                     modalVisible={modalVisible}
                     closeModal={() => setModalVisible(false)}
                     confirmar={expulsarUsuari} />
+
+                <ModalReservarHora
+                    modalVisible={modalReservarVisible}
+                    closeModal={() => setModalReservarVisible(false)}
+                    onSubmit={(time: string) => console.log("aqui")} />
+
             </ScrollView>
         </AutocompleteDropdownContextProvider>
     )

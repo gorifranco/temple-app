@@ -28,19 +28,42 @@ func (h *Handler) FindReserva(c *gin.Context) {
 
 func (h *Handler) CreateReserva(c *gin.Context) {
 	var input models.ReservaInput
-	if err := c.ShouldBindJSON(&input); err != nil {
+	var usuari models.Usuari
+	var entrenador models.Usuari
+	var err error
+
+	if err = c.ShouldBindJSON(&input); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	reserva := models.Reserva{Hora: input.Hora}
+	if input.Usuari != nil {
+		if err = h.DB.Where("id = ?", input.Usuari).First(&usuari).Error; err != nil {
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
 
-	h.DB.Create(&reserva)
+		if c.MustGet("id").(uint) == *usuari.EntrenadorID {
 
-	var createdReserva models.Reserva
-	h.DB.Preload("Usuari").First(&createdReserva, reserva.ID)
+			reserva := models.Reserva{Hora: input.Hora, UsuariID: *input.Usuari}
 
-	c.JSON(http.StatusOK, gin.H{"data": createdReserva})
+			h.DB.Create(&reserva)
+			c.JSON(http.StatusOK, gin.H{"data": "success"})
+			return
+		}
+	}
+
+	//select count(*) from reserves where usuari_id = ? and hora = ?; -->Total de reserves per aquella hora
+	//select max_alumnes_per_sessio from configuracio_entrenador where entrenador_id = ?; --> Max alumnes per sessió
+
+	err = h.DB.Where("id = ?", c.MustGet("id").(uint)).Preload("Entrenador.HorarisEntrenador").Preload("Entrenador.ConfiguracioEntrenador").First(&entrenador).Error
+	if err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	
+
 }
 
 func (h *Handler) UpdateReserva(c *gin.Context) {

@@ -6,6 +6,7 @@ import { nameValidator } from '@/helpers/nameValidator'
 import AuthContext, { AuthContextType } from '@/app/AuthContext'
 import { Redirect } from 'expo-router';
 import { useThemeStyles } from '@/themes/theme'
+import CloseButton from '../buttons/CloseButton'
 
 interface propsType {
     modalVisible: boolean
@@ -57,14 +58,7 @@ export default function ModalAfegirUsuari(props: propsType) {
             onRequestClose={() => {
                 closeModal()
             }}>
-            <View style={styles.closeButton}>
-                <Pressable
-                    onPress={() => {
-                        closeModal()
-                    }}>
-                    <AntDesign name="close" size={24} color="black" />
-                </Pressable>
-            </View>
+            <CloseButton onPress={() => closeModal()} />
 
             {!crearFictici ? (
                 <View>
@@ -113,16 +107,3 @@ export default function ModalAfegirUsuari(props: propsType) {
     )
 }
 
-
-const styles = StyleSheet.create({
-    closeButton: {
-        position: 'absolute',
-        top: 25,
-        left: 25,
-        width: 50,
-        height: 50,
-        zIndex: 100,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-});
