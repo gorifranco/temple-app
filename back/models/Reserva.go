@@ -19,5 +19,5 @@ func (Reserva) TableName() string {
 
 type ReservaInput struct {
 	Hora   time.Time `json:"hora"`
-	Usuari *uint      `json:"usuari"`
+	UsuariID *uint      `json:"usuariID"`
 }

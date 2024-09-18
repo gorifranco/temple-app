@@ -95,10 +95,18 @@ func InsertData() error {
 		Password:      cpass,
 	}
 
+	configEntrenador := models.ConfiguracioEntrenador{
+		DuracioSessions:     60,
+		MaxAlumnesPerSessio: 4,
+		EntrenadorID: 3,
+	}
+
 
 	db.Create(&adminUser)
 	db.Create(&basicUser)
 	db.Create(&entrenadorUser)
+
+	db.Create(&configEntrenador)
 
 	db.Create(&models.Exercici{Nom: "Press de banca"})
 	db.Create(&models.Exercici{Nom: "Sentadilla"})

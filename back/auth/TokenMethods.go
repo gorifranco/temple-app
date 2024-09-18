@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -40,7 +41,10 @@ func UserAuthMiddleware(tipusAdmesos []string) gin.HandlerFunc {
 			return
 		}
 
+
 		if(len(tipusAdmesos) == 0){
+			fmt.Println("UserAuthMiddleware")
+			fmt.Println(GetUsuari(c))
 			c.Set("id", GetUsuari(c))
 			c.Next()
 			return

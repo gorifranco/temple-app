@@ -52,7 +52,7 @@ func Routing() *gin.Engine {
 		solicituds.POST("/:id/declinar", handler.DeclinarSolicitudUnioEntrenador)
 	}
 
-	router.POST("reservar", handler.CreateReserva, auth.UserAuthMiddleware([]string{}))
+	router.POST("/api/reserves", auth.UserAuthMiddleware([]string{}), handler.CreateReserva)
 
 	entrenador := router.Group("/api/entrenador", auth.UserAuthMiddleware([]string{"Entrenador"}))
 	{

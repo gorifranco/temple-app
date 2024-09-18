@@ -26,6 +26,10 @@ export default function AlumneScreen() {
     const api = useAxios();
     const dispatch = useDispatch();
     const [modalReservarVisible, setModalReservarVisible] = useState(false)
+    const [errors, setErrorts] = useState({
+        Hora: "",
+        Dia: "",
+    })
 
     const alumne = useSelector((state: RootState) => state.alumnes[Number(alumneID)]);
 
@@ -40,8 +44,30 @@ export default function AlumneScreen() {
         return date.toISOString().split('T')[0];
     };
 
-    function reservar() {
-        const response = await api.post(`/reserves`, { hora: selectedTime })
+    async function reservar(hora: Date) {
+        if (!selectedDay) {
+            setErrorts({ ...errors, Dia: "Selecciona un dia" });
+            return;
+        }
+        hora.setMonth(hora.getMonth());
+        hora.setFullYear(hora.getFullYear());
+        hora.setDate(hora.getDate());
+        console.log(hora)
+        const response = await api.post(`/reserves`, { hora: hora, usuariID: alumne.ID })
+
+        if (response.status === 200) {
+            Toast.show({
+                type: 'success',
+                text1: 'Reserva creada',
+                position: 'top',
+            });
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: 'Error creant la reserva',
+                position: 'top',
+            });
+        }
     }
 
     async function fetchApi() {
@@ -199,7 +225,7 @@ export default function AlumneScreen() {
                 <ModalReservarHora
                     modalVisible={modalReservarVisible}
                     closeModal={() => setModalReservarVisible(false)}
-                    onSubmit={(time: string) => console.log("aqui")} />
+                    onSubmit={(time: Date) => reservar(time)} />
 
             </ScrollView>
         </AutocompleteDropdownContextProvider>
