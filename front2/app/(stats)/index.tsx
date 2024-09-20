@@ -13,13 +13,13 @@ export default function Index() {
     const [exerciciSeleccionat, setExerciciSeleccionat] = React.useState<number>(1);
 
     async function fetchStatsAPI() {
-    const response = await api.get(`/stats/exercicis/${exerciciSeleccionat}`);
-    if (response.status === 200) {
-        console.log("okey")
-    } else {
-        console.log("Error")
+        const response = await api.get(`/stats/exercicis/${exerciciSeleccionat}`);
+        if (response.status === 200) {
+            console.log("okey")
+        } else {
+            console.log("Error")
+        }
     }
-}
 
 
     return (
@@ -28,7 +28,9 @@ export default function Index() {
                 <Text style={themeStyles.titol1}>Estadístiques</Text>
 
                 <View style={{ width: "80%", marginBottom: 10, marginHorizontal: "auto" }}>
-                    <AutocompleteExercicis onSubmit={(id: number) => setExerciciSeleccionat(id)} />
+                    <AutocompleteExercicis
+                        onSubmit={(id: number) => setExerciciSeleccionat(id)} 
+                        selectedValue={exerciciSeleccionat} />
                 </View>
 
                 <View style={{ margin: "auto" }}>

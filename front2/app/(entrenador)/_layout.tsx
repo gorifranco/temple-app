@@ -39,14 +39,14 @@ export default function EntrenadorLayout({ children }: { children: React.ReactNo
           options={{
             title: 'Home',
             tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+              <TabBarIcon name={focused ? 'home' : 'home-outline'} color={"gray"} />
             ),
           }}
         />
         <Tabs.Screen name="Stats" component={StatsScreen} options={{
           title: 'Stats',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'bar-chart' : 'bar-chart-outline'} color={color} />
+            <TabBarIcon name={focused ? 'bar-chart' : 'bar-chart-outline'} color={"gray"} />
           ),
         }} />
         <Tabs.Screen
@@ -55,7 +55,7 @@ export default function EntrenadorLayout({ children }: { children: React.ReactNo
           options={{
             title: 'Config',
             tabBarIcon: ({ color, focused }) => (
-              <TabBarIcon name={focused ? 'settings' : 'settings-outline'} color={color} />
+              <TabBarIcon name={focused ? 'settings' : 'settings-outline'} color={"gray"} />
             ),
           }}
         />

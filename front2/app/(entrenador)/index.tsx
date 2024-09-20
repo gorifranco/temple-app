@@ -11,8 +11,9 @@ import { setReserves, updateReserves } from '@/store/reservesSlice';
 import ViewRutina from '@/components/viewers/ViewRutina';
 import { updateRutines } from '@/store/rutinesSlice';
 import { ScrollView } from 'react-native-gesture-handler';
-import { RutinaType, ReservaType, AlumneType } from '@/types/apiTypes';
+import { RutinaType, ReservaType, AlumneType, ExerciciType } from '@/types/apiTypes';
 import { useThemeStyles } from '@/themes/theme';
+import { setExercicis } from '@/store/exercicisSlice';
 
 export default function Index() {
     const themeStyles = useThemeStyles();
@@ -30,7 +31,8 @@ export default function Index() {
         if (rutinesArray.length === 0) {
             fetchRutinesAPI()
         }
-            fetchAlumnesAPI()
+        fetchApiExercicis()
+        fetchAlumnesAPI()
         fetchReservesAPI()
     }, [dispatch]);
 
@@ -42,6 +44,13 @@ export default function Index() {
         }
     }
 
+    async function fetchApiExercicis() {
+        const response = await api.get(`exercicis`);
+        if (response.status === 200) {
+            const fetchedExercicis: ExerciciType[] = response.data.data;
+            dispatch(setExercicis(fetchedExercicis));
+        }
+    }
 
     async function fetchReservesAPI() {
         const response = await api.get(`/entrenador/reserves`);
@@ -58,16 +67,17 @@ export default function Index() {
         if (response.status === 200) {
             const fetchedAlumnes = response.data.data;
             if (fetchedAlumnes && fetchedAlumnes.length > 0) {
-            let alumnesArray: AlumneType[] = [];
-            fetchedAlumnes.forEach((alumne:any) => {
-                alumnesArray.push({
-                    ID: alumne.ID,
-                    Nom: alumne.Nom,
-                    Entrenos: alumne.Entrenos,
-                    Reserves: alumne.Reserves,
-                    RutinaAssignada: alumne.RutinaActual
+                let alumnesArray: AlumneType[] = [];
+                fetchedAlumnes.forEach((alumne: any) => {
+                    alumnesArray.push({
+                        ID: alumne.ID,
+                        Nom: alumne.Nom,
+                        Entrenos: alumne.Entrenos,
+                        Reserves: alumne.Reserves,
+                        RutinaAssignada: alumne.RutinaActual
+                    })
                 })
-            })}
+            }
             dispatch(updateAlumnes({ data: alumnesArray }));
         }
     }

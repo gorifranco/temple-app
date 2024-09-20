@@ -37,19 +37,6 @@ export default function CrearRutina() {
         Cicles: "",
     })
 
-
-    useEffect(() => {
-        fetchApiExercicis();
-    }, [dispatch]);
-
-    async function fetchApiExercicis() {
-        const response = await api.get(`exercicis`);
-        if (response.status === 200) {
-            const fetchedExercicis: ExerciciType[] = response.data.data;
-            dispatch(setExercicis(fetchedExercicis));
-        }
-    }
-
     async function guardarRutina() {
         let exercicisEnviats = exercicisElegits.filter((exercici) => exercici.DiaRutina <= dies)
 
@@ -174,7 +161,6 @@ export default function CrearRutina() {
                                                 setExercicisElegits(updatedExercicisElegits);
                                             }}
                                             selectedValue={exercici.Nom}
-                                            setSelectedValue={(text: string) => console.log(text)}
                                         />
                                         {errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.ExerciciID !== "" ? (
                                             <Text style={themeStyles.textInputError}>* {errorsExercicis.get(i)!.ExerciciID}</Text>

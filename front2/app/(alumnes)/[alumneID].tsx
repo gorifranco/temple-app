@@ -14,7 +14,7 @@ import ViewRutina from '@/components/viewers/ViewRutina';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown'
 import AutocompleteRutines from '@/components/inputs/selects/AutocompleteRutines';
 import { useThemeStyles } from '@/themes/theme';
-import ModalReservarHora from '@/components/modals/ModalReservarHora';
+import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker'
 
 export default function AlumneScreen() {
     const themeStyles = useThemeStyles()
@@ -23,6 +23,7 @@ export default function AlumneScreen() {
     const [autocompleteRutinaError, setAutocompleteRutinaError] = useState("")
     const { alumneID } = useLocalSearchParams();
     const [selectedDay, setSelectedDay] = useState<DateData>();
+    const [selectedTime, setSelectedTime] = useState<Date>(new Date())
     const api = useAxios();
     const dispatch = useDispatch();
     const [modalReservarVisible, setModalReservarVisible] = useState(false)
@@ -45,6 +46,7 @@ export default function AlumneScreen() {
     };
 
     async function reservar(hora: Date) {
+        console.log(hora)
         if (!selectedDay) {
             setErrorts({ ...errors, Dia: "Selecciona un dia" });
             return;
@@ -53,21 +55,21 @@ export default function AlumneScreen() {
         hora.setFullYear(hora.getFullYear());
         hora.setDate(hora.getDate());
         console.log(hora)
-        const response = await api.post(`/reserves`, { hora: hora, usuariID: alumne.ID })
-
-        if (response.status === 200) {
-            Toast.show({
-                type: 'success',
-                text1: 'Reserva creada',
-                position: 'top',
-            });
-        } else {
-            Toast.show({
-                type: 'error',
-                text1: 'Error creant la reserva',
-                position: 'top',
-            });
-        }
+        /*         const response = await api.post(`/reserves`, { hora: hora, usuariID: alumne.ID })
+        
+                if (response.status === 200) {
+                    Toast.show({
+                        type: 'success',
+                        text1: 'Reserva creada',
+                        position: 'top',
+                    });
+                } else {
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Error creant la reserva',
+                        position: 'top',
+                    });
+                } */
     }
 
     async function fetchApi() {
@@ -176,10 +178,29 @@ export default function AlumneScreen() {
                 />
 
                 {selectedDay && selectedDay.dateString >= formatDate(new Date()) && <View>
-                    <Pressable style={themeStyles.button1} onPress={() => setModalReservarVisible(true)}>
+                    <Pressable style={themeStyles.button1} onPress={() => {
+                        setModalReservarVisible(true)
+                        setSelectedTime(new Date(selectedDay.timestamp))
+                    }}>
                         <Text style={themeStyles.button1Text}>Reservar</Text>
                     </Pressable>
                 </View>}
+
+                {modalReservarVisible && selectedDay && < RNDateTimePicker
+                    mode='time'
+                    display="spinner"
+                    is24Hour={true}
+                    value={new Date(selectedDay.timestamp)}
+                    minuteInterval={30}
+                    positiveButton={{ label: 'Reservar', textColor: 'white' }}
+                    negativeButton={{ label: 'Cancelar', textColor: 'white' }}
+                    onChange={(e: DateTimePickerEvent, time: Date | undefined) => {
+                        if (time && e.type == "set") {
+                            reservar(new Date(e.nativeEvent.timestamp))
+                        }
+                        e.nativeEvent && setModalReservarVisible(false)
+                    }} />
+                }
 
 
                 {/* Entrenos */}
@@ -222,10 +243,10 @@ export default function AlumneScreen() {
                     closeModal={() => setModalVisible(false)}
                     confirmar={expulsarUsuari} />
 
-                <ModalReservarHora
+                {/*                 <ModalReservarHora
                     modalVisible={modalReservarVisible}
                     closeModal={() => setModalReservarVisible(false)}
-                    onSubmit={(time: Date) => reservar(time)} />
+                    onSubmit={(time: Date) => reservar(time)} /> */}
 
             </ScrollView>
         </AutocompleteDropdownContextProvider>

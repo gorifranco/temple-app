@@ -5,7 +5,7 @@ import { AuthContextType } from './AuthContext';
 
 // Crear una instancia de Axios
 const api = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: 'http://192.168.217.67:8080/api',
   timeout: 10000, // Tiempo máximo de espera para una petición
 });
 
