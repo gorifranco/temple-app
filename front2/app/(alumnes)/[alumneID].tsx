@@ -5,7 +5,7 @@ import { useAxios } from '../api';
 import { AlumneType } from '@/types/apiTypes'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/store'
-import BackButton from '@/components/BackButton';
+import BackButton from '@/components/buttons/BackButton';
 import { updateAlumne, deleteAlumnne } from '../../store/alumnesSlice';
 import { Calendar, DateData } from 'react-native-calendars';
 import ModalConfirmacio from '@/components/modals/ModalConfirmacio';
@@ -46,30 +46,27 @@ export default function AlumneScreen() {
     };
 
     async function reservar(hora: Date) {
+        console.log("aqui")
         console.log(hora)
         if (!selectedDay) {
             setErrorts({ ...errors, Dia: "Selecciona un dia" });
             return;
         }
-        hora.setMonth(hora.getMonth());
-        hora.setFullYear(hora.getFullYear());
-        hora.setDate(hora.getDate());
-        console.log(hora)
-        /*         const response = await api.post(`/reserves`, { hora: hora, usuariID: alumne.ID })
-        
-                if (response.status === 200) {
-                    Toast.show({
-                        type: 'success',
-                        text1: 'Reserva creada',
-                        position: 'top',
-                    });
-                } else {
-                    Toast.show({
-                        type: 'error',
-                        text1: 'Error creant la reserva',
-                        position: 'top',
-                    });
-                } */
+        const response = await api.post(`/reserves`, { hora: hora, usuariID: alumne.ID })
+        console.log(response)
+        if (response.status === 200) {
+            Toast.show({
+                type: 'success',
+                text1: 'Reserva creada',
+                position: 'top',
+            });
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: 'Error creant la reserva',
+                position: 'top',
+            });
+        }
     }
 
     async function fetchApi() {
@@ -231,7 +228,7 @@ export default function AlumneScreen() {
                 )}
 
 
-                <Pressable style={[themeStyles.buttonDanger, { marginBottom: 30 }]} onPress={() => {
+                <Pressable style={[themeStyles.buttonDanger, { marginBottom: 70 }]} onPress={() => {
                     setModalVisible(true)
                 }}>
                     <Text style={themeStyles.button1Text}>Expulsar</Text>

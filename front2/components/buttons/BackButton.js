@@ -2,9 +2,12 @@ import React, { useState } from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { router } from 'expo-router';
 import { Pressable } from 'react-native';
+import { useAppTheme } from '@/themes/theme';
+import AntDesign from '@expo/vector-icons/AntDesign';
 
 export default function BackButton({ href }) {
   const [isPressed, setIsPressed] = useState(false);
+  const theme = useAppTheme();
 
   return (
     <View style={styles.divContainer}>
@@ -21,10 +24,7 @@ export default function BackButton({ href }) {
           styles.image,
         ]}
       >
-        <Image
-          style={[styles.image, isPressed && styles.imagePressed]}
-          source={require('../assets/images/arrow_back.png')}
-        />
+        <AntDesign name="arrowleft" size={24} color={theme.colors.text} />
       </Pressable>
     </View>
   );

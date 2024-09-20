@@ -1,5 +1,6 @@
 import { View, Pressable, StyleSheet } from 'react-native'
 import { AntDesign } from '@expo/vector-icons'
+import { useAppTheme } from '@/themes/theme'
 
 
 interface propsType {
@@ -8,6 +9,7 @@ interface propsType {
 
 export default function CloseButton(props: propsType) {
     const { onPress } = props
+    const themeStyles = useAppTheme()
 
     return (
         <View style={styles.closeButton}>
@@ -15,7 +17,7 @@ export default function CloseButton(props: propsType) {
                 onPress={() => {
                     onPress()
                 }}>
-                <AntDesign name="close" size={24} color="black" />
+                <AntDesign name="close" size={24} color={themeStyles.colors.text} />
             </Pressable>
         </View>
     )

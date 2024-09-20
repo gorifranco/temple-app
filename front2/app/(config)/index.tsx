@@ -1,4 +1,4 @@
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, ScrollView } from 'react-native';
 import React, { useContext, useState } from 'react';
 import AuthContext, { AuthContextType } from '../AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -6,6 +6,8 @@ import { useThemeStyles } from '@/themes/theme';
 import TextInput from '@/components/inputs/TextInput';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
+import { persistor } from '../../store';
+
 
 export default function Index() {
     const themeStyles = useThemeStyles();
@@ -21,9 +23,15 @@ export default function Index() {
     }
     const { logout } = authContext;
 
-    function borrarStorage() {
-        AsyncStorage.clear();
-        console.log("assync storage borrat")
+    async function borrarStorage() {
+        try {
+            await AsyncStorage.clear();
+            console.log("AsyncStorage borrado");
+            persistor.purge();
+            console.log("persistor borrat");
+        } catch (e) {
+            console.error("Error borrando AsyncStorage:", e);
+        }
     }
 
     function handleCanviarConfiguracio() {
@@ -31,7 +39,7 @@ export default function Index() {
     }
 
     return (
-        <View>
+        <ScrollView style={themeStyles.background}>
             <Pressable
                 style={themeStyles.button1}
                 onPress={() => logout()}>
@@ -43,7 +51,7 @@ export default function Index() {
                 <Text style={themeStyles.button1Text}>Borrar async storage</Text>
             </Pressable>
 
-            <Text>Horari: </Text>
+            <Text style={themeStyles.text}>Horari: </Text>
             <View style={{width: "80%", marginHorizontal: "auto", marginVertical: 10, marginBottom: 10, display: "flex", flexDirection: "row"}}>
                 <Text style={[themeStyles.text, {marginRight: 10}]}>Duració de les sessions (min)</Text>
                 <TextInput
@@ -82,6 +90,6 @@ export default function Index() {
                 <Text style={themeStyles.button1Text}>Canviar configuració</Text>
             </Pressable>
 
-        </View>
+        </ScrollView>
     );
 }

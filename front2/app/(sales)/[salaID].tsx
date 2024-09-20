@@ -1,22 +1,23 @@
 import { View, Text } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { useLocalSearchParams } from 'expo-router'
-import { themeStyles } from '@/themes/theme'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useAxios } from '../api'
 import { useDispatch, useSelector } from 'react-redux'
 import { setSales, updateSala} from '../../store/salesSlice'
 import { RootState } from '../../store'
 import { SalaType, UsuariType } from '../../types/apiTypes'
-import BackButton from '@/components/BackButton'
+import BackButton from '@/components/buttons/BackButton'
 import { Pressable } from 'react-native'
 import ModalAfegirUsuari from '@/components/modals/ModalAfegirUsuari'
 import { StyleSheet } from 'react-native'
 import Toast from 'react-native-toast-message';
+import { useThemeStyles } from '@/themes/theme'
 
 
 export default function Index() {
     const { salaID } = useLocalSearchParams();
+    const themeStyles = useThemeStyles()
     const api = useAxios();
     const dispatch = useDispatch();
     const [modalVisible, setModalVisible] = useState(false)

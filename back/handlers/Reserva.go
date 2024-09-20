@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"temple-app/models"
 	"time"
@@ -37,13 +36,10 @@ func (h *Handler) CreateReserva(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	fmt.Println(input.UsuariID)
-	fmt.Println(input.Hora)
-
 	// Si se envía el campo Usuari
 	if input.UsuariID != nil {
 		// Comprobar si el usuario existe
-		if err = h.DB.Where("id = ?", input.UsuariID).First(&usuari).Error; err != nil {
+		if err = h.DB.Where("id = ?", *input.UsuariID).First(&usuari).Error; err != nil {
 			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "Usuario no encontrado"})
 			return
 		}
@@ -51,22 +47,17 @@ func (h *Handler) CreateReserva(c *gin.Context) {
 		// Verificar que el usuario es entrenador
 		if c.MustGet("id").(uint) == *usuari.EntrenadorID {
 			// Crear reserva
-			fmt.Println(input.Hora)
 			reserva := models.Reserva{Hora: input.Hora, UsuariID: *input.UsuariID}
 			h.DB.Create(&reserva)
 			c.JSON(http.StatusOK, gin.H{"data": "success"})
 			return
 		}
 	}
-
 	// Buscar el usuario a partir del ID del contexto
 	if err = h.DB.Where("id = ?", c.MustGet("id").(uint)).First(&usuari).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Usuario no encontrado"})
 		return
 	}
-
-	fmt.Println(input.Hora)
-
 	// Comprobar si el número de reservas en esa hora ha alcanzado el máximo
 	query := `
 		SELECT COUNT(*) < (
@@ -89,13 +80,12 @@ func (h *Handler) CreateReserva(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Número máximo de alumnos alcanzado para esta hora"})
 		return
 	}
-
 	// Crear reserva si hay espacio disponible
 	reserva := models.Reserva{
-		Hora:        input.Hora,
-		UsuariID:    *input.UsuariID,
-		EntrenadorID: *usuari.EntrenadorID,
+		Hora:         input.Hora,
+		UsuariID:     *input.UsuariID,
 	}
+
 	if err = h.DB.Create(&reserva).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Error al crear la reserva"})
 		return
@@ -104,7 +94,6 @@ func (h *Handler) CreateReserva(c *gin.Context) {
 	// Respuesta de éxito
 	c.JSON(http.StatusOK, gin.H{"data": "success"})
 }
-
 
 func (h *Handler) UpdateReserva(c *gin.Context) {
 	var reserva models.Reserva

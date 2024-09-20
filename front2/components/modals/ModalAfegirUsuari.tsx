@@ -51,17 +51,18 @@ export default function ModalAfegirUsuari(props: propsType) {
 
     return (
         <Modal
-            style={{ overflow: 'hidden' }}
+            style={{ height: '100%' }}
             animationType="fade"
             transparent={false}
             visible={modalVisible}
             onRequestClose={() => {
                 closeModal()
             }}>
-            <CloseButton onPress={() => closeModal()} />
+            <CloseButton
+                onPress={() => closeModal()} />
 
             {!crearFictici ? (
-                <View>
+                <View style={[themeStyles.background, { height: '100%' }]}>
                     <Text style={themeStyles.titol1}>Afegir alumne</Text>
                     <Text style={themeStyles.text}>Codi d'entrenador: #{user.codiEntrenador}</Text>
                     <Pressable
@@ -83,17 +84,18 @@ export default function ModalAfegirUsuari(props: propsType) {
                     </Pressable>
                 </View>
             ) : (
-                <View>
+                <View style={[themeStyles.background, { height: '100%' }]}>
                     <Text style={themeStyles.titol1}>Crear alumne</Text>
-                    <TextInput
-                        style={themeStyles.inputContainer}
-                        label="Nom"
-                        returnKeyType="next"
-                        value={nom}
-                        onChangeText={(text: string) => setNom(text)}
-                        error={!!errors.nom}
-                        errorText={errors.nom}
-                    />
+                    <View style={{ width: "80%", alignSelf: "center" }}>
+                        <TextInput
+                            label="Nom"
+                            returnKeyType="next"
+                            value={nom}
+                            onChangeText={(text: string) => setNom(text)}
+                            error={!!errors.nom}
+                            errorText={errors.nom}
+                        />
+                    </View>
                     <Pressable
                         onPress={() => {
                             submit()

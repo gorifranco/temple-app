@@ -1,6 +1,6 @@
 import { View, Text, Pressable, StyleSheet, SafeAreaView } from 'react-native';
 import React, { useEffect, useState } from 'react';
-import BackButton from '@/components/BackButton';
+import BackButton from '@/components/buttons/BackButton';
 import { ExerciciRutinaType, ExerciciType } from '@/types/apiTypes';
 import { useAxios } from '@/app/api';
 import { useDispatch } from 'react-redux';

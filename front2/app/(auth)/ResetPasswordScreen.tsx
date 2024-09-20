@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import Background from '@/components/Background'
-import BackButton from '@/components/BackButton'
+import BackButton from '@/components/buttons/BackButton'
 import Logo from '@/components/Logo'
 import Header from '@/components/Header'
 import TextInput from '@/components/inputs/TextInput'
