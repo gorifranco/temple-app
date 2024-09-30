@@ -5,12 +5,12 @@ import { Pressable } from 'react-native';
 import { useAppTheme } from '@/themes/theme';
 import AntDesign from '@expo/vector-icons/AntDesign';
 
-export default function BackButton({ href }) {
+export default function BackButton({ href, styles={} }) {
   const [isPressed, setIsPressed] = useState(false);
   const theme = useAppTheme();
 
   return (
-    <View style={styles.divContainer}>
+    <View style={[constantStyles.divContainer, styles]}>
       <Pressable
         onPressIn={() => setIsPressed(true)}
         onPressOut={() => {
@@ -30,7 +30,7 @@ export default function BackButton({ href }) {
   );
 }
 
-const styles = StyleSheet.create({
+const constantStyles = StyleSheet.create({
   image: {
     width: 24,
     height: 24,

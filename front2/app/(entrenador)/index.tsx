@@ -34,6 +34,7 @@ export default function Index() {
         fetchApiExercicis()
         fetchAlumnesAPI()
         fetchReservesAPI()
+        fetchConfigAPI()
     }, [dispatch]);
 
     async function fetchRutinesAPI() {
@@ -50,6 +51,9 @@ export default function Index() {
             const fetchedExercicis: ExerciciType[] = response.data.data;
             dispatch(setExercicis(fetchedExercicis));
         }
+    }
+
+    async function fetchConfigAPI() {
     }
 
     async function fetchReservesAPI() {

@@ -16,6 +16,8 @@ export default function TextInput({ errorText, ...props }) {
         underlineColor="transparent"
         mode="outlined"
         {...props}
+        multiline={props.multiline}
+        numberOfLines={props.numberOfLines}
       />
       {errorText ? <Text style={themeStyles.textInputError}>{errorText}</Text> : null}
     </View>

@@ -18,7 +18,8 @@ const lightTheme = {
     primary: '#560CCE',
     secondary: '#414757',
     error: '#f13a59',
-    background: '#ffffff'
+    background: '#ffffff',
+    surface: '#f5f5f5',
   },
 };
 
@@ -31,6 +32,7 @@ const darkTheme = {
     secondary: '#414757',
     error: '#cf6679',
     background: '#121212',
+    surface: '#f5f5f5',
   },
 };
 
@@ -124,9 +126,12 @@ export function useThemeStyles() {
       width: '80%',
       marginTop: 12,
       marginBottom: 4,
-      alignItems: 'center',
-      alignSelf: 'center',
       marginHorizontal: "auto",
+      backgroundColor: theme.colors.background,
+      padding: 15,
+      borderRadius: 10,
+      borderWidth: 1,
+      borderColor: "lightgray"
     },
     crearRutinaContainer: {
       display: "flex",

@@ -5,7 +5,7 @@ import { ExerciciRutinaType, ExerciciType } from '@/types/apiTypes';
 import { useAxios } from '@/app/api';
 import { useDispatch } from 'react-redux';
 import { setExercicis } from '@/store/exercicisSlice';
-import { TextInput } from 'react-native-paper';
+import TextInput from '@/components/inputs/TextInput';
 import { ScrollView } from 'react-native-gesture-handler';
 import Entypo from '@expo/vector-icons/Entypo';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown'
@@ -84,20 +84,33 @@ export default function CrearRutina() {
 
     return (
         <AutocompleteDropdownContextProvider>
-            <SafeAreaView style={styles.container}>
-                <BackButton href={"(entrenador)"} />
+            <SafeAreaView style={[themeStyles.background, { height: '100%' }]}>
+                <BackButton href={"(entrenador)"} styles={{ top: 60 }} />
                 <Text style={themeStyles.titol1}>Creador de rutines</Text>
                 <ScrollView>
-                    <TextInput
-                        error={errors.Nom != ""}
-                        label={<Text>Nom de la rutina</Text>}
-                        style={themeStyles.inputContainer}
-                        onChangeText={(text: string) => setNom(text)}
-                        value={nom}
-                    />
-                    {errors.Nom && errors.Nom != "" ? <Text style={themeStyles.textInputError}>* {errors.Nom}</Text> : null}
+                    <View style={{ width: "80%", alignSelf: "center" }}>
+                        <TextInput
+                            label="Nom de la rutina"
+                            error={errors.Nom != ""}
+                            value={nom}
+                            onChangeText={(text: string) => setNom(text)}
+                            errorText={errors.Nom} />
+                        {errors.Nom && errors.Nom != "" ? <Text style={themeStyles.textInputError}>* {errors.Nom}</Text> : null}
+                    </View>
+                    <View style={{ width: "80%", alignSelf: "center" }}>
+                        <TextInput
+                            label="Descripció"
+                            error={errors.Descripcio != ""}
+                            value={descripcio}
+                            onChangeText={(text: string) => setDescripcio(text)}
+                            errorText={errors.Descripcio}
+                            multiline={true}
+                            numberOfLines={4}
+                            maxLength={150} />
+                    </View>
 
-                    <TextInput
+
+                    {/* <TextInput
                         placeholder='Descripció'
                         error={errors.Descripcio != ""}
                         style={[themeStyles.inputContainer, { paddingHorizontal: 0 }]}
@@ -107,13 +120,14 @@ export default function CrearRutina() {
                         maxLength={150}
                         onChangeText={(text: string) => setDescripcio(text)}
                         value={descripcio}
-                    />
+                    /> */}
                     {errors.Descripcio && errors.Descripcio != "" ? <Text style={themeStyles.textInputError}>* {errors.Descripcio}</Text> : null}
 
                     <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginHorizontal: "auto", marginBottom: 10, width: "80%" }}>
                         <View style={{ display: "flex", flexDirection: "column", width: "47%" }}>
                             <TextInput
                                 error={errors.Dies != ""}
+                                errorText={errors.Dies}
                                 label="Dies"
                                 keyboardType="numeric"
                                 style={{ width: "100%" }}
@@ -124,6 +138,7 @@ export default function CrearRutina() {
                         </View>
                         <View style={{ display: "flex", flexDirection: "column", width: "47%" }}>
                             <TextInput
+                                errorText={errors.Cicles}
                                 error={errors.Cicles != ""}
                                 label="Cicles"
                                 style={{ width: "100%" }}
@@ -169,7 +184,7 @@ export default function CrearRutina() {
                                         <View style={{ display: "flex", flexDirection: "row", gap: 25, margin: "auto", marginTop: 6 }}>
                                             <View style={styles.container2}>
                                                 <TextInput
-                                                    error={errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.NumSeries !== ""}
+                                                    errorText={errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.NumSeries}
                                                     label={<Text style={{ fontSize: 12 }}>Series</Text>}
                                                     style={{ width: 65 }}
                                                     keyboardType="numeric"
@@ -189,7 +204,7 @@ export default function CrearRutina() {
 
                                             <View style={styles.container2}>
                                                 <TextInput
-                                                    error={errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.NumRepes !== ""}
+                                                    errorText={errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.NumRepes}
                                                     label={<Text style={{ fontSize: 12 }}>Repes</Text>}
                                                     style={{ width: 65 }}
                                                     keyboardType="numeric"
@@ -210,7 +225,7 @@ export default function CrearRutina() {
 
                                             <View style={styles.container2}>
                                                 <TextInput
-                                                    error={errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.PercentatgeRM !== ""}
+                                                    errorText={errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.PercentatgeRM !== ""}
                                                     label={<Text style={{ fontSize: 12 }}>% RM</Text>}
                                                     keyboardType="numeric"
                                                     style={{ width: 65 }}

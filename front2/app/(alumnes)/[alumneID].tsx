@@ -163,7 +163,7 @@ export default function AlumneScreen() {
     return (
         <AutocompleteDropdownContextProvider>
             <ScrollView style={themeStyles.background}>
-                <BackButton href={"../"} />
+                <BackButton href={"../"}/>
                 <Text style={themeStyles.titol1}>{alumne.Nom}</Text>
                 <Calendar
                     firstDay={1}
