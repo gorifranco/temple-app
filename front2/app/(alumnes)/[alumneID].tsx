@@ -157,7 +157,7 @@ export default function AlumneScreen() {
     }
 
     if (!alumne) {
-        return (<View>Carregant alumne</View>)
+        return (<View><Text>Carregant alumne</Text></View>)
     }
 
     return (
