@@ -14,6 +14,9 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { RutinaType, ReservaType, AlumneType, ExerciciType } from '@/types/apiTypes';
 import { useThemeStyles } from '@/themes/theme';
 import { setExercicis } from '@/store/exercicisSlice';
+import { useContext } from 'react';
+import AuthContext, { AuthContextType } from '../AuthContext';
+import { setConfig } from '@/store/configSlice';
 
 export default function Index() {
     const themeStyles = useThemeStyles();
@@ -34,8 +37,8 @@ export default function Index() {
         fetchApiExercicis()
         fetchAlumnesAPI()
         fetchReservesAPI()
-        fetchConfigAPI()
     }, [dispatch]);
+    // fetchConfigAPI()
 
     async function fetchRutinesAPI() {
         const response = await api.get('/rutines/rutinesEntrenador');
@@ -54,6 +57,10 @@ export default function Index() {
     }
 
     async function fetchConfigAPI() {
+        const response = await api.get(`/configuracioEntrenador`);
+        if (response.status == 200) {
+            dispatch(setConfig(response.data.data));
+        }
     }
 
     async function fetchReservesAPI() {
@@ -70,22 +77,18 @@ export default function Index() {
         const response = await api.get(`/entrenador/alumnes`);
         if (response.status === 200) {
             const fetchedAlumnes = response.data.data;
-                let alumnesArray: AlumneType[] = [];
-                fetchedAlumnes.forEach((alumne: any) => {
-                    alumnesArray.push({
-                        ID: alumne.ID,
-                        Nom: alumne.Nom,
-                        Entrenos: alumne.Entrenos,
-                        Reserves: alumne.Reserves,
-                        RutinaAssignada: alumne.RutinaActual
-                    })
+            let alumnesArray: AlumneType[] = [];
+            fetchedAlumnes.forEach((alumne: any) => {
+                alumnesArray.push({
+                    ID: alumne.ID,
+                    Nom: alumne.Nom,
+                    Entrenos: alumne.Entrenos,
+                    Reserves: alumne.Reserves,
+                    RutinaAssignada: alumne.RutinaActual
                 })
-                dispatch(updateAlumnes({ data: alumnesArray }));
-            }
-    }
-
-
-    function compartir() {
+            })
+            dispatch(updateAlumnes({ data: alumnesArray }));
+        }
     }
 
     async function crearUsuariFictici(nom: string) {

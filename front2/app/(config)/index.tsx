@@ -7,6 +7,7 @@ import TextInput from '@/components/inputs/TextInput';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { persistor } from '../../store';
+import { ConfigType } from '@/types/apiTypes';
 
 
 export default function Index() {
@@ -17,6 +18,7 @@ export default function Index() {
         duracioSessions: "",
         maxAlumnesPerSessio: ""
     });
+    const  [configTmp, setConfigTmp] = useState<ConfigType>(config);
 
     console.log(config)
 
@@ -60,8 +62,8 @@ export default function Index() {
                     containerStyle={{width: 68}}
                     inputStyle={{textAlign: "right"}}
                     returnKeyType="done"
-                    value={config.duracioSessions}
-                    onChangeText={(text: string) => setConfig({ ...config, duracioSessions: Number(text.replace(/[^0-9]/g, '')) })}
+                    value={configTmp.duracioSessions}
+                    onChangeText={(text: string) => setConfigTmp({ ...configTmp, duracioSessions: Number(text.replace(/[^0-9]/g, '')) })}
                     error={!!errors.duracioSessions}
                     errorText={errors.duracioSessions}
                     autoCapitalize="none"
@@ -77,8 +79,8 @@ export default function Index() {
                     containerStyle={{width: 68}}
                     inputStyle={{textAlign: "right"}}
                     returnKeyType="done"
-                    value={config.maxAlumnesPerSessio}
-                    onChangeText={(text: string) => setConfig({ ...config, maxAlumnesPerSessio: Number(text.replace(/[^0-9]/g, '')) })}
+                    value={configTmp.maxAlumnesPerSessio}
+                    onChangeText={(text: string) => setConfigTmp({ ...configTmp, maxAlumnesPerSessio: Number(text.replace(/[^0-9]/g, '')) })}
                     error={!!errors.maxAlumnesPerSessio}
                     errorText={errors.maxAlumnesPerSessio}
                     autoCapitalize="none"

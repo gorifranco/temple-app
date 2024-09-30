@@ -10,7 +10,22 @@ import (
 func (h *Handler) FindConfiguracioEntrenador(c *gin.Context) {
 	var configuracio models.ConfiguracioEntrenador
 
-	if err := h.DB.Where("entrenador_id = ?", c.Param("id")).First(&configuracio).Error; err != nil {
+	if c.MustGet("tipusUsuari").(string) == "Entrenador" {
+		if err := h.DB.Where("entrenador_id = ?", c.MustGet("id").(uint)).First(&configuracio).Error; err != nil {
+			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		c.JSON(http.StatusOK, gin.H{"data": configuracio})
+		return
+	}
+
+	var user models.Usuari
+	if err := h.DB.Where("id = ?", c.MustGet("id").(uint)).First(&user).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := h.DB.Where("entrenador_id = ?", user.EntrenadorID).First(&configuracio).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}

@@ -43,6 +43,7 @@ func UserAuthMiddleware(tipusAdmesos []string) gin.HandlerFunc {
 
 		if(len(tipusAdmesos) == 0){
 			c.Set("id", GetUsuari(c))
+			c.Set("tipusUsuari", claims.TipusUsuari)
 			c.Next()
 			return
 		} 
@@ -52,6 +53,7 @@ func UserAuthMiddleware(tipusAdmesos []string) gin.HandlerFunc {
 		}
 
 		c.Set("id", GetUsuari(c))
+		c.Set("tipusUsuari", claims.TipusUsuari)
 		c.Next()
 	}
 }
@@ -120,10 +122,6 @@ func UserTypeValid(c *gin.Context, claims *Claims, tipusAdmesos []string) bool {
 		return false
 	}
 	return true
-}
-
-func UserIsAdmin(c *gin.Context, claims *Claims) bool {
-	return claims.TipusUsuari == "Administrador"
 }
 
 func GetUsuari(c *gin.Context) uint {
