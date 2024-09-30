@@ -69,7 +69,7 @@ func Routing() *gin.Engine {
 	}
 	
 	router.POST("/api/solicitarUnioEntrenador", handler.SolicitarUnioEntrenador, auth.UserAuthMiddleware([]string{}))
-	router.GET("/api/configuracioEntrenador", handler.FindConfiguracioEntrenador)
+	router.GET("/api/configuracioEntrenador", auth.UserAuthMiddleware([]string{}), handler.FindConfiguracioEntrenador)
 
 	exercicis := router.Group("/api/exercicis", auth.UserAuthMiddleware([]string{"Administrador"}))
 	{

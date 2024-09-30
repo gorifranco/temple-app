@@ -20,7 +20,6 @@ export default function Index() {
     });
     const  [configTmp, setConfigTmp] = useState<ConfigType>(config);
 
-    console.log(config)
 
     if (!authContext) {
         throw new Error("AuthProvider is missing. Please wrap your component tree with AuthProvider.");

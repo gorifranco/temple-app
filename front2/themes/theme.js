@@ -55,7 +55,7 @@ export function useThemeStyles() {
     authBackground: {
       flex: 1,
       width: '100%',
-      backgroundColor: theme.colors.surface,
+      backgroundColor: theme.colors.background,
     },
     authContainer: {
       flex: 1,

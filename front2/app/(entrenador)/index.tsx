@@ -38,7 +38,7 @@ export default function Index() {
         fetchAlumnesAPI()
         fetchReservesAPI()
     }, [dispatch]);
-    // fetchConfigAPI()
+    fetchConfigAPI()
 
     async function fetchRutinesAPI() {
         const response = await api.get('/rutines/rutinesEntrenador');
@@ -58,6 +58,7 @@ export default function Index() {
 
     async function fetchConfigAPI() {
         const response = await api.get(`/configuracioEntrenador`);
+        console.log(response)
         if (response.status == 200) {
             dispatch(setConfig(response.data.data));
         }

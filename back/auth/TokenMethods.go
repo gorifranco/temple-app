@@ -40,7 +40,6 @@ func UserAuthMiddleware(tipusAdmesos []string) gin.HandlerFunc {
 			return
 		}
 
-
 		if(len(tipusAdmesos) == 0){
 			c.Set("id", GetUsuari(c))
 			c.Set("tipusUsuari", claims.TipusUsuari)
