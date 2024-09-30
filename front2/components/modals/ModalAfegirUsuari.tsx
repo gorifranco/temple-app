@@ -7,22 +7,24 @@ import AuthContext, { AuthContextType } from '@/app/AuthContext'
 import { Redirect } from 'expo-router';
 import { useThemeStyles } from '@/themes/theme'
 import CloseButton from '../buttons/CloseButton'
+import Share from 'react-native-share';
+import { useAxios } from '@/app/api';
 
 interface propsType {
     modalVisible: boolean
     closeModal: Function
-    compartir: Function
     crearUsuariFictici: Function
 }
 
 export default function ModalAfegirUsuari(props: propsType) {
     const themeStyles = useThemeStyles()
-    const { modalVisible, closeModal, compartir, crearUsuariFictici } = props
+    const { modalVisible, closeModal, crearUsuariFictici } = props
     const [crearFictici, setCrearFictici] = useState(false)
     const [nom, setNom] = useState('')
     const [errors, setErrors] = useState({
         nom: '',
     });
+    const api = useAxios();
     const authContext = useContext<AuthContextType | undefined>(AuthContext);
 
     if (!authContext) {
@@ -33,7 +35,6 @@ export default function ModalAfegirUsuari(props: propsType) {
     if (!user) {
         return <Redirect href="/(auth)" />
     }
-
 
     function submit() {
         const nameError = nameValidator(nom)
@@ -46,6 +47,18 @@ export default function ModalAfegirUsuari(props: propsType) {
         setNom('')
         crearUsuariFictici(nom)
         closeModal()
+    }
+
+
+    async function share() {
+        try {
+            await Share.open({
+                message: 'Unit a l ameva sala amb el codi ${user.codiEntrenador}',
+                url: 'temple-app://unirse/${usuari.CodiEntrenador}',
+            });
+        } catch (error) {
+            console.log(error);
+        }
     }
 
 
@@ -67,7 +80,7 @@ export default function ModalAfegirUsuari(props: propsType) {
                     <Text style={themeStyles.text}>Codi d'entrenador: #{user.codiEntrenador}</Text>
                     <Pressable
                         onPress={() => {
-                            compartir()
+                            share()
                         }}
                         style={themeStyles.button1}>
                         <View style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>

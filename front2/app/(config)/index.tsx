@@ -27,7 +27,7 @@ export default function Index() {
         try {
             await AsyncStorage.clear();
             console.log("AsyncStorage borrado");
-            persistor.purge();
+            await persistor.purge();
             console.log("persistor borrat");
         } catch (e) {
             console.error("Error borrando AsyncStorage:", e);

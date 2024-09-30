@@ -11,10 +11,11 @@ export default function ExerciciLinearGrafic(props: propsType) {
             height={250}
             width={Dimensions.get("window").width * 0.8}
             data={{
-                labels: ["January", "February", "March", "April", "May", "June"],
+                labels: ["Gen", "", "Feb", "Mar", "Abr", "Mai", "Jun"],
                 datasets: [
                     {
                         data: [
+                            Math.random() * 100,
                             Math.random() * 100,
                             Math.random() * 100,
                             Math.random() * 100,

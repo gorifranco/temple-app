@@ -13,6 +13,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { PaperProvider } from 'react-native-paper';
 import { useAppTheme } from '@/themes/theme';
+import { Linking } from 'react-native';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -68,6 +69,24 @@ export default function RootLayout() {
 
     }
   }, [loaded]);
+
+  useEffect(() => {
+    // Listen for deep links
+    const handleDeepLink = (event: { url: string }) => {
+      const url = event.url;
+      const codigoEntrenador = url.split('/').pop();
+    };
+
+    const listener = Linking.addEventListener('url', handleDeepLink);
+
+    Linking.getInitialURL().then((url) => {
+      if (url) handleDeepLink({ url });
+    });
+
+    return () => {
+      listener.remove();
+    };
+  }, []);
 
   if (!loaded) {
     return null;
