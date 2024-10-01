@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
 import { persistor } from '../../store';
 import { ConfigType } from '@/types/apiTypes';
+import HorariConfig from '@/components/viewers/HorariConfig';
 
 
 export default function Index() {
@@ -16,9 +17,12 @@ export default function Index() {
     const config = useSelector((state: RootState) => state.config);
     const [errors, setErrors] = useState({
         duracioSessions: "",
-        maxAlumnesPerSessio: ""
+        maxAlumnesPerSessio: "",
+        horariEntrenador: []
     });
-    const  [configTmp, setConfigTmp] = useState<ConfigType>(config);
+    const [configTmp, setConfigTmp] = useState<ConfigType>(config);
+
+    console.log(configTmp)
 
 
     if (!authContext) {
@@ -53,16 +57,18 @@ export default function Index() {
                 onPress={() => borrarStorage()}>
                 <Text style={themeStyles.button1Text}>Borrar async storage</Text>
             </Pressable>
+            
+            {/* Horari */}
+            <HorariConfig />
 
-            <Text style={themeStyles.text}>Horari: </Text>
-            <View style={{width: "80%", marginHorizontal: "auto", marginVertical: 10, marginBottom: 10, display: "flex", flexDirection: "row"}}>
-                <Text style={[themeStyles.text, {marginRight: 10}]}>Duració de les sessions (min)</Text>
+            <View style={{ width: "80%", marginHorizontal: "auto", marginVertical: 10, marginBottom: 10, display: "flex", flexDirection: "row" }}>
+                <Text style={[themeStyles.text, { marginRight: 10 }]}>Duració de les sessions (min)</Text>
                 <TextInput
-                    containerStyle={{width: 68}}
-                    inputStyle={{textAlign: "right"}}
+                    containerStyle={{ width: 68 }}
+                    inputStyle={{ textAlign: "right" }}
                     returnKeyType="done"
-                    value={configTmp.duracioSessions}
-                    onChangeText={(text: string) => setConfigTmp({ ...configTmp, duracioSessions: Number(text.replace(/[^0-9]/g, '')) })}
+                    value={configTmp.DuracioSessions}
+                    onChangeText={(text: string) => setConfigTmp({ ...configTmp, DuracioSessions: Number(text.replace(/[^0-9]/g, '')) })}
                     error={!!errors.duracioSessions}
                     errorText={errors.duracioSessions}
                     autoCapitalize="none"
@@ -71,15 +77,15 @@ export default function Index() {
                 />
             </View>
 
-            <View style={{width: "80%", marginHorizontal: "auto", marginVertical: 10, marginBottom: 10, display: "flex", flexDirection: "row"}}>
-            <Text style={[themeStyles.text, {marginRight: 10}]}>Alumnes per sessió</Text>
+            <View style={{ width: "80%", marginHorizontal: "auto", marginVertical: 10, marginBottom: 10, display: "flex", flexDirection: "row" }}>
+                <Text style={[themeStyles.text, { marginRight: 10 }]}>Alumnes per sessió</Text>
                 <TextInput
                     maxLength={3}
-                    containerStyle={{width: 68}}
-                    inputStyle={{textAlign: "right"}}
+                    containerStyle={{ width: 68 }}
+                    inputStyle={{ textAlign: "right" }}
                     returnKeyType="done"
-                    value={configTmp.maxAlumnesPerSessio}
-                    onChangeText={(text: string) => setConfigTmp({ ...configTmp, maxAlumnesPerSessio: Number(text.replace(/[^0-9]/g, '')) })}
+                    value={configTmp.MaxAlumnesPerSessio}
+                    onChangeText={(text: string) => setConfigTmp({ ...configTmp, MaxAlumnesPerSessio: Number(text.replace(/[^0-9]/g, '')) })}
                     error={!!errors.maxAlumnesPerSessio}
                     errorText={errors.maxAlumnesPerSessio}
                     autoCapitalize="none"
@@ -88,11 +94,10 @@ export default function Index() {
             </View>
 
             <Pressable
-                style={themeStyles.button1}
+                style={[themeStyles.button1, { marginBottom: 25 }]}
                 onPress={() => handleCanviarConfiguracio()}>
                 <Text style={themeStyles.button1Text}>Canviar configuració</Text>
             </Pressable>
-
         </ScrollView>
     );
 }

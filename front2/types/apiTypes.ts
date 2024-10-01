@@ -49,9 +49,9 @@ export interface RutinaState {
 }
 
 export interface ConfigState {
-  duracioSessions: number;
-  maxAlumnesPerSessio: number;
-  horariEntrenador: HorariType[];
+  DuracioSessions: number;
+  MaxAlumnesPerSessio: number;
+  HorariEntrenador: HorariType[];
 }
 
 export interface AlumneType {
@@ -105,9 +105,9 @@ export interface ExerciciErrorType {
 }
 
 export interface ConfigType {
-  duracioSessions: number;
-  maxAlumnesPerSessio: number;
-  horariEntrenador: HorariType[];
+  DuracioSessions: number;
+  MaxAlumnesPerSessio: number;
+  HorariEntrenador: HorariType[];
 }
 
 export interface HorariType {
