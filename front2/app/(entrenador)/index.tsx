@@ -14,9 +14,9 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { RutinaType, ReservaType, AlumneType, ExerciciType } from '@/types/apiTypes';
 import { useThemeStyles } from '@/themes/theme';
 import { setExercicis } from '@/store/exercicisSlice';
-import { useContext } from 'react';
-import AuthContext, { AuthContextType } from '../AuthContext';
 import { setConfig } from '@/store/configSlice';
+import { HorariType } from '@/types/apiTypes';
+
 
 export default function Index() {
     const themeStyles = useThemeStyles();
@@ -60,16 +60,35 @@ export default function Index() {
     async function fetchConfigAPI() {
         const response = await api.get(`/configuracioEntrenador`);
         if (response.status == 200) {
-            dispatch(setConfig(response.data.data));
+            const horari: HorariType[] = response.data.data.Horaris.map((h:any) => {
+                const currentDate = new Date();
+                console.log(h)
+
+                const [desdeHours, desdeMinutes] = h.Desde.split(':').map(Number);
+                const [finsHours, finsMinutes] = h.Fins.split(':').map(Number);
+    
+                const desdeDate = new Date(currentDate.setHours(desdeHours, desdeMinutes, 0, 0));
+                const finsDate = new Date(currentDate.setHours(finsHours, finsMinutes, 0, 0));
+    
+                return {
+                    DiaSetmana: h.DiaSetmana,
+                    Desde: desdeDate,
+                    Fins: finsDate,
+                };
+            });
+    
+            dispatch(setConfig({
+                DuracioSessions: response.data.data.DuracioSessions,
+                MaxAlumnesPerSessio: response.data.data.MaxAlumnesPerSessio,
+                Horaris: horari,
+            }));
         }
     }
-
     async function fetchReservesAPI() {
         const response = await api.get(`/entrenador/reserves`);
         if (response.status === 200) {
             const fetchedReserves: ReservaType[] = response.data.data;
             dispatch(updateReserves({ data: fetchedReserves }));
-
         }
     }
 

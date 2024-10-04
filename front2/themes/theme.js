@@ -175,6 +175,24 @@ export function useThemeStyles() {
       width: '80%',
       marginTop: 20,
       alignSelf: 'center',
+    },
+    diaHorariContainer: {
+      marginVertical: 10,
+      width: "100%",
+      margin: "auto",
+      borderColor: "lightgray",
+      borderWidth: 1,
+      padding: 10,
+      borderRadius: 10,
+      backgroundColor: theme.colors.background,
+      shadowColor: theme.colors.text,
+      shadowOffset: {
+          width: 0,
+          height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 6,
+      elevation: 5,
     }
   })
 }
