@@ -14,6 +14,7 @@ export default function HorariConfig() {
     const api = useAxios();
     const horaris = useSelector((state: RootState) => state.config.Horaris);
     const [horarisMap, setHorarisMap] = useState<Map<number, { Desde: Date|null; Fins: Date|null }[]>>(new Map());
+    const [errorsHorarisMap, setErrorsHorarisMap] = useState<Map<number, { errDesde: string|null; errFins: string|null }[]>>(new Map());
     const dies = ["Dilluns", "Dimarts", "Dimecres", "Dijous", "Divendres", "Dissabte", "Diumenge"];
 
     useEffect(() => {
@@ -34,12 +35,13 @@ export default function HorariConfig() {
     }
 
     async function guardarHoraris() {
-        if(!validarHoraris(horarisMap)){
+        if(validarHoraris(horarisMap).status){
             Toast.show({
                 type: 'error',
                 text1: 'Error guardant la configuració',
                 position: 'top',
             });
+            setErrorsHorarisMap(validarHoraris(horarisMap).errors);
             return;
         }
         const horarisArray = Array.from(horarisMap.entries()).flatMap(([diaSetmana, horaris]) => {
@@ -108,6 +110,7 @@ export default function HorariConfig() {
                     return (
                         <DiaHorari
                             dia={d}
+                            errors={errorsHorarisMap.get(i) ?? []}
                             horaris={horarisMap.get(i) ?? []}
                             afegirHorari={() => afegirHorari(i)}
                             llevarHorari={() => llevarHorari(i)} key={i} 

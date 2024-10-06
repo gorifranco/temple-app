@@ -60,9 +60,9 @@ export default function Index() {
     async function fetchConfigAPI() {
         const response = await api.get(`/configuracioEntrenador`);
         if (response.status == 200) {
+
             const horari: HorariType[] = response.data.data.Horaris.map((h:any) => {
                 const currentDate = new Date();
-                console.log(h)
 
                 const [desdeHours, desdeMinutes] = h.Desde.split(':').map(Number);
                 const [finsHours, finsMinutes] = h.Fins.split(':').map(Number);
