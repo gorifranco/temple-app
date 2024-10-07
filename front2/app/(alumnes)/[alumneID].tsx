@@ -46,14 +46,12 @@ export default function AlumneScreen() {
     };
 
     async function reservar(hora: Date) {
-        console.log("aqui")
-        console.log(hora)
         if (!selectedDay) {
             setErrorts({ ...errors, Dia: "Selecciona un dia" });
             return;
         }
-        const response = await api.post(`/reserves`, { hora: hora, usuariID: alumne.ID })
-        console.log(response)
+        const horaUTC = new Date(hora.getTime() - hora.getTimezoneOffset() * 60000);
+        const response = await api.post(`/reserves`, { hora: horaUTC, usuariID: alumne.ID });
         if (response.status === 200) {
             Toast.show({
                 type: 'success',

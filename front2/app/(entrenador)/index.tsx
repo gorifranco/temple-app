@@ -16,6 +16,8 @@ import { useThemeStyles } from '@/themes/theme';
 import { setExercicis } from '@/store/exercicisSlice';
 import { setConfig } from '@/store/configSlice';
 import { HorariType } from '@/types/apiTypes';
+import { getUserByID } from '@/store/alumnesSlice';
+import { formatHora } from '@/helpers/timeHelpers';
 
 
 export default function Index() {
@@ -88,7 +90,7 @@ export default function Index() {
         const response = await api.get(`/entrenador/reserves`);
         if (response.status === 200) {
             const fetchedReserves: ReservaType[] = response.data.data;
-            dispatch(updateReserves({ data: fetchedReserves }));
+            dispatch(setReserves(fetchedReserves));
         }
     }
 
@@ -195,8 +197,7 @@ export default function Index() {
                 ) : (
                     reservesArray.map((reserva) => (
                         <View key={reserva.ID} style={themeStyles.mainContainer1}>
-                            <Text>{reserva.Usuari.Nom}</Text>
-                            <Text>{reserva.Hora.toLocaleTimeString()}</Text>
+                            <Text style={themeStyles.text}>{getUserByID(alumnes, reserva.UsuariID).Nom + " - " + formatHora(reserva.Hora)}</Text>
                         </View>
                     ))
                 )}

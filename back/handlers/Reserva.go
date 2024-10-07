@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"temple-app/models"
 	"time"
@@ -47,8 +48,17 @@ func (h *Handler) CreateReserva(c *gin.Context) {
 		// Verificar que el usuario es entrenador
 		if c.MustGet("id").(uint) == *usuari.EntrenadorID {
 			// Crear reserva
-			reserva := models.Reserva{Hora: input.Hora, UsuariID: *input.UsuariID}
-			h.DB.Create(&reserva)
+			fmt.Println("Entrenador")
+			fmt.Println(c.MustGet("id").(uint))
+			tmp := time.Date(input.Hora.Year(), input.Hora.Month(), input.Hora.Day(), input.Hora.Hour(), input.Hora.Minute(), 0, 0, time.Local)
+			reserva := models.Reserva{Hora: tmp, UsuariID: *input.UsuariID, EntrenadorID: c.MustGet("id").(uint)}
+			err = h.DB.Create(&reserva).Error
+
+			if err != nil {
+				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Error al crear reserva"})
+				fmt.Println(err)
+				return
+			}
 			c.JSON(http.StatusOK, gin.H{"data": "success"})
 			return
 		}

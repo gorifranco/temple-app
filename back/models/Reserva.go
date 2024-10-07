@@ -10,6 +10,7 @@ type Reserva struct {
 	UsuariID     uint      `gorm:"primaryKey"`
 	Hora         time.Time `gorm:"primaryKey"`
 	Confirmada   bool
+	EntrenadorID uint      `gorm:"not null"`
 }
 
 func (Reserva) TableName() string {

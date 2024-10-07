@@ -70,5 +70,10 @@ const alumnesSlice = createSlice({
     },
   });
 
+  export function getUserByID (state: AlumnesState, userID: number) {
+    return state[userID];
+  
+};
+
   export const { setAlumne, updateAlumne, updateAlumnes, deleteAlumnne, addAlumne } = alumnesSlice.actions;
   export default alumnesSlice.reducer;
