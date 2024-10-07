@@ -71,17 +71,9 @@ export interface EntrenoType {
 
 export interface ReservaType {
   ID: number;
-  Hora: Date;
-  Usuari: UsuariType;
-  Entrenador: UsuariType;
-  Confirmada: boolean;
-}
-
-export interface ReservaType{
-  ID: number;
+  Hora: String;
   UsuariID: number;
   Confirmada: boolean;
-  hora: Date;
 }
 
 export interface ExerciciRutinaType {

@@ -146,7 +146,7 @@ export function useThemeStyles() {
       marginBottom: 10,
     },
     mainContainer1: {
-        marginVertical: 20,
+        marginVertical: 10,
         marginHorizontal: "auto",
         borderWidth: 1,
         borderColor: theme.colors.primary,

@@ -2,11 +2,11 @@ import { View, Text, Pressable, SafeAreaView, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams, router } from 'expo-router'
 import { useAxios } from '../api';
-import { AlumneType } from '@/types/apiTypes'
+import { AlumneType, ReservaType } from '@/types/apiTypes'
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/store'
 import BackButton from '@/components/buttons/BackButton';
-import { updateAlumne, deleteAlumnne } from '../../store/alumnesSlice';
+import { updateAlumne, deleteAlumnne } from '@/store/alumnesSlice';
 import { Calendar, DateData } from 'react-native-calendars';
 import ModalConfirmacio from '@/components/modals/ModalConfirmacio';
 import Toast from 'react-native-toast-message';
@@ -15,6 +15,7 @@ import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-d
 import AutocompleteRutines from '@/components/inputs/selects/AutocompleteRutines';
 import { useThemeStyles } from '@/themes/theme';
 import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker'
+import { addReserva } from '@/store/reservesSlice';
 
 export default function AlumneScreen() {
     const themeStyles = useThemeStyles()
@@ -53,6 +54,9 @@ export default function AlumneScreen() {
         const horaUTC = new Date(hora.getTime() - hora.getTimezoneOffset() * 60000);
         const response = await api.post(`/reserves`, { hora: horaUTC, usuariID: alumne.ID });
         if (response.status === 200) {
+            const reserva:ReservaType = {ID: Number(response.data.data), UsuariID: alumne.ID, Hora: horaUTC.toISOString(), Confirmada: false}; 
+            console.log(horaUTC.toISOString())
+            dispatch(addReserva({id: reserva.ID, data: reserva}));
             Toast.show({
                 type: 'success',
                 text1: 'Reserva creada',
@@ -64,23 +68,6 @@ export default function AlumneScreen() {
                 text1: 'Error creant la reserva',
                 position: 'top',
             });
-        }
-    }
-
-    async function fetchApi() {
-        const response = await api.get(`entrenador/alumnes/${alumneID}`);
-        const a: AlumneType = {
-            ID: response.data.data.ID,
-            Nom: response.data.data.Nom,
-            Entrenos: [],
-            Reserves: [],
-            RutinaAssignada: response.data.data.RutinaAssignada
-        }
-        if (response.status === 200) {
-            const fetchedAlumne: AlumneType = response.data.data;
-            if (!alumne || alumne !== fetchedAlumne) {
-                dispatch(updateAlumne({ id: Number(alumneID), data: fetchedAlumne }));
-            }
         }
     }
 

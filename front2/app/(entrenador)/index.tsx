@@ -17,7 +17,7 @@ import { setExercicis } from '@/store/exercicisSlice';
 import { setConfig } from '@/store/configSlice';
 import { HorariType } from '@/types/apiTypes';
 import { getUserByID } from '@/store/alumnesSlice';
-import { formatHora } from '@/helpers/timeHelpers';
+import { stringDiaToDate } from '@/helpers/timeHelpers';
 
 
 export default function Index() {
@@ -63,22 +63,22 @@ export default function Index() {
         const response = await api.get(`/configuracioEntrenador`);
         if (response.status == 200) {
 
-            const horari: HorariType[] = response.data.data.Horaris.map((h:any) => {
+            const horari: HorariType[] = response.data.data.Horaris.map((h: any) => {
                 const currentDate = new Date();
 
                 const [desdeHours, desdeMinutes] = h.Desde.split(':').map(Number);
                 const [finsHours, finsMinutes] = h.Fins.split(':').map(Number);
-    
+
                 const desdeDate = new Date(currentDate.setHours(desdeHours, desdeMinutes, 0, 0));
                 const finsDate = new Date(currentDate.setHours(finsHours, finsMinutes, 0, 0));
-    
+
                 return {
                     DiaSetmana: h.DiaSetmana,
                     Desde: desdeDate,
                     Fins: finsDate,
                 };
             });
-    
+
             dispatch(setConfig({
                 DuracioSessions: response.data.data.DuracioSessions,
                 MaxAlumnesPerSessio: response.data.data.MaxAlumnesPerSessio,
@@ -168,13 +168,15 @@ export default function Index() {
         <ScrollView style={themeStyles.background}>
             <Text style={themeStyles.titol1}>Alumnes ({!alumnesArray ? '0' : alumnesArray.length}/12)</Text>
             <View>
-                {alumnesArray && alumnesArray.map((alumne) => (
-                    <Pressable key={alumne.ID} style={themeStyles.mainContainer1} onPress={() => {
-                        router.push({ pathname: `../(alumnes)/${alumne.ID}` })
-                    }}>
-                        <Text style={themeStyles.text}>{alumne.Nom}</Text>
-                    </Pressable>
-                ))}
+                <ScrollView style={{maxHeight: 200, width: "85%", alignContent: "center", alignSelf: "center"}}>
+                    {alumnesArray && alumnesArray.map((alumne) => (
+                        <Pressable key={alumne.ID} style={themeStyles.mainContainer1} onPress={() => {
+                            router.push({ pathname: `../(alumnes)/${alumne.ID}` })
+                        }}>
+                            <Text style={themeStyles.text}>{alumne.Nom}</Text>
+                        </Pressable>
+                    ))}
+                </ScrollView>
 
                 {!alumnesArray || alumnesArray.length < 12 && (
                     <Pressable
@@ -195,13 +197,18 @@ export default function Index() {
                 {!reserves || reservesArray.length === 0 ? (
                     <Text style={themeStyles.text}>Avui no tens més entrenos</Text>
                 ) : (
-                    reservesArray.map((reserva) => (
-                        <View key={reserva.ID} style={themeStyles.mainContainer1}>
-                            <Text style={themeStyles.text}>{getUserByID(alumnes, reserva.UsuariID).Nom + " - " + formatHora(reserva.Hora)}</Text>
-                        </View>
-                    ))
+                    reservesArray.map((reserva) => {
+                        const hora = stringDiaToDate(reserva.Hora);
+                        return (
+                            <View key={reserva.ID} style={themeStyles.mainContainer1}>
+                                <Text style={themeStyles.text}>
+                                    {getUserByID(alumnes, reserva.UsuariID).Nom + " - " +
+                                        hora.getHours() + ":" + hora.getMinutes().toString().padStart(2, '0')}
+                                </Text>
+                            </View>
+                        );
+                    })
                 )}
-
             </View>
 
 

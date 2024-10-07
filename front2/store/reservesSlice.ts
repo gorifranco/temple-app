@@ -21,6 +21,13 @@ const reservesSlice = createSlice({
         const { id, data } = action.payload;
         state[id] = data;
       },
+      addReserva(
+        state: ReservesState,
+        action: PayloadAction<{ id: number; data: ReservaType }>
+      ) {
+        const { id, data } = action.payload;
+        state[id] = data;
+      },
       updateReserves(
         state: ReservesState,
         action: PayloadAction<{ data: ReservaType[] }>
@@ -56,5 +63,5 @@ const reservesSlice = createSlice({
     },
   });
 
-export const { setReserves, updateReserva, updateReserves } = reservesSlice.actions;
+export const { setReserves, updateReserva, updateReserves, addReserva } = reservesSlice.actions;
 export default reservesSlice.reducer;
