@@ -24,7 +24,7 @@ export default function DiaHorari(props: propsType) {
         <View style={themeStyles.diaHorariContainer}>
             <Text style={themeStyles.text}>{dia}</Text>
 
-            {horaris.map((horari, i) => (
+            {horaris && horaris.map((horari, i) => (
                 <View style={{ flexDirection: "row", width: "100%", alignItems: "center" }} key={i}>
                     <Pressable
                         onPress={() => {

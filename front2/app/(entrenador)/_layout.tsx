@@ -5,16 +5,17 @@ import { useColorScheme } from '@/hooks/useColorScheme';
 import AuthContext, { AuthContextType } from '../AuthContext';
 import { useContext } from 'react';
 import { Redirect } from 'expo-router';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import HomeScreen from './index';
 import ConfigScreen from '../(config)/index';
 import StatsScreen from "../(stats)/index";
+import { useAppTheme } from '@/themes/theme';
 
 
-const Tabs = createBottomTabNavigator();
+const Tabs = createMaterialTopTabNavigator();
 
 export default function EntrenadorLayout({ children }: { children: React.ReactNode }) {
-  const colorScheme = useColorScheme();
+  const theme = useAppTheme()
   const authContext = useContext<AuthContextType | undefined>(AuthContext);
 
   if (!authContext) {
@@ -29,9 +30,16 @@ export default function EntrenadorLayout({ children }: { children: React.ReactNo
     return (
       <Tabs.Navigator
         screenOptions={{
-          tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-          headerShown: false,
+          tabBarActiveTintColor: theme.colors.primary,
+          tabBarIndicatorStyle: { backgroundColor: theme.colors.primary },
+          tabBarIconStyle: {width: "100%"},
+          tabBarStyle: { 
+            height: 61, // Ajusta la altura para hacerla más estrecha
+            elevation: 0,
+            borderBottomWidth: 0,
+          },
         }}
+        tabBarPosition='bottom'
       >
         <Tabs.Screen
           name="Home"
