@@ -8,32 +8,30 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SolicitarUnio (cx *gin.Context) {
+func (h *Handler) SolicitarUnio(cx *gin.Context) {
 	var input models.SolicitudUnioSalaInput
-	if err := cx.ShouldBindJSON(&input); err != nil {
+	var err error
+
+	if err = cx.ShouldBindJSON(&input); err != nil {
 		cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	//Sala no existeix
-	err := h.DB.Where("sala_id = ?", input.SalaID).First(&models.Sala{}).Error
-	if err != nil {
+	if err = h.DB.Where("sala_id = ?", input.SalaID).First(&models.Sala{}).Error; err != nil {
 		cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	//Usuari ja està en la sala
-	err = h.DB.Where("sala_id = ? AND usuari_id = ?", input.SalaID, auth.GetUsuari(cx)).First(models.UsuarisSala{}).Error
-	if err == nil {
+	if err = h.DB.Where("sala_id = ? AND usuari_id = ?", input.SalaID, auth.GetUsuari(cx)).First(models.UsuarisSala{}).Error; err != nil {
 		cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": `L'usuari ja està en la sala`})
 		return
 	}
 
 	solicitud := models.SolicitudUnioSala{SalaID: input.SalaID, UsuariID: auth.GetUsuari(cx)}
 
-	err = h.DB.Create(&solicitud).Error
-
-	if err != nil {
+	if err = h.DB.Create(&solicitud).Error; err != nil {
 		cx.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -42,21 +40,17 @@ func (h *Handler) SolicitarUnio (cx *gin.Context) {
 }
 
 func (h *Handler) AcceptarSolicitudUnio(cx *gin.Context) {
-
 	var solicitud models.SolicitudUnioSala
+	var err error
 
-	err := h.DB.Where("id = ?", cx.Param("solicitud_id")).First(&solicitud).Error
-
-	//Solicitud existeix
-	if(err != nil) {
+	if err = h.DB.Where("id = ?", cx.Param("solicitud_id")).First(&solicitud).Error; err != nil {
 		cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "No existeix la solicitud"})
 		return
 	}
 
 	//Usuari ja es troba dins el grup
 	var usuariSala models.UsuarisSala
-	err = h.DB.Where("usuari_id = ? and sala_id = ?", solicitud.UsuariID, solicitud.SalaID).First(&usuariSala).Error
-	if(err == nil) {
+	if err = h.DB.Where("usuari_id = ? and sala_id = ?", solicitud.UsuariID, solicitud.SalaID).First(&usuariSala).Error; err != nil {
 		cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "L'usuari ja es troba dins la sala"})
 		return
 	}
@@ -70,12 +64,11 @@ func (h *Handler) AcceptarSolicitudUnio(cx *gin.Context) {
 }
 
 func (h *Handler) DeclinarSolicitudUnio(cx *gin.Context) {
-	var solicitud models.SolicitudUnioSala 
+	var solicitud models.SolicitudUnioSala
 
-	err := h.DB.Where("id = ?", cx.Param("solicitud_id")).First(&solicitud).Error
-	if err != nil {
+	if err := h.DB.Where("id = ?", cx.Param("solicitud_id")).First(&solicitud).Error; err != nil {
 		cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "No existeix la solicitud"})
-		return	
+		return
 	}
 	cx.JSON(http.StatusOK, gin.H{"data": "success"})
 }

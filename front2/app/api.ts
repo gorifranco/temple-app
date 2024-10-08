@@ -4,7 +4,7 @@ import AuthContext from './AuthContext';
 import { AuthContextType } from './AuthContext';
 
 const api = axios.create({
-  baseURL: 'http://217.71.207.116:8080/api',
+  baseURL: 'http://localhost:8080/api',
   timeout: 10000,
 });
 

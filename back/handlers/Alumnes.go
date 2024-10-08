@@ -64,9 +64,7 @@ func (h *Handler) CrearUsuariFictici(c *gin.Context) {
 		TipusUsuariID: 4,
 	}
 
-	err = h.DB.Create(&usuari).Error
-
-	if err != nil {
+	if err = h.DB.Create(&usuari).Error; err != nil{
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -79,8 +77,7 @@ func (h *Handler) UpdateUsuariFictici(c *gin.Context) {
 	var err error
 
 	var entrenador models.Usuari
-	err = h.DB.Where("id = ?", auth.GetUsuari(c)).First(&entrenador).Error
-	if err != nil {
+	if err = h.DB.Where("id = ?", auth.GetUsuari(c)).First(&entrenador).Error; err != nil{
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
@@ -122,8 +119,7 @@ func (h *Handler) ExpulsarUsuari(c *gin.Context) {
 	}
 
 	var entrenador models.Usuari
-	err = h.DB.Where("id = ?", c.Copy().MustGet("id").(uint)).First(&entrenador).Error
-	if err != nil {
+	if err = h.DB.Where("id = ?", c.Copy().MustGet("id").(uint)).First(&entrenador).Error; err != nil{
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
@@ -148,8 +144,7 @@ func (h *Handler) FindAlumneEntrenador(c *gin.Context) {
 	var err error
 	var entrenador models.Usuari
 
-	err = h.DB.Where("id = ?", auth.GetUsuari(c)).First(&entrenador).Error
-	if err != nil {
+	if err = h.DB.Where("id = ?", auth.GetUsuari(c)).First(&entrenador).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}

@@ -9,7 +9,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 type UserResponse struct {
@@ -33,8 +32,9 @@ func (h *Handler) Login(c *gin.Context) {
 		Password string `json:"password"`
 	}
 	var token string
+	var err error
 
-	if err := c.ShouldBindJSON(&credentials); err != nil {
+	if err = c.ShouldBindJSON(&credentials); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request"})
 		return
 	}
@@ -67,14 +67,14 @@ func (h *Handler) Login(c *gin.Context) {
 
 func (h *Handler) GetUserByEmailAndPassword(email string, password string) (*models.Usuari, error) {
 	var user models.Usuari
-	result := h.DB.Where("email = ?", email).Preload("TipusUsuari").First(&user)
-	if result.Error != nil {
-		return nil, result.Error
+	var err error
+
+	if err = h.DB.Where("email = ?", email).Preload("TipusUsuari").First(&user).Error; err != nil {
+		return nil, err
 	}
 
 	// Verificando la contraseña
-	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
-	if err != nil {
+	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		return nil, err // La contraseña no coincide
 	}
 
@@ -83,8 +83,9 @@ func (h *Handler) GetUserByEmailAndPassword(email string, password string) (*mod
 
 func (h *Handler) Registre(c *gin.Context) {
 	var userInput usuariInput
+	var err error
 
-	if err := c.ShouldBindJSON(&userInput); err != nil {
+	if err = c.ShouldBindJSON(&userInput); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data", "details": err.Error()})
 		return
 	}
@@ -119,7 +120,7 @@ func (h *Handler) Registre(c *gin.Context) {
 	}
 
 	// Simulando una función que guardaría los datos del usuario en alguna parte
-	if err := h.SaveUser(newUser); err != nil {
+	if err = h.SaveUser(newUser); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not register user", "details": err.Error()})
 		return
 	}
@@ -130,11 +131,9 @@ func (h *Handler) Registre(c *gin.Context) {
 
 func (h *Handler) UsuariExisteix(email string) bool {
 	var usuari models.Usuari
-	result := h.DB.Where("email = ?", email).First(&usuari)
-	if result.Error != nil {
-		if result.Error == gorm.ErrRecordNotFound {
-			return false
-		}
+	var err error
+
+	if err = h.DB.Where("email = ?", email).First(&usuari).Error; err != nil {
 		return false
 	}
 	return true
@@ -149,10 +148,8 @@ func (h *Handler) SaveUser(usuari models.Usuari) error {
 	}
 
 	// Crear el registro en la base de datos
-	result := h.DB.Create(&usuari)
-	if result.Error != nil {
-		return result.Error
+	if err = h.DB.Create(&usuari).Error; err != nil {
+		return err
 	}
-
 	return nil
 }

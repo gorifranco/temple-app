@@ -27,6 +27,8 @@ func (h *Handler) FindExercici(c *gin.Context) {
 
 func (h *Handler) CreateExercici(c *gin.Context) {
 	var input models.ExerciciInput
+	var err error
+
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -34,9 +36,7 @@ func (h *Handler) CreateExercici(c *gin.Context) {
 
 	exercici := models.Exercici{Nom: input.Nom}
 
-	err := h.DB.Create(&exercici).Error;
-
-	if(err != nil) {
+	if err = h.DB.Create(&exercici).Error; err != nil{
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create exercici"})
 		return
 	}

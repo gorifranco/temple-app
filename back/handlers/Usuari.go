@@ -28,6 +28,7 @@ func (h *Handler) FindUsuari(c *gin.Context) {
 
 func (h *Handler) CreateUsuari(c *gin.Context) {
 	var input models.UsuariInput
+
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -51,23 +52,24 @@ func (h *Handler) CreateUsuari(c *gin.Context) {
 
 func (h *Handler) UpdateUsuari(c *gin.Context) {
 	var usuari models.Usuari
-	if err := h.DB.Where("id = ?", c.Param("id")).First(&usuari).Error; err != nil {
+	var err error
+
+	if err = h.DB.Where("id = ?", c.Param("id")).First(&usuari).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "record not found"})
 		return
 	}
 
 	var input models.UsuariInput
 
-	if err := c.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	hash := input.Password
-	var err error
 
 	if hash != "" {
-		hash, err = services.EncryptPassword(input.Password) // nota que aquí usamos = en lugar de :=
+		hash, err = services.EncryptPassword(input.Password)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Error crypting password"})
 			return

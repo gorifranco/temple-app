@@ -29,9 +29,7 @@ func (h *Handler) AfegirExercici(c *gin.Context) {
 		return
 	}
 
-	err = h.DB.Create(&input).Error
-
-	if err != nil {
+	if err = h.DB.Create(&input).Error; err != nil{
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to aappend exercici"})
 		return
 	}
@@ -56,14 +54,11 @@ func (h *Handler) LlevarExercici(c *gin.Context) {
 
 	var exercici models.ExerciciRutina
 
-	err = h.DB.Where("id = ?", c.Query("exerciciId")).First(&exercici).Error
-	if err != nil {
+	if err = h.DB.Where("id = ?", c.Query("exerciciId")).First(&exercici).Error; err != nil{
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Exercici no trobat"})
 	}
 
-	err = h.DB.Delete(&exercici).Error
-
-	if err != nil {
+	if err = h.DB.Delete(&exercici).Error; err != nil{
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete exercici from rutina"})
 		return
 	}

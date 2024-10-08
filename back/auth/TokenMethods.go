@@ -40,12 +40,12 @@ func UserAuthMiddleware(tipusAdmesos []string) gin.HandlerFunc {
 			return
 		}
 
-		if(len(tipusAdmesos) == 0){
+		if len(tipusAdmesos) == 0 {
 			c.Set("id", GetUsuari(c))
 			c.Set("tipusUsuari", claims.TipusUsuari)
 			c.Next()
 			return
-		} 
+		}
 
 		if !UserTypeValid(c, claims, tipusAdmesos) {
 			return
@@ -73,7 +73,7 @@ func OwnerAuthMiddleware() gin.HandlerFunc {
 		if err != nil {
 			return
 		}
-		if(claims.Id == uint(i)) {
+		if claims.Id == uint(i) {
 			c.Next()
 		}
 

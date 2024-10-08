@@ -40,6 +40,7 @@ func (h *Handler) IndexRutina(c *gin.Context) {
 func (h *Handler) CreateRutina(c *gin.Context) {
 	var input models.RutinaInput
 	var err error
+
 	if err = c.ShouldBindJSON(&input); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -75,7 +76,7 @@ func (h *Handler) CreateRutina(c *gin.Context) {
 				ExerciciID:    exercici.ExerciciID,
 			}
 
-			if err := tx.Create(&ex).Error; err != nil {
+			if err = tx.Create(&ex).Error; err != nil {
 				return err
 			}
 		}
@@ -91,7 +92,7 @@ func (h *Handler) CreateRutina(c *gin.Context) {
 
 	// Si la transacción fue exitosa, cargar la rutina creada con los ejercicios
 	var createdRutina models.Rutina
-	if err := h.DB.Preload("ExercicisRutina").First(&createdRutina, rutina.ID).Error; err != nil {
+	if err = h.DB.Preload("ExercicisRutina").First(&createdRutina, rutina.ID).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to load created rutina"})
 		return
 	}
@@ -100,13 +101,15 @@ func (h *Handler) CreateRutina(c *gin.Context) {
 }
 func (h Handler) UpdateRutina(c *gin.Context) {
 	var rutina models.Rutina
-	if err := h.DB.Where("id = ?", c.Param("id")).First(&rutina).Error; err != nil {
+	var err error
+
+	if err = h.DB.Where("id = ?", c.Param("id")).First(&rutina).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "record not found"})
 	}
 
 	var input models.RutinaInput
 
-	if err := c.ShouldBindJSON(&input); err != nil {
+	if err = c.ShouldBindJSON(&input); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -122,24 +125,26 @@ func (h Handler) UpdateRutina(c *gin.Context) {
 }
 
 func (h *Handler) DeleteRutina(c *gin.Context) {
-	// Iniciar una transacción
+
 	err := h.DB.Transaction(func(tx *gorm.DB) error {
 		var rutina models.Rutina
-		if err := tx.Where("id = ?", c.Param("id")).First(&rutina).Error; err != nil {
+		var err error
+
+		if err = tx.Where("id = ?", c.Param("id")).First(&rutina).Error; err != nil {
 			return err // Esto provocará un rollback automático
 		}
 
 		// Eliminar los ejercicios asociados
-		if err := tx.Where("rutina_id = ?", rutina.ID).Delete(&models.ExerciciRutina{}).Error; err != nil {
-			return err // Esto también provocará un rollback si falla
+		if err = tx.Where("rutina_id = ?", rutina.ID).Delete(&models.ExerciciRutina{}).Error; err != nil {
+			return err
 		}
 
 		// Eliminar la rutina
-		if err := tx.Delete(&rutina).Error; err != nil {
-			return err // Rollback si falla
+		if err = tx.Delete(&rutina).Error; err != nil {
+			return err
 		}
 
-		return nil // Si todo va bien, la transacción se compromete automáticamente
+		return nil
 	})
 
 	// Manejo de errores fuera de la transacción
@@ -153,6 +158,7 @@ func (h *Handler) DeleteRutina(c *gin.Context) {
 
 func (h *Handler) RutinesEntrenador(c *gin.Context) {
 	var rutines []models.Rutina
+
 	h.DB.Find(&rutines).Where("entrenador_id = ?", auth.GetUsuari(c))
 
 	query := `SELECT exercici_id as ID, ex.nom as nom, ordre as ordre, num_series as numSeries, num_repes as numRepes, cicle as cicle,
@@ -219,9 +225,7 @@ func (h *Handler) CanviarVisibilitat(c *gin.Context) {
 
 	rutina.Publica = !rutina.Publica
 
-	err = h.DB.Model(&rutina).Update("publica", rutina.Publica).Error
-
-	if err != nil {
+	if err = h.DB.Model(&rutina).Update("publica", rutina.Publica).Error; err != nil{
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to update rutina"})
 		return
 	}
@@ -295,17 +299,15 @@ func (h *Handler) AssignarRutina(c *gin.Context) {
 	}
 
 	var r models.UsuariRutina
-	err = h.DB.Where("data_finalitzacio is null and usuari_id = ?", alumne.ID).First(&r).Error
-	if err != nil {
+	if err = h.DB.Where("data_finalitzacio is null and usuari_id = ?", alumne.ID).First(&r).Error; err != nil{
 		var now = time.Now()
 		r.DataFinalitzacio = &now
 		h.DB.Save(&r)
 	}
 
 	var nova = models.UsuariRutina{UsuariID: alumne.ID, RutinaID: rutina.ID, DataInici: time.Now()}
-	err = h.DB.Create(&nova).Error
-
-	if err != nil {
+	
+	if err = h.DB.Create(&nova).Error; err != nil{
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create new user rutina"})
 		return
 	}

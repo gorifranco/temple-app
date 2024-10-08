@@ -8,11 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SolicitudsEntrenador (cx *gin.Context) {
+func (h *Handler) SolicitudsEntrenador(cx *gin.Context) {
 	var entrenador models.Usuari
 
-	err := h.DB.Where("entrenador_id = ?", auth.GetUsuari(cx)).First(&entrenador).Error
-	if err != nil {
+	if err := h.DB.Where("entrenador_id = ?", auth.GetUsuari(cx)).First(&entrenador).Error; err != nil {
 		cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -20,19 +19,18 @@ func (h *Handler) SolicitudsEntrenador (cx *gin.Context) {
 	cx.JSON(http.StatusOK, gin.H{"data": entrenador.SolicitudsUnioEntrenador})
 }
 
-func (h *Handler) SolicitarUnioEntrenador (cx *gin.Context) {
+func (h *Handler) SolicitarUnioEntrenador(cx *gin.Context) {
 	var input models.SolicitudUnioEntrenadorInput
 	var entrenador models.Usuari
-
 	var err error
+
 	if err = cx.ShouldBindJSON(&input); err != nil {
 		cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	//Entrenador no existeix
-	err = h.DB.Where("codiEntrenador = ?", input.CodiEntrenador).First(&entrenador).Error
-	if err != nil {
+	if err = h.DB.Where("codiEntrenador = ?", input.CodiEntrenador).First(&entrenador).Error; err != nil {
 		cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -41,16 +39,14 @@ func (h *Handler) SolicitarUnioEntrenador (cx *gin.Context) {
 	var usuari models.Usuari
 	h.DB.Where("ID = ?", auth.GetUsuari(cx)).First(usuari)
 
-	if(usuari.EntrenadorID != nil){
+	if usuari.EntrenadorID != nil {
 		cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": `L'usuari ja té un entrenador`})
 		return
 	}
 
 	solicitud := models.SolicitudUnioEntrenador{EntrenadorID: entrenador.ID, UsuariID: usuari.ID}
 
-	err = h.DB.Create(&solicitud).Error
-
-	if err != nil {
+	if err = h.DB.Create(&solicitud).Error; err != nil {
 		cx.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
 		return
 	}
@@ -64,23 +60,19 @@ func (h *Handler) AcceptarSolicitudUnioEntrenador(cx *gin.Context) {
 	var err error
 	var usuari models.Usuari
 
-	err = h.DB.Where("id = ?", cx.Param("solicitud_id")).First(&solicitud).Error
-
-	//Solicitud existeix
-	if(err != nil) {
+	if err = h.DB.Where("id = ?", cx.Param("solicitud_id")).First(&solicitud).Error; err != nil {
 		cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "No existeix la solicitud"})
 		return
 	}
 
-	err = h.DB.Where("ID = ?", solicitud.EntrenadorID).First(entrenador).Error
-	if err != nil {
+	if err = h.DB.Where("ID = ?", solicitud.EntrenadorID).First(entrenador).Error; err != nil {
 		cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	if(entrenador.ID != auth.GetUsuari(cx)){
+	if entrenador.ID != auth.GetUsuari(cx) {
 		cx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return 
+		return
 	}
 
 	//Usuari ja es troba dins el grup
@@ -100,22 +92,20 @@ func (h *Handler) AcceptarSolicitudUnioEntrenador(cx *gin.Context) {
 }
 
 func (h *Handler) DeclinarSolicitudUnioEntrenador(cx *gin.Context) {
-	var solicitud models.SolicitudUnioEntrenador 
+	var solicitud models.SolicitudUnioEntrenador
 	var err error
 
-	err = h.DB.Where("id = ?", cx.Param("solicitud_id")).First(&solicitud).Error
-	if err != nil {
+	if err = h.DB.Where("id = ?", cx.Param("solicitud_id")).First(&solicitud).Error; err != nil {
 		cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "No existeix la solicitud"})
-		return	
+		return
 	}
 
-	if(auth.GetUsuari(cx) != solicitud.EntrenadorID){
+	if auth.GetUsuari(cx) != solicitud.EntrenadorID {
 		cx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		return
 	}
-	err = h.DB.Delete(&solicitud).Error
 
-	if err != nil {
+	if err = h.DB.Delete(&solicitud).Error; err != nil {
 		cx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete solicitud"})
 		return
 	}

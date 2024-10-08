@@ -12,24 +12,23 @@ func (h *Handler) GuardarHorariEntrenador(c *gin.Context) {
 	var horari []models.HorarisEntrenadorInput
 	var horarisPrevis []models.HorarisEntrenador
 	var newHorari []models.HorarisEntrenador
+	var err error
 
-	if err := c.ShouldBindJSON(&horari); err != nil {
+	if err = c.ShouldBindJSON(&horari); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	tx := h.DB.Begin()
 
-	err := tx.Where("entrenador_id = ?", c.MustGet("id").(uint)).Find(&horarisPrevis).Error
-	if err != nil {
+	if err = tx.Where("entrenador_id = ?", c.MustGet("id").(uint)).Find(&horarisPrevis).Error; err != nil{
 		tx.Rollback()
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	if len(horarisPrevis) > 0 {
-		err = tx.Delete(&horarisPrevis).Error
-		if err != nil {
+		if err = tx.Delete(&horarisPrevis).Error; err != nil{
 			tx.Rollback()
 			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete previous horaris"})
 			return
@@ -66,8 +65,7 @@ func (h *Handler) GuardarHorariEntrenador(c *gin.Context) {
 		})
 	}
 
-	err = tx.Create(&newHorari).Error
-	if err != nil {
+	if err = tx.Create(&newHorari).Error; err != nil{
 		tx.Rollback()
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create new horaris"})
 		return
