@@ -9,6 +9,7 @@ import { RootState } from '@/store';
 import { persistor } from '../../store';
 import { ConfigType } from '@/types/apiTypes';
 import HorariConfig from '@/components/viewers/HorariConfig';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 export default function Index() {
@@ -46,58 +47,60 @@ export default function Index() {
     }
 
     return (
-        <ScrollView style={themeStyles.background}>
-            <Pressable
-                style={themeStyles.button1}
-                onPress={() => logout()}>
-                <Text style={themeStyles.button1Text}>Logout</Text>
-            </Pressable>
-            <Pressable
-                style={themeStyles.button1}
-                onPress={() => borrarStorage()}>
-                <Text style={themeStyles.button1Text}>Borrar async storage</Text>
-            </Pressable>
-            
-            {/* Horari */}
-            <HorariConfig />
+        <SafeAreaView style={themeStyles.background}>
+            <ScrollView>
+                <Pressable
+                    style={themeStyles.button1}
+                    onPress={() => logout()}>
+                    <Text style={themeStyles.button1Text}>Logout</Text>
+                </Pressable>
+                <Pressable
+                    style={themeStyles.button1}
+                    onPress={() => borrarStorage()}>
+                    <Text style={themeStyles.button1Text}>Borrar async storage</Text>
+                </Pressable>
 
-            <View style={{ width: "80%", marginHorizontal: "auto", marginVertical: 10, marginBottom: 10, display: "flex", flexDirection: "row" }}>
-                <Text style={[themeStyles.text, { marginRight: 10 }]}>Duració de les sessions (min)</Text>
-                <TextInput
-                    containerStyle={{ width: 68 }}
-                    inputStyle={{ textAlign: "right" }}
-                    returnKeyType="done"
-                    value={configTmp.DuracioSessions}
-                    onChangeText={(text: string) => setConfigTmp({ ...configTmp, DuracioSessions: Number(text.replace(/[^0-9]/g, '')) })}
-                    error={!!errors.duracioSessions}
-                    errorText={errors.duracioSessions}
-                    autoCapitalize="none"
-                    keyboardType="numeric"
-                    maxLength={3}
-                />
-            </View>
+                {/* Horari */}
+                <HorariConfig />
 
-            <View style={{ width: "80%", marginHorizontal: "auto", marginVertical: 10, marginBottom: 10, display: "flex", flexDirection: "row" }}>
-                <Text style={[themeStyles.text, { marginRight: 10 }]}>Alumnes per sessió</Text>
-                <TextInput
-                    maxLength={3}
-                    containerStyle={{ width: 68 }}
-                    inputStyle={{ textAlign: "right" }}
-                    returnKeyType="done"
-                    value={configTmp.MaxAlumnesPerSessio}
-                    onChangeText={(text: string) => setConfigTmp({ ...configTmp, MaxAlumnesPerSessio: Number(text.replace(/[^0-9]/g, '')) })}
-                    error={!!errors.maxAlumnesPerSessio}
-                    errorText={errors.maxAlumnesPerSessio}
-                    autoCapitalize="none"
-                    keyboardType="numeric"
-                />
-            </View>
+                <View style={{ width: "80%", marginHorizontal: "auto", marginVertical: 10, marginBottom: 10, display: "flex", flexDirection: "row" }}>
+                    <Text style={[themeStyles.text, { marginRight: 10 }]}>Duració de les sessions (min)</Text>
+                    <TextInput
+                        containerStyle={{ width: 68 }}
+                        inputStyle={{ textAlign: "right" }}
+                        returnKeyType="done"
+                        value={configTmp.DuracioSessions}
+                        onChangeText={(text: string) => setConfigTmp({ ...configTmp, DuracioSessions: Number(text.replace(/[^0-9]/g, '')) })}
+                        error={!!errors.duracioSessions}
+                        errorText={errors.duracioSessions}
+                        autoCapitalize="none"
+                        keyboardType="numeric"
+                        maxLength={3}
+                    />
+                </View>
 
-            <Pressable
-                style={[themeStyles.button1, { marginBottom: 25 }]}
-                onPress={() => handleCanviarConfiguracio()}>
-                <Text style={themeStyles.button1Text}>Canviar configuració</Text>
-            </Pressable>
-        </ScrollView>
+                <View style={{ width: "80%", marginHorizontal: "auto", marginVertical: 10, marginBottom: 10, display: "flex", flexDirection: "row" }}>
+                    <Text style={[themeStyles.text, { marginRight: 10 }]}>Alumnes per sessió</Text>
+                    <TextInput
+                        maxLength={3}
+                        containerStyle={{ width: 68 }}
+                        inputStyle={{ textAlign: "right" }}
+                        returnKeyType="done"
+                        value={configTmp.MaxAlumnesPerSessio}
+                        onChangeText={(text: string) => setConfigTmp({ ...configTmp, MaxAlumnesPerSessio: Number(text.replace(/[^0-9]/g, '')) })}
+                        error={!!errors.maxAlumnesPerSessio}
+                        errorText={errors.maxAlumnesPerSessio}
+                        autoCapitalize="none"
+                        keyboardType="numeric"
+                    />
+                </View>
+
+                <Pressable
+                    style={[themeStyles.button1, { marginBottom: 25 }]}
+                    onPress={() => handleCanviarConfiguracio()}>
+                    <Text style={themeStyles.button1Text}>Canviar configuració</Text>
+                </Pressable>
+            </ScrollView>
+        </SafeAreaView>
     );
 }

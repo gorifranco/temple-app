@@ -18,6 +18,7 @@ import { setConfig } from '@/store/configSlice';
 import { HorariType } from '@/types/apiTypes';
 import { getUserByID } from '@/store/alumnesSlice';
 import { stringDiaToDate } from '@/helpers/timeHelpers';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 export default function Index() {
@@ -165,59 +166,60 @@ export default function Index() {
 
 
     return (
-        <ScrollView style={themeStyles.background}>
-            <Text style={themeStyles.titol1}>Alumnes ({!alumnesArray ? '0' : alumnesArray.length}/12)</Text>
-            <View>
-                <ScrollView style={{ maxHeight: 200, width: "85%", alignContent: "center", alignSelf: "center" }}>
-                    {alumnesArray && alumnesArray.map((alumne) => (
-                        <Pressable key={alumne.ID} style={themeStyles.mainContainer1} onPress={() => {
-                            router.push({ pathname: `../(alumnes)/${alumne.ID}` })
-                        }}>
-                            <Text style={themeStyles.text}>{alumne.Nom}</Text>
+        <SafeAreaView style={themeStyles.background}>
+            <ScrollView>
+                <Text style={themeStyles.titol1}>Alumnes ({!alumnesArray ? '0' : alumnesArray.length}/12)</Text>
+                <View>
+                    <ScrollView style={{ maxHeight: 200, width: "85%", alignContent: "center", alignSelf: "center" }}>
+                        {alumnesArray && alumnesArray.map((alumne) => (
+                            <Pressable key={alumne.ID} style={themeStyles.mainContainer1} onPress={() => {
+                                router.push({ pathname: `../(alumnes)/${alumne.ID}` })
+                            }}>
+                                <Text style={themeStyles.text}>{alumne.Nom}</Text>
+                            </Pressable>
+                        ))}
+                    </ScrollView>
+
+                    {!alumnesArray || alumnesArray.length < 12 && (
+                        <Pressable
+                            style={themeStyles.button1}
+                            onPress={() => {
+                                setAfegirAlumneVisible(true)
+                            }}
+                        >
+                            <Text style={themeStyles.button1Text}>Afegeix un alumne</Text>
                         </Pressable>
-                    ))}
-                </ScrollView>
+                    )}
+                </View>
 
-                {!alumnesArray || alumnesArray.length < 12 && (
-                    <Pressable
-                        style={themeStyles.button1}
-                        onPress={() => {
-                            setAfegirAlumneVisible(true)
-                        }}
-                    >
-                        <Text style={themeStyles.button1Text}>Afegeix un alumne</Text>
-                    </Pressable>
-                )}
-            </View>
+                <View style={themeStyles.hr} />
 
-            <View style={themeStyles.hr} />
+                <View>
+                    <Text style={themeStyles.titol1}>Entrenos d'avui</Text>
+                    {!reserves || reservesArray.length === 0 ? (
+                        <Text style={themeStyles.text}>Avui no tens més entrenos</Text>
+                    ) : (
+                        reservesArray.map((reserva) => {
+                            const hora: Date = stringDiaToDate(reserva.Hora);
+                            const ahora: Date = new Date();
+                            ahora.setHours(ahora.getHours() - 2);
 
-            <View>
-                <Text style={themeStyles.titol1}>Entrenos d'avui</Text>
-                {!reserves || reservesArray.length === 0 ? (
-                    <Text style={themeStyles.text}>Avui no tens més entrenos</Text>
-                ) : (
-                    reservesArray.map((reserva) => {
-                        const hora: Date = stringDiaToDate(reserva.Hora);
-                        const ahora: Date = new Date();
-                        ahora.setHours(ahora.getHours() - 2);
-
-                        if (hora >= ahora) {
-                            return (
-                                <View key={reserva.ID} style={themeStyles.mainContainer1}>
-                                    <Text style={themeStyles.text}>
-                                        {getUserByID(alumnes, reserva.UsuariID).Nom + " - " +
-                                            hora.getHours() + ":" + hora.getMinutes().toString().padStart(2, '0')}
-                                    </Text>
-                                </View>
-                            );
-                        }
-                    })
-                )}
-            </View>
+                            if (hora >= ahora) {
+                                return (
+                                    <View key={reserva.ID} style={themeStyles.mainContainer1}>
+                                        <Text style={themeStyles.text}>
+                                            {getUserByID(alumnes, reserva.UsuariID).Nom + " - " +
+                                                hora.getHours() + ":" + hora.getMinutes().toString().padStart(2, '0')}
+                                        </Text>
+                                    </View>
+                                );
+                            }
+                        })
+                    )}
+                </View>
 
 
-            {/*
+                {/*
             <Text style={themeStyles.titol1}>Sales ({sales.length}/3)</Text>
 
              <View>
@@ -239,32 +241,33 @@ export default function Index() {
             </View>
              */}
 
-            <View style={themeStyles.hr} />
-            <Text style={themeStyles.titol1}>Rutines</Text>
-            <View>
-                {rutinesArray.length === 0 && <Text style={themeStyles.text}>Encara no tens cap rutina</Text>}
-                {rutinesArray.length > 0 && rutinesArray.map((rutina) => (
-                    <ViewRutina rutinaID={rutina.ID} key={rutina.ID} />
-                ))}
-            </View>
+                <View style={themeStyles.hr} />
+                <Text style={themeStyles.titol1}>Rutines</Text>
+                <View>
+                    {rutinesArray.length === 0 && <Text style={themeStyles.text}>Encara no tens cap rutina</Text>}
+                    {rutinesArray.length > 0 && rutinesArray.map((rutina) => (
+                        <ViewRutina rutinaID={rutina.ID} key={rutina.ID} />
+                    ))}
+                </View>
 
-            <View>
-                <Pressable
-                    style={themeStyles.button1}
-                    onPress={() => {
-                        router.replace("../(rutines)/crearRutina")
-                    }}><Text style={themeStyles.button1Text}>Crea una rutina</Text></Pressable>
-                <Pressable
-                    style={[themeStyles.button1, { marginBottom: 60 }]}
-                    onPress={() => {
-                        router.replace("../(rutines)/rutinesPubliques")
-                    }}><Text style={themeStyles.button1Text}>Rutines públiques</Text></Pressable>
-            </View>
+                <View>
+                    <Pressable
+                        style={themeStyles.button1}
+                        onPress={() => {
+                            router.replace("../(rutines)/crearRutina")
+                        }}><Text style={themeStyles.button1Text}>Crea una rutina</Text></Pressable>
+                    <Pressable
+                        style={[themeStyles.button1, { marginBottom: 60 }]}
+                        onPress={() => {
+                            router.replace("../(rutines)/rutinesPubliques")
+                        }}><Text style={themeStyles.button1Text}>Rutines públiques</Text></Pressable>
+                </View>
 
-            <ModalAfegirUsuari
-                modalVisible={afegirAlumneVisible}
-                closeModal={() => setAfegirAlumneVisible(false)}
-                crearUsuariFictici={crearUsuariFictici} />
-        </ScrollView>
+                <ModalAfegirUsuari
+                    modalVisible={afegirAlumneVisible}
+                    closeModal={() => setAfegirAlumneVisible(false)}
+                    crearUsuariFictici={crearUsuariFictici} />
+            </ScrollView>
+        </SafeAreaView>
     )
 }

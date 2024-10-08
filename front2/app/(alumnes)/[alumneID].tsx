@@ -1,4 +1,5 @@
-import { View, Text, Pressable, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, Pressable, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams, router } from 'expo-router'
 import { useAxios } from '../api';
@@ -54,9 +55,9 @@ export default function AlumneScreen() {
         const horaUTC = new Date(hora.getTime() - hora.getTimezoneOffset() * 60000);
         const response = await api.post(`/reserves`, { hora: horaUTC, usuariID: alumne.ID });
         if (response.status === 200) {
-            const reserva:ReservaType = {ID: Number(response.data.data), UsuariID: alumne.ID, Hora: horaUTC.toISOString(), Confirmada: false}; 
+            const reserva: ReservaType = { ID: Number(response.data.data), UsuariID: alumne.ID, Hora: horaUTC.toISOString(), Confirmada: false };
             console.log(horaUTC.toISOString())
-            dispatch(addReserva({id: reserva.ID, data: reserva}));
+            dispatch(addReserva({ id: reserva.ID, data: reserva }));
             Toast.show({
                 type: 'success',
                 text1: 'Reserva creada',
@@ -147,90 +148,92 @@ export default function AlumneScreen() {
 
     return (
         <AutocompleteDropdownContextProvider>
-            <ScrollView style={themeStyles.background}>
-                <BackButton href={"../"}/>
-                <Text style={themeStyles.titol1}>{alumne.Nom}</Text>
-                <Calendar
-                    firstDay={1}
-                    onDayPress={(day: DateData) => handleDayPress(day)}
-                    markedDates={
-                        selectedDay && {
-                            [selectedDay.dateString]: { selected: true, marked: true, selectedColor: 'blue' }
-                        }}
-                />
+            <SafeAreaView style={themeStyles.background}>
+                <ScrollView>
+                    <BackButton href={"../"} />
+                    <Text style={themeStyles.titol1}>{alumne.Nom}</Text>
+                    <Calendar
+                        firstDay={1}
+                        onDayPress={(day: DateData) => handleDayPress(day)}
+                        markedDates={
+                            selectedDay && {
+                                [selectedDay.dateString]: { selected: true, marked: true, selectedColor: 'blue' }
+                            }}
+                    />
 
-                {selectedDay && selectedDay.dateString >= formatDate(new Date()) && <View>
-                    <Pressable style={themeStyles.button1} onPress={() => {
-                        setModalReservarVisible(true)
-                        setSelectedTime(new Date(selectedDay.timestamp))
-                    }}>
-                        <Text style={themeStyles.button1Text}>Reservar</Text>
-                    </Pressable>
-                </View>}
-
-                {modalReservarVisible && selectedDay && < RNDateTimePicker
-                    mode='time'
-                    display="spinner"
-                    is24Hour={true}
-                    value={new Date(selectedDay.timestamp)}
-                    minuteInterval={30}
-                    positiveButton={{ label: 'Reservar', textColor: 'white' }}
-                    negativeButton={{ label: 'Cancelar', textColor: 'white' }}
-                    onChange={(e: DateTimePickerEvent, time: Date | undefined) => {
-                        if (time && e.type == "set") {
-                            reservar(new Date(e.nativeEvent.timestamp))
-                        }
-                        e.nativeEvent && setModalReservarVisible(false)
-                    }} />
-                }
-
-
-                {/* Entrenos */}
-                <Text style={themeStyles.titol1}>Pròxims entrenos</Text>
-                {!alumne.Entrenos ? (<Text style={themeStyles.text}>No hi ha entrenos pròximament</Text>
-                ) : (
-                    alumne.Entrenos.map((entreno) => (
-                        entreno.DiaRutina >= Date.now() && <Text key={entreno.DiaRutina} style={themeStyles.text}>{entreno.Dia_hora.toDateString()}</Text>
-                    )))}
-
-                {/* Rutina */}
-                <Text style={themeStyles.titol1}>Rutina actual</Text>
-                {alumne.RutinaAssignada ? (<ViewRutina rutinaID={alumne.RutinaAssignada} versio={1} acabarRutina={acabarRutina} />
-                ) : (
-                    <View>
-                        <Text style={themeStyles.text}>No té cap rutina assignada</Text>
-                        <View style={{ marginHorizontal: "auto", marginVertical: 10, width: "80%" }}>
-                            <AutocompleteRutines
-                                onSubmit={(id: number) => setAssignarRutinaID(id)}
-                                error={autocompleteRutinaError} />
-                        </View>
+                    {selectedDay && selectedDay.dateString >= formatDate(new Date()) && <View>
                         <Pressable style={themeStyles.button1} onPress={() => {
-                            assignarRutina()
+                            setModalReservarVisible(true)
+                            setSelectedTime(new Date(selectedDay.timestamp))
                         }}>
-                            <Text style={themeStyles.button1Text}>Assignar rutina</Text>
+                            <Text style={themeStyles.button1Text}>Reservar</Text>
                         </Pressable>
-                    </View>
-                )}
+                    </View>}
+
+                    {modalReservarVisible && selectedDay && < RNDateTimePicker
+                        mode='time'
+                        display="spinner"
+                        is24Hour={true}
+                        value={new Date(selectedDay.timestamp)}
+                        minuteInterval={30}
+                        positiveButton={{ label: 'Reservar', textColor: 'white' }}
+                        negativeButton={{ label: 'Cancelar', textColor: 'white' }}
+                        onChange={(e: DateTimePickerEvent, time: Date | undefined) => {
+                            if (time && e.type == "set") {
+                                reservar(new Date(e.nativeEvent.timestamp))
+                            }
+                            e.nativeEvent && setModalReservarVisible(false)
+                        }} />
+                    }
 
 
-                <Pressable style={[themeStyles.buttonDanger, { marginBottom: 70 }]} onPress={() => {
-                    setModalVisible(true)
-                }}>
-                    <Text style={themeStyles.button1Text}>Expulsar</Text>
-                </Pressable>
-                <ModalConfirmacio
-                    titol={'Expulsar usuari'}
-                    missatge={'Segur que vols eliminar l\'usuari?'}
-                    modalVisible={modalVisible}
-                    closeModal={() => setModalVisible(false)}
-                    confirmar={expulsarUsuari} />
+                    {/* Entrenos */}
+                    <Text style={themeStyles.titol1}>Pròxims entrenos</Text>
+                    {!alumne.Entrenos ? (<Text style={themeStyles.text}>No hi ha entrenos pròximament</Text>
+                    ) : (
+                        alumne.Entrenos.map((entreno) => (
+                            entreno.DiaRutina >= Date.now() && <Text key={entreno.DiaRutina} style={themeStyles.text}>{entreno.Dia_hora.toDateString()}</Text>
+                        )))}
 
-                {/*                 <ModalReservarHora
+                    {/* Rutina */}
+                    <Text style={themeStyles.titol1}>Rutina actual</Text>
+                    {alumne.RutinaAssignada ? (<ViewRutina rutinaID={alumne.RutinaAssignada} versio={1} acabarRutina={acabarRutina} />
+                    ) : (
+                        <View>
+                            <Text style={themeStyles.text}>No té cap rutina assignada</Text>
+                            <View style={{ marginHorizontal: "auto", marginVertical: 10, width: "80%" }}>
+                                <AutocompleteRutines
+                                    onSubmit={(id: number) => setAssignarRutinaID(id)}
+                                    error={autocompleteRutinaError} />
+                            </View>
+                            <Pressable style={themeStyles.button1} onPress={() => {
+                                assignarRutina()
+                            }}>
+                                <Text style={themeStyles.button1Text}>Assignar rutina</Text>
+                            </Pressable>
+                        </View>
+                    )}
+
+
+                    <Pressable style={[themeStyles.buttonDanger, { marginBottom: 70 }]} onPress={() => {
+                        setModalVisible(true)
+                    }}>
+                        <Text style={themeStyles.button1Text}>Expulsar</Text>
+                    </Pressable>
+                    <ModalConfirmacio
+                        titol={'Expulsar usuari'}
+                        missatge={'Segur que vols eliminar l\'usuari?'}
+                        modalVisible={modalVisible}
+                        closeModal={() => setModalVisible(false)}
+                        confirmar={expulsarUsuari} />
+
+                    {/*                 <ModalReservarHora
                     modalVisible={modalReservarVisible}
                     closeModal={() => setModalReservarVisible(false)}
                     onSubmit={(time: Date) => reservar(time)} /> */}
 
-            </ScrollView>
+                </ScrollView>
+            </SafeAreaView>
         </AutocompleteDropdownContextProvider>
     )
 }

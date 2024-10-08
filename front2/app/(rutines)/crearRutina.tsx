@@ -109,18 +109,6 @@ export default function CrearRutina() {
                             maxLength={150} />
                     </View>
 
-
-                    {/* <TextInput
-                        placeholder='Descripció'
-                        error={errors.Descripcio != ""}
-                        style={[themeStyles.inputContainer, { paddingHorizontal: 0 }]}
-                        multiline={true}
-                        contentStyle={{ paddingHorizontal: 0, width: 200 }}
-                        numberOfLines={4}
-                        maxLength={150}
-                        onChangeText={(text: string) => setDescripcio(text)}
-                        value={descripcio}
-                    /> */}
                     {errors.Descripcio && errors.Descripcio != "" ? <Text style={themeStyles.textInputError}>* {errors.Descripcio}</Text> : null}
 
                     <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginHorizontal: "auto", marginBottom: 10, width: "80%" }}>

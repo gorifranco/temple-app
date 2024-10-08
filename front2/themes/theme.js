@@ -49,8 +49,7 @@ export function useThemeStyles() {
 
   return StyleSheet.create({
     background: {
-      backgroundColor: theme.colors.background,
-      paddingTop: statusBarHeight,
+      backgroundColor: theme.colors.background
     },
     authBackground: {
       flex: 1,
