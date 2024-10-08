@@ -168,7 +168,7 @@ export default function Index() {
         <ScrollView style={themeStyles.background}>
             <Text style={themeStyles.titol1}>Alumnes ({!alumnesArray ? '0' : alumnesArray.length}/12)</Text>
             <View>
-                <ScrollView style={{maxHeight: 200, width: "85%", alignContent: "center", alignSelf: "center"}}>
+                <ScrollView style={{ maxHeight: 200, width: "85%", alignContent: "center", alignSelf: "center" }}>
                     {alumnesArray && alumnesArray.map((alumne) => (
                         <Pressable key={alumne.ID} style={themeStyles.mainContainer1} onPress={() => {
                             router.push({ pathname: `../(alumnes)/${alumne.ID}` })
@@ -198,15 +198,20 @@ export default function Index() {
                     <Text style={themeStyles.text}>Avui no tens més entrenos</Text>
                 ) : (
                     reservesArray.map((reserva) => {
-                        const hora = stringDiaToDate(reserva.Hora);
-                        return (
-                            <View key={reserva.ID} style={themeStyles.mainContainer1}>
-                                <Text style={themeStyles.text}>
-                                    {getUserByID(alumnes, reserva.UsuariID).Nom + " - " +
-                                        hora.getHours() + ":" + hora.getMinutes().toString().padStart(2, '0')}
-                                </Text>
-                            </View>
-                        );
+                        const hora: Date = stringDiaToDate(reserva.Hora);
+                        const ahora: Date = new Date();
+                        ahora.setHours(ahora.getHours() - 2);
+
+                        if (hora >= ahora) {
+                            return (
+                                <View key={reserva.ID} style={themeStyles.mainContainer1}>
+                                    <Text style={themeStyles.text}>
+                                        {getUserByID(alumnes, reserva.UsuariID).Nom + " - " +
+                                            hora.getHours() + ":" + hora.getMinutes().toString().padStart(2, '0')}
+                                    </Text>
+                                </View>
+                            );
+                        }
                     })
                 )}
             </View>
