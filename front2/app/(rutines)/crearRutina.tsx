@@ -66,7 +66,7 @@ export default function CrearRutina() {
                     position: 'top',
                 });
                 dataRutina.ID = response.data.data.ID
-                dispatch(afegirRutina({ id: response.data.data.ID, data: dataRutina }))
+                dispatch(afegirRutina({ id: response.data.data.ID, data: response.data.data }))
                 router.replace("/(entrenador)")
             } else {
                 Toast.show({

@@ -9,7 +9,7 @@ import { RootState } from '@/store';
 import { addAlumne, updateAlumnes } from '@/store/alumnesSlice';
 import { setReserves } from '@/store/reservesSlice';
 import ViewRutina from '@/components/viewers/ViewRutina';
-import { updateRutines } from '@/store/rutinesSlice';
+import { setRutines, updateRutines } from '@/store/rutinesSlice';
 import { ScrollView } from 'react-native-gesture-handler';
 import { RutinaType, ReservaType, AlumneType, ExerciciType } from '@/types/apiTypes';
 import { useThemeStyles } from '@/themes/theme';
@@ -38,9 +38,7 @@ export default function Index() {
     /* dispatch(setReserves([])) */
 
     useEffect(() => {
-        if (rutinesArray.length === 0) {
-            fetchRutinesAPI()
-        }
+        fetchRutinesAPI()
         fetchApiExercicis()
         fetchAlumnesAPI()
         fetchReservesAPI()
@@ -51,8 +49,10 @@ export default function Index() {
     async function fetchRutinesAPI() {
         const response = await api.get('/rutines/rutinesEntrenador');
         if (response.status === 200) {
+            console.log("rutina")
+            console.log(response.data.data)
             const fetchedRutines: RutinaType[] = response.data.data;
-            dispatch(updateRutines({ data: fetchedRutines }));
+            dispatch(setRutines(fetchedRutines));
         }
     }
 

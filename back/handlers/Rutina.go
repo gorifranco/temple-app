@@ -62,8 +62,6 @@ func (h *Handler) CreateRutina(c *gin.Context) {
 			return err
 		}
 
-		fmt.Println(input.Exercicis)
-
 		// Crear los ejercicios asociados a la rutina
 		for _, exercici := range input.Exercicis {
 			ex := models.ExerciciRutina{

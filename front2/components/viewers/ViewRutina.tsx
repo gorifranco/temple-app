@@ -33,6 +33,8 @@ export default function ViewRutina(props: propsType) {
     const dispatch = useDispatch();
     const exercicis = useSelector((state: RootState) => state.exercicis);
 
+    console.log(rutina)
+
     function editarRutina() {
         console.log("editar")
     }
@@ -67,13 +69,13 @@ export default function ViewRutina(props: propsType) {
         }
     }
 
-    return (
+    return rutina && (
         <View key={rutina.ID} style={themeStyles.mainContainer1}>
             <View style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", position: "relative" }}>
                 <Text style={themeStyles.text}>{rutina.Nom}</Text>
                 <FletxaDesplegar
                     amunt={desplegat}
-                    containerStyle={{ position: "absolute", right: 0, top: 0 }}
+                    containerStyle={{ position: "absolute", right: 0, top:   0 }}
                     size={24}
                     onPress={() => setDesplegat(!desplegat)} />
             </View>

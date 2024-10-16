@@ -26,14 +26,9 @@ export default function Entreno(props: propsType) {
         rutina.Exercicis.filter(e => e.DiaRutina == diaActual && e.Cicle == setmanaActual).map(f => ({ ExerciciRutinaID: f.ExerciciID, Repeticions: f.NumRepes, Series: f.NumSeries, Pes: 50 }))
     );
 
-    console.log("Resultats")
-    console.log(resultats)
-
-    function crearResultats() {
-
-    }
-
     const exercicisArray = Object.values(rutina.Exercicis);
+
+    console.log(rutina.Exercicis)
 
     return (
         <View>
