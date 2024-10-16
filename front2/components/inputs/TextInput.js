@@ -1,17 +1,17 @@
 import React from 'react'
-import { View, StyleSheet, Text } from 'react-native'
+import { View, Text } from 'react-native'
 import { TextInput as Input } from 'react-native-paper'
 import { useAppTheme, useThemeStyles } from '@/themes/theme'
 
-export default function TextInput({ errorText, ...props }) {
+export default function TextInput({ ...props }) {
   const themeStyles = useThemeStyles();
   const theme = useAppTheme();
 
   return (
-    <View style={[styles.container, props.containerStyle]}>
+    <View style={props.containerStyle}>
       <Input
         maxLength={props.maxLength}
-        style={[styles.input, props.inputStyle]}
+        style={props.inputStyle}
         selectionColor={theme.colors.primary}
         underlineColor="transparent"
         mode="outlined"
@@ -20,14 +20,7 @@ export default function TextInput({ errorText, ...props }) {
         numberOfLines={props.numberOfLines}
         editable={props.editable}
       />
-      {errorText ? <Text style={themeStyles.textInputError}>{errorText}</Text> : null}
+      {props.errorText ? <Text style={themeStyles.textInputError}>{props.errorText}</Text> : null}
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    marginVertical: 12,
-  },
-})

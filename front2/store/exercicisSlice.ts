@@ -48,6 +48,10 @@ const exercicisSlice = createSlice({
       },
     },
   });
+
+  export function getExerciciByID (state: ExercicisState, exerciciID: number) {
+    return state[exerciciID];
+};
   
   export const { setExercicis } = exercicisSlice.actions;
   export default exercicisSlice.reducer;

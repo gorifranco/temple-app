@@ -62,6 +62,11 @@ RutinaType
           },
       },
     });
+
+    export function getRutinaByID (state: RutinaState, rutinaID: number) {
+        return state[rutinaID];
+    
+};
     
     export const { setRutines, afegirRutina, updateRutines, deleteRutina } = rutinesSlice.actions;
     export default rutinesSlice.reducer;

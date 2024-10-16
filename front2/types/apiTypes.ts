@@ -57,21 +57,15 @@ export interface ConfigState {
 export interface AlumneType {
   ID: number;
   Nom: string;
-  Entrenos: EntrenoType[];
+  ResultatsRutinaActual: ResultatsExercici[];
   Reserves: ReservaType[];
-  RutinaAssignada: number|null;
-}
-
-export interface EntrenoType {
-  Dia_hora: Date;
-  Usuari: UsuariType;
-  Rutina: RutinaType;
-  DiaRutina: number;
+  RutinaActual: number|null;
+  RMs: RMsState;
 }
 
 export interface ReservaType {
   ID: number;
-  Hora: String;
+  Hora: string;
   UsuariID: number;
   Confirmada: boolean;
 }
@@ -104,6 +98,21 @@ export interface ConfigType {
 
 export interface HorariType {
   DiaSetmana: number;
-  Desde: Date;
-  Fins: Date;
+  Desde: string;
+  Fins: string;
+}
+
+export interface ResultatsExercici {
+  ExerciciRutinaID: number;
+  Repeticions: number;
+  Series: number;
+  Pes: number;
+}
+
+export interface RMsState {
+  [ExerciciID: number]: RMDetail;
+}
+
+export interface RMDetail {
+  Pes: number;
 }

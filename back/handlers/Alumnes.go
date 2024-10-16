@@ -9,12 +9,13 @@ import (
 )
 
 type alumneResposta struct {
-	ID           uint             `json:"ID"`
-	Nom          string           `json:"Nom"`
-	Alumnes      []models.Usuari  `json:"Alumnes"`
-	TipusUsuari  string           `json:"TipusUsuari"`
-	Reserves     []models.Reserva `json:"Reserves"`
-	RutinaActual uint             `json:"RutinaActual"`
+	ID                    uint                            `json:"ID"`
+	Nom                   string                          `json:"Nom"`
+	Alumnes               []models.Usuari                 `json:"Alumnes"`
+	TipusUsuari           string                          `json:"TipusUsuari"`
+	Reserves              []models.Reserva                `json:"Reserves"`
+	RutinaActual          uint                            `json:"RutinaActual"`
+	ResultatsRutinaActual []models.UsuariResultatExercici `json:"ResultatsRutinaActual"`
 }
 
 func (h *Handler) AlumnesEntrenador(c *gin.Context) {
@@ -26,22 +27,33 @@ func (h *Handler) AlumnesEntrenador(c *gin.Context) {
 		return
 	}
 
+	query := `select ure.id as id, ure.dia as dia, ure.repeticions as repeticions, ure.series as series, ure.pes as pes,
+ ure.exercici_rutina_id as exercici_rutina_id from usuari_resultat_exercici ure
+  inner join usuari_rutina ur on ur.id = ure.usuari_rutina_id where ur.data_finalitzacio is null and Usuari_id = 1;`
+
 	var resposta []alumneResposta
 	for _, alumne := range alumnes {
+		var resultatsRutinaActual []models.UsuariResultatExercici
 		var rutina models.UsuariRutina
 		err = h.DB.Where("usuari_id = ? and data_finalitzacio is null", alumne.ID).First(&rutina).Error
 		var tmp = alumneResposta{
-			ID:           alumne.ID,
-			Nom:          alumne.Nom,
-			Alumnes:      alumne.Alumnes,
-			TipusUsuari:  alumne.TipusUsuari.Nom,
-			Reserves:     alumne.Reserves,
+			ID:          alumne.ID,
+			Nom:         alumne.Nom,
+			TipusUsuari: alumne.TipusUsuari.Nom,
+			Reserves:    alumne.Reserves,
 		}
 		if err == nil {
 			tmp.RutinaActual = rutina.RutinaID
-		}else {
+		} else {
 			tmp.RutinaActual = 0
 		}
+
+		if err := h.DB.Raw(query, alumne.ID).Scan(&resultatsRutinaActual).Error; err != nil {
+			tmp.ResultatsRutinaActual = []models.UsuariResultatExercici{}
+		} else{
+			tmp.ResultatsRutinaActual = resultatsRutinaActual
+		}
+
 		resposta = append(resposta, tmp)
 	}
 
@@ -64,7 +76,7 @@ func (h *Handler) CrearUsuariFictici(c *gin.Context) {
 		TipusUsuariID: 4,
 	}
 
-	if err = h.DB.Create(&usuari).Error; err != nil{
+	if err = h.DB.Create(&usuari).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -77,7 +89,7 @@ func (h *Handler) UpdateUsuariFictici(c *gin.Context) {
 	var err error
 
 	var entrenador models.Usuari
-	if err = h.DB.Where("id = ?", auth.GetUsuari(c)).First(&entrenador).Error; err != nil{
+	if err = h.DB.Where("id = ?", auth.GetUsuari(c)).First(&entrenador).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
@@ -119,7 +131,7 @@ func (h *Handler) ExpulsarUsuari(c *gin.Context) {
 	}
 
 	var entrenador models.Usuari
-	if err = h.DB.Where("id = ?", c.Copy().MustGet("id").(uint)).First(&entrenador).Error; err != nil{
+	if err = h.DB.Where("id = ?", c.Copy().MustGet("id").(uint)).First(&entrenador).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}

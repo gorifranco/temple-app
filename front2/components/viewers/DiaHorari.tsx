@@ -6,7 +6,7 @@ import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/d
 
 interface propsType {
     dia: string
-    horaris: { Desde: Date | null; Fins: Date | null }[]
+    horaris: { Desde: string | null; Fins: string | null }[]
     afegirHorari: Function
     llevarHorari: Function
     handleChange: Function
@@ -36,7 +36,7 @@ export default function DiaHorari(props: propsType) {
                         <TextInput
                             label="Desde"
                             returnKeyType="next"
-                            value={horari.Desde ? horari.Desde.getHours().toString().padStart(2, "0") + ":" + horari.Desde.getMinutes().toString().padStart(2, "0") : "_ _ : _ _"}
+                            value={horari.Desde ? horari.Desde : "_ _ : _ _"}
                             error={errors[i] ? !!errors[i].errDesde : false}
                             errorText={errors[i] ? errors[i].errDesde : ""}
                             inputStyle={{ textAlign: "center", width: "100%" }}
@@ -55,7 +55,7 @@ export default function DiaHorari(props: propsType) {
                             label="Fins"
                             editable={false}
                             returnKeyType="next"
-                            value={horari.Fins ? horari.Fins.getHours().toString() + ":" + horari.Fins.getMinutes().toString() : "_ _ : _ _"}
+                            value={horari.Fins ? horari.Fins : "_ _ : _ _"}
                             error={errors[i] ? !!errors[i].errFins : false}
                             errorText={errors[i] ? errors[i].errFins : ""}
                             inputStyle={{ textAlign: "center" }}
@@ -91,7 +91,7 @@ export default function DiaHorari(props: propsType) {
                     negativeButton={{ label: 'Cancelar', textColor: 'white' }}
                     onChange={(e: DateTimePickerEvent, time: Date | undefined) => {
                         if (time && e.type == "set") {
-                            handleChange(new Date(e.nativeEvent.timestamp), changing, dof)
+                            handleChange(new Date(e.nativeEvent.timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }), changing, dof)
                         }
                         e.nativeEvent && setTimePickerVisible(false)
                     }} />

@@ -1,4 +1,4 @@
-export function validarHoraris(horaris: Map<number, { Desde: Date | null; Fins: Date | null }[]>) {
+export function validarHoraris(horaris: Map<number, { Desde: string | null; Fins: string | null }[]>) {
     let errors = new Map<number, { errDesde: string | null; errFins: string | null }[]>();
     let status = false;
 

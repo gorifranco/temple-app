@@ -27,6 +27,10 @@ function AutocompleteExercicis(props) {
                 dataSet={dataSet}
                 suggestionsListMaxHeight={Dimensions.get('window').height * 0.3}
                 inputContainerStyle={{ backgroundColor: "#e7e0ec", paddingVertical: 5 }}
+                textInputProps={{
+                    style: { color: "black" },
+                }}
+                containerStyle={{color: "black"}}
                 renderItem={(item, text) => (
                     <Text style={[themeStyles.text, { padding: 15 }]}>
                         {item.title}

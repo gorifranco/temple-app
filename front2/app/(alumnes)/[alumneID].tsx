@@ -3,7 +3,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useEffect, useState } from 'react';
 import { useLocalSearchParams, router } from 'expo-router'
 import { useAxios } from '../api';
-import { AlumneType, ReservaType } from '@/types/apiTypes'
+import { ReservaType } from '@/types/apiTypes';
 import { useSelector, useDispatch } from 'react-redux'
 import { RootState } from '@/store'
 import BackButton from '@/components/buttons/BackButton';
@@ -17,6 +17,8 @@ import AutocompleteRutines from '@/components/inputs/selects/AutocompleteRutines
 import { useThemeStyles } from '@/themes/theme';
 import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker'
 import { addReserva } from '@/store/reservesSlice';
+import { assignarRutinaAPI } from '@/app/api';
+import { stringDiaToDate } from '@/helpers/timeHelpers';
 
 export default function AlumneScreen() {
     const themeStyles = useThemeStyles()
@@ -56,7 +58,6 @@ export default function AlumneScreen() {
         const response = await api.post(`/reserves`, { hora: horaUTC, usuariID: alumne.ID });
         if (response.status === 200) {
             const reserva: ReservaType = { ID: Number(response.data.data), UsuariID: alumne.ID, Hora: horaUTC.toISOString(), Confirmada: false };
-            console.log(horaUTC.toISOString())
             dispatch(addReserva({ id: reserva.ID, data: reserva }));
             Toast.show({
                 type: 'success',
@@ -98,24 +99,13 @@ export default function AlumneScreen() {
             return
         } else {
             setAutocompleteRutinaError("")
-            const response = await api.post(`/entrenador/assignarRutina`, { rutinaID: assignarRutinaID, alumneID: alumne.ID })
-            if (response.status === 200) {
-                Toast.show({
-                    type: 'success',
-                    text1: 'Rutina assignada',
-                    position: 'top',
-                });
+            const response = await assignarRutinaAPI(assignarRutinaID, alumne.ID)
+            if (response == true) {
                 const updatedAlumne = {
                     ...alumne,
                     RutinaAssignada: assignarRutinaID
                 };
                 dispatch(updateAlumne({ id: alumne.ID, data: updatedAlumne }))
-            } else {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Error assignant la rutina',
-                    position: 'top',
-                });
             }
         }
     }
@@ -189,15 +179,15 @@ export default function AlumneScreen() {
 
                     {/* Entrenos */}
                     <Text style={themeStyles.titol1}>Pròxims entrenos</Text>
-                    {!alumne.Entrenos ? (<Text style={themeStyles.text}>No hi ha entrenos pròximament</Text>
+                    {!alumne.Reserves ? (<Text style={themeStyles.text}>No hi ha entrenos pròximament</Text>
                     ) : (
-                        alumne.Entrenos.map((entreno) => (
-                            entreno.DiaRutina >= Date.now() && <Text key={entreno.DiaRutina} style={themeStyles.text}>{entreno.Dia_hora.toDateString()}</Text>
+                        alumne.Reserves.map((reserva) => (
+                            stringDiaToDate(reserva.Hora).getMilliseconds() >= Date.now() && <Text key={reserva.ID} style={themeStyles.text}>{reserva.Hora}</Text>
                         )))}
 
                     {/* Rutina */}
                     <Text style={themeStyles.titol1}>Rutina actual</Text>
-                    {alumne.RutinaAssignada ? (<ViewRutina rutinaID={alumne.RutinaAssignada} versio={1} acabarRutina={acabarRutina} />
+                    {alumne.RutinaActual ? (<ViewRutina rutinaID={alumne.RutinaActual} versio={1} acabarRutina={acabarRutina} />
                     ) : (
                         <View>
                             <Text style={themeStyles.text}>No té cap rutina assignada</Text>

@@ -8,12 +8,13 @@ import { useAxios } from '@/app/api'
 import Toast from 'react-native-toast-message'
 import { HorariType } from '@/types/apiTypes'
 import { validarHoraris } from '@/helpers/horarisValidator'
+import { stringDiaToDate } from '@/helpers/timeHelpers'
 
 export default function HorariConfig() {
     const themeStyles = useThemeStyles()
     const api = useAxios();
     const horaris = useSelector((state: RootState) => state.config.Horaris);
-    const [horarisMap, setHorarisMap] = useState<Map<number, { Desde: Date|null; Fins: Date|null }[]>>(new Map());
+    const [horarisMap, setHorarisMap] = useState<Map<number, { Desde: string|null; Fins: string|null }[]>>(new Map());
     const [errorsHorarisMap, setErrorsHorarisMap] = useState<Map<number, { errDesde: string|null; errFins: string|null }[]>>(new Map());
     const dies = ["Dilluns", "Dimarts", "Dimecres", "Dijous", "Divendres", "Dissabte", "Diumenge"];
 
@@ -25,7 +26,7 @@ export default function HorariConfig() {
     }, [horaris]);
 
     function transformHoraris(horaris: HorariType[]) {
-        return horaris.reduce((acc: Map<number, { Desde: Date; Fins: Date }[]>, horari: HorariType) => {
+        return horaris.reduce((acc: Map<number, { Desde: string; Fins: string }[]>, horari: HorariType) => {
             if (!acc.has(horari.DiaSetmana)) {
                 acc.set(horari.DiaSetmana, []);
             }
@@ -47,8 +48,8 @@ export default function HorariConfig() {
         const horarisArray = Array.from(horarisMap.entries()).flatMap(([diaSetmana, horaris]) => {
             return horaris.map(horari => ({
                 diaSetmana: diaSetmana,
-                desde: horari.Desde!.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }),
-                fins: horari.Fins!.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })
+                desde: horari.Desde,
+                fins: horari.Fins
             }));
         });
 
@@ -79,7 +80,7 @@ export default function HorariConfig() {
         });
     }
 
-    function handleCanviarHorari(dia:string, index:number, hora:Date, dof:number){ //dof = desde o fins
+    function handleCanviarHorari(dia:string, index:number, hora:string, dof:number){ //dof = desde o fins
         const d = dies.indexOf(dia);
         setHorarisMap(prevMap => {
             const updatedMap = new Map(prevMap);
@@ -114,7 +115,7 @@ export default function HorariConfig() {
                             horaris={horarisMap.get(i) ?? []}
                             afegirHorari={() => afegirHorari(i)}
                             llevarHorari={() => llevarHorari(i)} key={i} 
-                            handleChange={(hora: Date, index: number, dof: number) => handleCanviarHorari(d, index, hora, dof)} />
+                            handleChange={(hora: string, index: number, dof: number) => handleCanviarHorari(d, index, hora, dof)} />
                 )})}
             </View>
 

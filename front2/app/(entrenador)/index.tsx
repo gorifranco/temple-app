@@ -7,7 +7,7 @@ import Toast from 'react-native-toast-message';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '@/store';
 import { addAlumne, updateAlumnes } from '@/store/alumnesSlice';
-import { setReserves, updateReserves } from '@/store/reservesSlice';
+import { setReserves } from '@/store/reservesSlice';
 import ViewRutina from '@/components/viewers/ViewRutina';
 import { updateRutines } from '@/store/rutinesSlice';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -19,9 +19,11 @@ import { HorariType } from '@/types/apiTypes';
 import { getUserByID } from '@/store/alumnesSlice';
 import { stringDiaToDate } from '@/helpers/timeHelpers';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import FentEntreno from '@/components/viewers/FentEntreno';
 
 
 export default function Index() {
+    const [entrenoDesplegat, setEntrenoDesplegat] = useState<null | number>(null)
     const themeStyles = useThemeStyles();
     const rutines = useSelector((state: RootState) => state.rutines);
     const rutinesArray = Object.values(rutines);
@@ -32,6 +34,8 @@ export default function Index() {
     const alumnes = useSelector((state: RootState) => state.alumnes);
     const alumnesArray = Object.values(alumnes);
     const dispatch = useDispatch();
+
+    /* dispatch(setReserves([])) */
 
     useEffect(() => {
         if (rutinesArray.length === 0) {
@@ -63,28 +67,7 @@ export default function Index() {
     async function fetchConfigAPI() {
         const response = await api.get(`/configuracioEntrenador`);
         if (response.status == 200) {
-
-            const horari: HorariType[] = response.data.data.Horaris.map((h: any) => {
-                const currentDate = new Date();
-
-                const [desdeHours, desdeMinutes] = h.Desde.split(':').map(Number);
-                const [finsHours, finsMinutes] = h.Fins.split(':').map(Number);
-
-                const desdeDate = new Date(currentDate.setHours(desdeHours, desdeMinutes, 0, 0));
-                const finsDate = new Date(currentDate.setHours(finsHours, finsMinutes, 0, 0));
-
-                return {
-                    DiaSetmana: h.DiaSetmana,
-                    Desde: desdeDate,
-                    Fins: finsDate,
-                };
-            });
-
-            dispatch(setConfig({
-                DuracioSessions: response.data.data.DuracioSessions,
-                MaxAlumnesPerSessio: response.data.data.MaxAlumnesPerSessio,
-                Horaris: horari,
-            }));
+            dispatch(setConfig(response.data.data));
         }
     }
     async function fetchReservesAPI() {
@@ -99,18 +82,7 @@ export default function Index() {
     async function fetchAlumnesAPI() {
         const response = await api.get(`/entrenador/alumnes`);
         if (response.status === 200) {
-            const fetchedAlumnes = response.data.data;
-            let alumnesArray: AlumneType[] = [];
-            fetchedAlumnes.forEach((alumne: any) => {
-                alumnesArray.push({
-                    ID: alumne.ID,
-                    Nom: alumne.Nom,
-                    Entrenos: alumne.Entrenos,
-                    Reserves: alumne.Reserves,
-                    RutinaAssignada: alumne.RutinaActual
-                })
-            })
-            dispatch(updateAlumnes({ data: alumnesArray }));
+            dispatch(updateAlumnes({ data: response.data.data }));
         }
     }
 
@@ -125,9 +97,10 @@ export default function Index() {
             const alumne: AlumneType = {
                 ID: response.data.data.ID,
                 Nom: response.data.data.Nom,
-                Entrenos: [],
                 Reserves: [],
-                RutinaAssignada: null
+                RutinaActual: 0,
+                ResultatsRutinaActual: [],
+                RMs: {}
             }
             dispatch(addAlumne({ id: alumne.ID, data: alumne }))
         } else {
@@ -199,19 +172,23 @@ export default function Index() {
                     {!reserves || reservesArray.length === 0 ? (
                         <Text style={themeStyles.text}>Avui no tens més entrenos</Text>
                     ) : (
-                        reservesArray.map((reserva) => {
+                        reservesArray.map((reserva, i) => {
                             const hora: Date = stringDiaToDate(reserva.Hora);
                             const ahora: Date = new Date();
                             ahora.setHours(ahora.getHours() - 2);
 
                             if (hora >= ahora) {
                                 return (
-                                    <View key={reserva.ID} style={themeStyles.mainContainer1}>
-                                        <Text style={themeStyles.text}>
-                                            {getUserByID(alumnes, reserva.UsuariID).Nom + " - " +
-                                                hora.getHours() + ":" + hora.getMinutes().toString().padStart(2, '0')}
-                                        </Text>
-                                    </View>
+                                    //getUserByID(alumnes, reserva.UsuariID).Nom
+                                    <FentEntreno
+                                        key={i}
+                                        reserva={reserva}
+                                        hora={hora}
+                                        desplegat={entrenoDesplegat != null && entrenoDesplegat == i}
+                                        onPress={() => {
+                                            setEntrenoDesplegat(i)
+                                        }
+                                        } />
                                 );
                             }
                         })

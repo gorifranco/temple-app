@@ -1,10 +1,9 @@
-import { View, Text, Pressable, StyleSheet, SafeAreaView } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import { View, Text, Pressable, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
 import BackButton from '@/components/buttons/BackButton';
 import { ExerciciRutinaType, ExerciciType } from '@/types/apiTypes';
 import { useAxios } from '@/app/api';
 import { useDispatch } from 'react-redux';
-import { setExercicis } from '@/store/exercicisSlice';
 import TextInput from '@/components/inputs/TextInput';
 import { ScrollView } from 'react-native-gesture-handler';
 import Entypo from '@expo/vector-icons/Entypo';
@@ -17,6 +16,7 @@ import { router } from 'expo-router';
 import Toast from 'react-native-toast-message';
 import { afegirRutina } from '@/store/rutinesSlice';
 import { useThemeStyles } from '@/themes/theme';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 export default function CrearRutina() {
@@ -38,7 +38,16 @@ export default function CrearRutina() {
     })
 
     async function guardarRutina() {
-        let exercicisEnviats = exercicisElegits.filter((exercici) => exercici.DiaRutina <= dies)
+        const tmp = exercicisElegits.filter((exercici) => exercici.DiaRutina <= dies)
+
+        const exercicisEnviats = [];
+        for (let ciclo = 0; ciclo < Number(cicles); ciclo++) {
+            const ejerciciosParaEsteCiclo: ExerciciRutinaType[] = tmp.map((exercici) => ({
+                ...exercici,
+                Cicle: ciclo,
+            }));
+            exercicisEnviats.push(...ejerciciosParaEsteCiclo);
+        }
 
         if (!checkErrors(exercicisEnviats)) {
             const dataRutina: RutinaType = {
@@ -150,10 +159,10 @@ export default function CrearRutina() {
                         if (exercici.DiaRutina == currentDia)
                             return (
                                 <View key={i} style={themeStyles.crearRutinaContainer}>
-                                    <View style={styles.iconContainer}>
+                                    {/*                                     <View style={styles.iconContainer}>
                                         <Entypo name="menu" size={24} color="black" style={{ paddingLeft: 10 }} />
-                                    </View>
-                                    <View style={{ display: "flex", flexDirection: "column", width: "100%", margin: "auto" }}>
+                                    </View> */}
+                                    <View style={{ display: "flex", flexDirection: "column", width: "100%", marginHorizontal: "auto" }}>
                                         <AutocompleteExercicis
                                             onSubmit={(id: number) => {
                                                 const updatedExercicisElegits = [...exercicisElegits];
