@@ -50,7 +50,7 @@ func (h *Handler) AlumnesEntrenador(c *gin.Context) {
 
 		if err := h.DB.Raw(query, alumne.ID).Scan(&resultatsRutinaActual).Error; err != nil {
 			tmp.ResultatsRutinaActual = []models.UsuariResultatExercici{}
-		} else{
+		} else {
 			tmp.ResultatsRutinaActual = resultatsRutinaActual
 		}
 

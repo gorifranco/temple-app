@@ -25,7 +25,7 @@ func crearExercici() models.Exercici {
 	return exercici
 }
 
-func SetUpRouter() *gin.Engine {
+func SetUpRouterExercici() *gin.Engine {
 	router := gin.Default()
 
 	db := GetDBTest()
@@ -37,16 +37,16 @@ func SetUpRouter() *gin.Engine {
 	return router
 }
 
-func eliminarDades() {
+func EliminarDadesExercici() {
 	GetDBTest().Exec("delete from exercicis")
 }
 
 func TestCreateExercici(t *testing.T) {
 
 	defer func() {
-		eliminarDades()
+		EliminarDadesExercici()
 	}()
-	
+
 	exerciciJSON1, err1 := json.Marshal(map[string]interface{}{
 		"nom": "Exercici test",
 	})
@@ -62,7 +62,7 @@ func TestCreateExercici(t *testing.T) {
 	req, _ := http.NewRequest("POST", "/api/exercicis", bytes.NewReader(exerciciJSON1))
 	req.Header.Set("Content-Type", "application/json")
 
-	router := SetUpRouter()
+	router := SetUpRouterExercici()
 	router.ServeHTTP(w, req)
 
 	fmt.Print(w.Body.String())
@@ -96,14 +96,14 @@ func TestDeleteExercici(t *testing.T) {
 
 	defer func() {
 		if count != 0 {
-			eliminarDades()
+			EliminarDadesExercici()
 		}
 	}()
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("DELETE", "/api/exercicis/"+strconv.Itoa(int(exercici.ID+1)), nil)
 
-	router := SetUpRouter()
+	router := SetUpRouterExercici()
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusNotFound, w.Code)

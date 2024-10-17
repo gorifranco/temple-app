@@ -13,6 +13,8 @@ import (
 	"gorm.io/gorm/logger"
 )
 
+//go run gotest.tools/gotestsum@latest --format testname ./test
+
 var (
 	db   *gorm.DB
 	once sync.Once
@@ -39,21 +41,20 @@ func InitializeDBTest() {
 			log.Fatalf("failed to connect to database: %v", err)
 		}
 
-		err = db.AutoMigrate(
-			&models.Usuari{}, &models.TipusUsuari{}, &models.Sala{}, &models.UsuarisSala{}, &models.Reserva{}, &models.SolicitudUnioSala{},
-			&models.Exercici{}, &models.Rutina{}, &models.ExerciciRutina{}, &models.SolicitudUnioEntrenador{}, &models.UsuariResultatExercici{},
-			&models.UsuariRutina{}, &models.HorarisEntrenador{}, &models.ConfiguracioEntrenador{},
-		)
+		/* 		err = db.AutoMigrate(
+		   			&models.Usuari{}, &models.TipusUsuari{}, &models.Sala{}, &models.UsuarisSala{}, &models.Reserva{}, &models.SolicitudUnioSala{},
+		   			&models.Exercici{}, &models.Rutina{}, &models.ExerciciRutina{}, &models.SolicitudUnioEntrenador{}, &models.UsuariResultatExercici{},
+		   			&models.UsuariRutina{}, &models.HorarisEntrenador{}, &models.ConfiguracioEntrenador{},
+		   		)
 
-		if err != nil {
-			log.Fatalf("failed to auto-migrate: %v", err)
-		}
+		   		if err != nil {
+		   			log.Fatalf("failed to auto-migrate: %v", err)
+		   		}
 
-		err = GetDBTest().Where("Nom = ?", "Admin").First(&models.Usuari{}).Error
+		   		if err = GetDBTest().Where("Nom = ?", "Admin").First(&models.Usuari{}).Error; err != nil {
+		   			InsertData()
+		   		} */
 
-		if err != nil {
-			InsertData()
-		}
 	})
 }
 func GetDBTest() *gorm.DB {
