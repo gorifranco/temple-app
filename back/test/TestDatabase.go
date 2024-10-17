@@ -10,6 +10,7 @@ import (
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 var (
@@ -21,7 +22,7 @@ func InitializeDBTest() {
 	once.Do(func() {
 		var err error
 
-		err = godotenv.Load()
+		err = godotenv.Load("../.env")
 		if err != nil {
 			log.Fatalf("Error loading .env file")
 		}
@@ -30,7 +31,10 @@ func InitializeDBTest() {
 			"@tcp(" + os.Getenv("DB_HOST_TEST") + ":" + os.Getenv("DB_PORT_TEST") + ")/" +
 			os.Getenv("DB_NAME_TEST") + "?charset=utf8mb4&parseTime=True&loc=Local"
 
-		db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+		db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
+			Logger: logger.Default.LogMode(logger.Silent),
+		})
+
 		if err != nil {
 			log.Fatalf("failed to connect to database: %v", err)
 		}
@@ -98,9 +102,8 @@ func InsertData() error {
 	configEntrenador := models.ConfiguracioEntrenador{
 		DuracioSessions:     60,
 		MaxAlumnesPerSessio: 4,
-		EntrenadorID: 3,
+		EntrenadorID:        3,
 	}
-
 
 	db.Create(&adminUser)
 	db.Create(&basicUser)

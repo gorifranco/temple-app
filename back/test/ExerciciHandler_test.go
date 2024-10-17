@@ -50,7 +50,7 @@ func TestCreateExercici(t *testing.T) {
 		"nom": "Exercici test",
 	})
 	exerciciJSON2, err2 := json.Marshal(map[string]interface{}{
-		"nom": "Exercici test",
+		"nom": "",
 	})
 	if err1 != nil || err2 != nil {
 		t.Errorf("Error al convertir el mapa a JSON: %v", []string{err1.Error(), err2.Error()})
@@ -70,6 +70,7 @@ func TestCreateExercici(t *testing.T) {
 	json.Unmarshal(w.Body.Bytes(), &response)
 
 	assert.Equal(t, "Exercici test", response["data"].Nom)
+	assert.Equal(t, http.StatusOK, w.Code)
 
 	w2 := httptest.NewRecorder()
 	req2, _ := http.NewRequest("POST", "/api/exercicis", bytes.NewReader(exerciciJSON1))
