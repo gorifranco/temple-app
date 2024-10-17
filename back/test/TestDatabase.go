@@ -4,10 +4,10 @@ import (
 	"log"
 	"os"
 	"sync"
-
 	"temple-app/models"
 	"temple-app/services"
 
+	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -21,26 +21,37 @@ func InitializeDBTest() {
 	once.Do(func() {
 		var err error
 
+		err = godotenv.Load()
+		if err != nil {
+			log.Fatalf("Error loading .env file")
+		}
+
 		dsn := os.Getenv("DB_USER_TEST") + ":" + os.Getenv("DB_PASS_TEST") +
 			"@tcp(" + os.Getenv("DB_HOST_TEST") + ":" + os.Getenv("DB_PORT_TEST") + ")/" +
-			os.Getenv("DB_NAME") + "?charset=utf8mb4&parseTime=True&loc=Local"
+			os.Getenv("DB_NAME_TEST") + "?charset=utf8mb4&parseTime=True&loc=Local"
 
 		db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 		if err != nil {
 			log.Fatalf("failed to connect to database: %v", err)
 		}
 
-		if err = db.AutoMigrate(
-			&models.TipusUsuari{}, &models.Usuari{}, &models.Sala{}, &models.UsuarisSala{}, &models.Reserva{}, &models.SolicitudUnioSala{},); err !=  nil{
+		err = db.AutoMigrate(
+			&models.Usuari{}, &models.TipusUsuari{}, &models.Sala{}, &models.UsuarisSala{}, &models.Reserva{}, &models.SolicitudUnioSala{},
+			&models.Exercici{}, &models.Rutina{}, &models.ExerciciRutina{}, &models.SolicitudUnioEntrenador{}, &models.UsuariResultatExercici{},
+			&models.UsuariRutina{}, &models.HorarisEntrenador{}, &models.ConfiguracioEntrenador{},
+		)
+
+		if err != nil {
 			log.Fatalf("failed to auto-migrate: %v", err)
 		}
-		
-		if err = GetDBTest().Where("Nom = ?", "Admin").First(&models.TipusUsuari{}).Error; err !=  nil{
-			InsertDataTest()
+
+		err = GetDBTest().Where("Nom = ?", "Admin").First(&models.Usuari{}).Error
+
+		if err != nil {
+			InsertData()
 		}
 	})
 }
-
 func GetDBTest() *gorm.DB {
 	if db == nil {
 		InitializeDBTest()
@@ -48,15 +59,16 @@ func GetDBTest() *gorm.DB {
 	return db
 }
 
-func InsertDataTest() error {
+func InsertData() error {
 	// Insertar tipos de usuarios
 	tipos := []models.TipusUsuari{
 		{Nom: "Administrador"},
 		{Nom: "Basic"},
+		{Nom: "Entrenador"},
+		{Nom: "Fictici"},
 	}
-	db.Create(&tipos)
+	GetDBTest().Create(&tipos)
 
-	// Insertar usuario administrador
 	cpass, err := services.EncryptPassword("1234")
 	if err != nil {
 		return err
@@ -64,11 +76,37 @@ func InsertDataTest() error {
 
 	adminUser := models.Usuari{
 		Nom:           "Admin",
+		Email:         "admin@temple.com",
 		TipusUsuariID: 1,
-		Password:      cpass, // Asumiendo que tienes una función `encryptPassword` definida
+		Password:      cpass,
 	}
 
+	basicUser := models.Usuari{
+		Nom:           "Basic",
+		Email:         "basic@temple.com",
+		TipusUsuariID: 2,
+		Password:      cpass,
+	}
+
+	entrenadorUser := models.Usuari{
+		Nom:           "Entrenador",
+		Email:         "entrenador@temple.com",
+		TipusUsuariID: 3,
+		Password:      cpass,
+	}
+
+	configEntrenador := models.ConfiguracioEntrenador{
+		DuracioSessions:     60,
+		MaxAlumnesPerSessio: 4,
+		EntrenadorID: 3,
+	}
+
+
 	db.Create(&adminUser)
+	db.Create(&basicUser)
+	db.Create(&entrenadorUser)
+
+	db.Create(&configEntrenador)
 
 	return nil
 }
