@@ -49,7 +49,6 @@ export default function Index() {
     async function fetchRutinesAPI() {
         const response = await api.get('/rutines/rutinesEntrenador');
         if (response.status === 200) {
-            console.log("rutina")
             console.log(response.data.data)
             const fetchedRutines: RutinaType[] = response.data.data;
             dispatch(setRutines(fetchedRutines));

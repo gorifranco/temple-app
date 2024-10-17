@@ -28,7 +28,7 @@ export default function ViewRutina(props: propsType) {
     const [desplegat, setDesplegat] = useState(false)
     const [dia, setDia] = useState(0)
     const [modalVisible, setModalVisible] = useState(false)
-    const rutina = useSelector((state: RootState) => state.rutines[rutinaID])
+    const rutina = useSelector((state: RootState) => state.rutines[Number(rutinaID)])
     const api = useAxios();
     const dispatch = useDispatch();
     const exercicis = useSelector((state: RootState) => state.exercicis);
@@ -69,7 +69,7 @@ export default function ViewRutina(props: propsType) {
         }
     }
 
-    return rutina && (
+    return rutina &&  (
         <View key={rutina.ID} style={themeStyles.mainContainer1}>
             <View style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", position: "relative" }}>
                 <Text style={themeStyles.text}>{rutina.Nom}</Text>

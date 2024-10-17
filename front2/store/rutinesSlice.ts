@@ -11,8 +11,13 @@ RutinaType
       name: "rutines",
       initialState: {} as RutinaState,
       reducers: {
-        setRutines(state: RutinaState, action: PayloadAction<RutinaState>) {
-          return action.payload;
+        setRutines(state: RutinaState, action: PayloadAction<RutinaType[]>) {
+          const rutinesByID = action.payload.reduce((acc, rutina) => {
+            acc[rutina.ID] = rutina;
+            return acc;
+          }, {} as Record<number, RutinaType>);
+        
+          return rutinesByID;
         },
         afegirRutina(
           state: RutinaState,

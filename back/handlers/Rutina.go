@@ -21,6 +21,7 @@ type RutinaResposta struct {
 
 type ExerciciRutinaResposta struct {
 	ID            uint   `json:"ID"`
+	ExerciciID    uint   `json:"ExerciciID"`
 	Nom           string `json:"Nom"`
 	Ordre         int    `json:"Ordre"`
 	NumSeries     int    `json:"NumSeries"`
@@ -159,7 +160,7 @@ func (h *Handler) RutinesEntrenador(c *gin.Context) {
 
 	h.DB.Find(&rutines).Where("entrenador_id = ?", auth.GetUsuari(c))
 
-	query := `SELECT exercici_id as ID, ex.nom as nom, ordre as ordre, num_series as numSeries, num_repes as numRepes, cicle as cicle,
+	query := `SELECT e.id as ID, e.exercici_id as exerciciID, ex.nom as nom, ordre as ordre, num_series as numSeries, num_repes as numRepes, cicle as cicle,
     percentatge_rm as percentatgeRM, dia_rutina as diaRutina FROM exercicis_rutina e 
     INNER JOIN exercicis ex ON ex.id = e.exercici_id 
     WHERE e.rutina_id = ? AND e.deleted_at IS NULL`
@@ -177,7 +178,7 @@ func (h *Handler) RutinesEntrenador(c *gin.Context) {
 
 		for rows.Next() {
 			var exercici ExerciciRutinaResposta
-			err := rows.Scan(&exercici.ID, &exercici.Nom, &exercici.Ordre, &exercici.NumSeries, &exercici.NumRepes,
+			err := rows.Scan(&exercici.ID, &exercici.ExerciciID, &exercici.Nom, &exercici.Ordre, &exercici.NumSeries, &exercici.NumRepes,
 				&exercici.Cicle, &exercici.PercentatgeRM, &exercici.DiaRutina)
 			if err != nil {
 				fmt.Println("Error scanning row:", err)
@@ -223,7 +224,7 @@ func (h *Handler) CanviarVisibilitat(c *gin.Context) {
 
 	rutina.Publica = !rutina.Publica
 
-	if err = h.DB.Model(&rutina).Update("publica", rutina.Publica).Error; err != nil{
+	if err = h.DB.Model(&rutina).Update("publica", rutina.Publica).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to update rutina"})
 		return
 	}
@@ -297,15 +298,15 @@ func (h *Handler) AssignarRutina(c *gin.Context) {
 	}
 
 	var r models.UsuariRutina
-	if err = h.DB.Where("data_finalitzacio is null and usuari_id = ?", alumne.ID).First(&r).Error; err != nil{
+	if err = h.DB.Where("data_finalitzacio is null and usuari_id = ?", alumne.ID).First(&r).Error; err != nil {
 		var now = time.Now()
 		r.DataFinalitzacio = &now
 		h.DB.Save(&r)
 	}
 
 	var nova = models.UsuariRutina{UsuariID: alumne.ID, RutinaID: rutina.ID, DataInici: time.Now()}
-	
-	if err = h.DB.Create(&nova).Error; err != nil{
+
+	if err = h.DB.Create(&nova).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create new user rutina"})
 		return
 	}

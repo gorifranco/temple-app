@@ -28,8 +28,6 @@ export default function Entreno(props: propsType) {
 
     const exercicisArray = Object.values(rutina.Exercicis);
 
-    console.log(rutina.Exercicis)
-
     return (
         <View>
             <Text style={[themeStyles.text, { marginTop: 5, marginBottom: 10 }]}>Setmana {setmanaSeleccionada}</Text>

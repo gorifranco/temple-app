@@ -138,7 +138,7 @@ export default function AlumneScreen() {
 
     return (
         <AutocompleteDropdownContextProvider>
-            <SafeAreaView style={themeStyles.background}>
+            <SafeAreaView style={[themeStyles.background, {height: '100%'}]}>
                 <ScrollView>
                     <BackButton href={"../"} />
                     <Text style={themeStyles.titol1}>{alumne.Nom}</Text>
