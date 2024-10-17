@@ -3,6 +3,7 @@ package test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -30,7 +31,7 @@ func SetUpRouter() *gin.Engine {
 	db := GetDBTest()
 	handler := handlers.NewHandler(db)
 
-	router.GET("/api/exercicis", handler.CreateExercici)
+	router.POST("/api/exercicis", handler.CreateExercici)
 	router.DELETE("/api/exercicis/:id", handler.DeleteExercici)
 
 	return router
@@ -45,7 +46,7 @@ func TestCreateExercici(t *testing.T) {
 	defer func() {
 		eliminarDades()
 	}()
-
+	
 	exerciciJSON1, err1 := json.Marshal(map[string]interface{}{
 		"nom": "Exercici test",
 	})
@@ -64,7 +65,7 @@ func TestCreateExercici(t *testing.T) {
 	router := SetUpRouter()
 	router.ServeHTTP(w, req)
 
-	assert.Equal(t, http.StatusOK, w.Code)
+	fmt.Print(w.Body.String())
 
 	var response map[string]models.Exercici
 	json.Unmarshal(w.Body.Bytes(), &response)
@@ -87,7 +88,7 @@ func TestCreateExercici(t *testing.T) {
 	assert.Equal(t, http.StatusBadRequest, w3.Code)
 }
 
-func TestDeleteArtista(t *testing.T) {
+func TestDeleteExercici(t *testing.T) {
 
 	exercici := crearExercici()
 

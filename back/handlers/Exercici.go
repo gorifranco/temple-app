@@ -39,7 +39,7 @@ func (h *Handler) CreateExercici(c *gin.Context) {
 		return
 	}
 
-	if err := h.DB.Where("nom = ?", input.Nom).First(&models.Exercici{}).Error; err != nil {
+	if err := h.DB.Where("nom = ?", input.Nom).First(&models.Exercici{}).Error; err == nil {
 		c.AbortWithStatusJSON(http.StatusConflict, gin.H{"error": "Exercici ja existeix"})
 		return
 	}
