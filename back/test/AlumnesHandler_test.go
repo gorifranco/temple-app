@@ -1,7 +1,6 @@
 package test
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -15,9 +14,6 @@ import (
 	"github.com/go-playground/assert/v2"
 )
 
-type contextKey string
-
-const userIDKey contextKey = "id"
 
 func CrearEntrenador() []models.Usuari {
 
@@ -57,22 +53,26 @@ func EliminarDadesAlumnes() {
 
 func TestAlumnesEntrenador(t *testing.T) {
 
+	//https://canopas.com/golang-unit-tests-with-test-gin-context-80e1ac04adcd
+
 	defer func() {
 		EliminarDadesAlumnes()
 	}()
+
+	gin.SetMode(gin.TestMode)
 
 	entrenador := CrearEntrenador()[0]
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/entrenador/alumnes", nil)
 
-	ctx := context.Background()
-	ctx = context.WithValue(ctx, userIDKey, entrenador.EntrenadorID)
-	req = req.WithContext(ctx)
-	fmt.Println(req.Context())
+	c, _ := gin.CreateTestContext(w) 
+	c.Set("id", entrenador.ID)
+
+	fmt.Println(req.WithContext(c))
 
 	router := SetUpRouterAlumnes()
-	router.ServeHTTP(w, req)
+	router.ServeHTTP(w, req.WithContext(c))
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
