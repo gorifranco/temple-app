@@ -22,7 +22,7 @@ func (h *Handler) AlumnesEntrenador(c *gin.Context) {
 	var alumnes []models.Usuari
 	var err error
 
-	if err = h.DB.Where("entrenador_id = ?", auth.GetUsuari(c)).Preload("Alumnes").Preload("TipusUsuari").Preload("Reserves").Find(&alumnes).Error; err != nil {
+	if err = h.DB.Where("entrenador_id = ?", c.MustGet("id").(uint)).Preload("Alumnes").Preload("TipusUsuari").Preload("Reserves").Find(&alumnes).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
