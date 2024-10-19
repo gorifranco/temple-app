@@ -3,7 +3,6 @@ package test
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -64,8 +63,6 @@ func TestCreateExercici(t *testing.T) {
 
 	router := SetUpRouterExercici()
 	router.ServeHTTP(w, req)
-
-	fmt.Print(w.Body.String())
 
 	var response map[string]models.Exercici
 	json.Unmarshal(w.Body.Bytes(), &response)

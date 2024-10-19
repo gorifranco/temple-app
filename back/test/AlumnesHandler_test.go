@@ -2,7 +2,6 @@ package test
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -13,7 +12,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/assert/v2"
 )
-
 
 func CrearEntrenador() []models.Usuari {
 
@@ -53,31 +51,41 @@ func EliminarDadesAlumnes() {
 
 func TestAlumnesEntrenador(t *testing.T) {
 
-	//https://canopas.com/golang-unit-tests-with-test-gin-context-80e1ac04adcd
-
+	//Al acabar elimina Els usuaris de la base de dades
 	defer func() {
 		EliminarDadesAlumnes()
 	}()
 
-	gin.SetMode(gin.TestMode)
+	db := GetDBTest()
+	handler := handlers.NewHandler(db)
 
+	gin.SetMode(gin.TestMode)
+    router := gin.Default()
 	entrenador := CrearEntrenador()[0]
 
+	//INtrodueix l'id de l'entrenador al router
+	router.Use(func(c *gin.Context) {
+        c.Set("id", entrenador.ID)
+        c.Next()
+    })
+
+	//Crea la ruta
+	router.GET("/api/entrenador/alumnes", handler.AlumnesEntrenador)
+	
 	w := httptest.NewRecorder()
+
 	req, _ := http.NewRequest("GET", "/api/entrenador/alumnes", nil)
+    req.Header.Set("Content-Type", "application/json")
 
-	c, _ := gin.CreateTestContext(w) 
-	c.Set("id", entrenador.ID)
-
-	fmt.Println(req.WithContext(c))
-
-	router := SetUpRouterAlumnes()
-	router.ServeHTTP(w, req.WithContext(c))
+	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var response []models.Usuari
+    var response struct {
+        Data []models.Usuari `json:"data"`
+    }
+
 	json.Unmarshal(w.Body.Bytes(), &response)
 
-	assert.Equal(t, 2, len(response))
+	assert.Equal(t, 2, len(response.Data))
 }
