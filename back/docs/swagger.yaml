@@ -1,0 +1,147 @@
+definitions:
+  models.ExerciciInput:
+    properties:
+      nom:
+        description: |-
+          Nom es el nombre del exercici.
+          required: true
+          example: Extensión de tríceps en polea
+        type: string
+    type: object
+  models.ExerciciResponse:
+    properties:
+      id:
+        type: integer
+      nom:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/exercicis:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all the exercicis from the database.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.ExerciciResponse'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get all exercicis
+      tags:
+      - Exercicis
+    post:
+      consumes:
+      - application/json
+      description: Creates a new exercici in the database.
+      parameters:
+      - description: Exercici to create
+        in: body
+        name: exercici
+        required: true
+        schema:
+          $ref: '#/definitions/models.ExerciciInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ExerciciResponse'
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "409":
+          description: Conflict
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      - Admin: []
+      summary: Create an exercici
+      tags:
+      - Exercicis
+  /api/exercicis/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes an exercici from the database.
+      parameters:
+      - description: ID of the exercici to delete
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "401":
+          description: Unauthorized
+          schema:
+            type: string
+        "404":
+          description: Not Found
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      security:
+      - Bearer: []
+      - Admin: []
+      summary: Delete an exercici
+      tags:
+      - Exercicis
+    get:
+      consumes:
+      - application/json
+      description: Retrieves an exercici from the database by its ID.
+      parameters:
+      - description: ID of the exercici to retrieve
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ExerciciResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Get an exercici by ID
+      tags:
+      - Exercicis
+securityDefinitions:
+  Bearer:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

@@ -8,10 +8,17 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"temple-app/auth"
+
+	"github.com/swaggo/gin-swagger"
+	"github.com/swaggo/files"
+
 )
 
 func Routing() *gin.Engine {
 	router := gin.Default()
+
+	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 
 	router.Use(cors.New(cors.Config{
 		AllowAllOrigins:  true,
@@ -57,7 +64,7 @@ func Routing() *gin.Engine {
 	entrenador := router.Group("/api/entrenador", auth.UserAuthMiddleware([]string{"Entrenador"}))
 	{
 		entrenador.GET("/alumnes", handler.AlumnesEntrenador)
-/* 		entrenador.GET("/alumnes/:id", handler.FindAlumneEntrenador) */
+		/* 		entrenador.GET("/alumnes/:id", handler.FindAlumneEntrenador) */
 		entrenador.POST("/usuarisFicticis", handler.CrearUsuariFictici)
 		entrenador.PUT("/usuarisFicticis/:id", handler.UpdateUsuariFictici)
 		entrenador.GET("/expulsarUsuari/:id", handler.ExpulsarUsuari)
@@ -74,11 +81,11 @@ func Routing() *gin.Engine {
 
 	exercicis := router.Group("/api/exercicis", auth.UserAuthMiddleware([]string{"Administrador"}))
 	{
-		exercicis.GET("/:id", handler.FindExercici)
 		exercicis.POST("", handler.CreateExercici)
 		exercicis.DELETE("/:id", handler.DeleteExercici)
 	}
 	router.GET("/api/exercicis", handler.IndexExercici)
+	router.GET("/api/exercicis/:id", handler.FindExercici)
 
 	rutines := router.Group("/api/rutines", auth.UserAuthMiddleware([]string{"Entrenador"}))
 	{
