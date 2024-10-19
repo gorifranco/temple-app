@@ -1,6 +1,7 @@
 package test
 
 import (
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -29,20 +30,6 @@ func CrearEntrenador() []models.Usuari {
 	return []models.Usuari{entrenador, alumne1, alumne2}
 }
 
-func SetUpRouterAlumnes() *gin.Engine {
-	router := gin.Default()
-
-	db := GetDBTest()
-	handler := handlers.NewHandler(db)
-
-	router.GET("/api/entrenador/alumnes", handler.AlumnesEntrenador)
-	router.POST("/api/usuarisFicticis", handler.CrearUsuariFictici)
-	router.PUT("/api/usuarisFicticis/:id", handler.UpdateUsuariFictici)
-	router.GET("/api/expulsarUsuari/:id", handler.ExpulsarUsuari)
-
-	return router
-}
-
 func EliminarDadesAlumnes() {
 	GetDBTest().Exec("delete from usuaris")
 	GetDBTest().Exec("delete from usuari_rutina")
@@ -63,7 +50,7 @@ func TestAlumnesEntrenador(t *testing.T) {
     router := gin.Default()
 	entrenador := CrearEntrenador()[0]
 
-	//INtrodueix l'id de l'entrenador al router
+	//Introdueix l'id de l'entrenador al router
 	router.Use(func(c *gin.Context) {
         c.Set("id", entrenador.ID)
         c.Next()
@@ -85,7 +72,64 @@ func TestAlumnesEntrenador(t *testing.T) {
         Data []models.Usuari `json:"data"`
     }
 
+	//Tradueix el JSON a un struct
 	json.Unmarshal(w.Body.Bytes(), &response)
 
 	assert.Equal(t, 2, len(response.Data))
 }
+
+func TestCreateUsuariFictici(t *testing.T) {
+
+	defer func() {
+		EliminarDadesAlumnes()
+	}()
+
+	db := GetDBTest()
+	handler := handlers.NewHandler(db)
+	gin.SetMode(gin.TestMode)
+	router := gin.Default()
+
+	entrenador := CrearEntrenador()[0]
+
+	router.Use(func(c *gin.Context) {
+        c.Set("id", entrenador.ID)
+        c.Next()
+    })
+
+	router.POST("/api/entrenador/usuarisFicticis", handler.CrearUsuariFictici)
+
+	w := httptest.NewRecorder()
+
+	usuariJSON, err := json.Marshal(map[string]interface{}{
+		"nom": "Alumne Test 1",
+	})
+
+	usuariJSON2, err2 := json.Marshal(map[string]interface{}{
+		"nom": "",
+	})
+
+	if err != nil || err2 != nil {
+		t.Errorf("Error al convertir el mapa a JSON: %v", []string{err.Error()})
+	}
+
+	req, _ := http.NewRequest("POST", "/api/entrenador/usuarisFicticis", bytes.NewReader(usuariJSON))
+	req.Header.Set("Content-Type", "application/json")
+
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	var response map[string]models.Usuari
+	json.Unmarshal(w.Body.Bytes(), &response)
+
+	assert.Equal(t, "Alumne Test 1", response["data"].Nom)
+
+	w2 := httptest.NewRecorder()
+	req2, _ := http.NewRequest("POST", "/api/entrenador/usuarisFicticis", bytes.NewReader(usuariJSON2))
+	req2.Header.Set("Content-Type", "application/json")
+	router.ServeHTTP(w2, req2)
+
+	assert.Equal(t, http.StatusBadRequest, w2.Code)
+}
+
+

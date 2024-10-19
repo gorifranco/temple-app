@@ -69,7 +69,12 @@ func (h *Handler) CrearUsuariFictici(c *gin.Context) {
 		return
 	}
 
-	usuariID := auth.GetUsuari(c)
+	if input.Nom == "" {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Nom no pot ser buit"})
+		return
+	}
+
+	usuariID := c.MustGet("id").(uint)
 	usuari := models.Usuari{
 		Nom:           input.Nom,
 		EntrenadorID:  &usuariID,
