@@ -1,4 +1,9 @@
 definitions:
+  models.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
   models.ExerciciInput:
     properties:
       nom:
@@ -15,6 +20,10 @@ definitions:
       nom:
         type: string
     type: object
+  models.SuccessResponse:
+    properties:
+      data: {}
+    type: object
 info:
   contact: {}
 paths:
@@ -29,13 +38,18 @@ paths:
         "200":
           description: OK
           schema:
-            items:
-              $ref: '#/definitions/models.ExerciciResponse'
-            type: array
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.ExerciciResponse'
+                  type: array
+              type: object
         "500":
-          description: Internal Server Error
+          description: Internal server error
           schema:
-            type: string
+            $ref: '#/definitions/models.ErrorResponse'
       summary: Get all exercicis
       tags:
       - Exercicis
@@ -56,26 +70,30 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ExerciciResponse'
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ExerciciResponse'
+              type: object
         "400":
-          description: Bad Request
+          description: Bad request
           schema:
-            type: string
+            $ref: '#/definitions/models.ErrorResponse'
         "401":
           description: Unauthorized
           schema:
-            type: string
+            $ref: '#/definitions/models.ErrorResponse'
         "409":
           description: Conflict
           schema:
-            type: string
+            $ref: '#/definitions/models.ErrorResponse'
         "500":
-          description: Internal Server Error
+          description: Internal server error
           schema:
-            type: string
+            $ref: '#/definitions/models.ErrorResponse'
       security:
       - Bearer: []
-      - Admin: []
       summary: Create an exercici
       tags:
       - Exercicis
@@ -96,22 +114,26 @@ paths:
         "200":
           description: OK
           schema:
-            type: string
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
         "401":
           description: Unauthorized
           schema:
-            type: string
+            $ref: '#/definitions/models.ErrorResponse'
         "404":
-          description: Not Found
+          description: Not found
           schema:
-            type: string
+            $ref: '#/definitions/models.ErrorResponse'
         "500":
-          description: Internal Server Error
+          description: Internal server error
           schema:
-            type: string
+            $ref: '#/definitions/models.ErrorResponse'
       security:
       - Bearer: []
-      - Admin: []
       summary: Delete an exercici
       tags:
       - Exercicis
@@ -131,16 +153,22 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.ExerciciResponse'
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ExerciciResponse'
+              type: object
         "500":
-          description: Internal Server Error
+          description: Internal server error
           schema:
-            type: string
+            $ref: '#/definitions/models.ErrorResponse'
       summary: Get an exercici by ID
       tags:
       - Exercicis
 securityDefinitions:
   Bearer:
+    description: 'Enter the token with the `Bearer: ` prefix, e.g. "Bearer abcde12345".'
     in: header
     name: Authorization
     type: apiKey

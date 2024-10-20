@@ -11,6 +11,7 @@ import (
 // @securityDefinitions.apikey Bearer
 // @in header
 // @name Authorization
+// @Description Enter the token with the `Bearer: ` prefix, e.g. "Bearer abcde12345".
 func main() {
 
 	// gin.DisableConsoleColor()
