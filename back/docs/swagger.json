@@ -4,6 +4,68 @@
         "contact": {}
     },
     "paths": {
+        "/api/entrenador/alumnes": {
+            "get": {
+                "security": [
+                    {
+                        "Bearer": []
+                    }
+                ],
+                "description": "Retrieves all the alumnes of a trainer from the database.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Alumnes",
+                    "Entrenador"
+                ],
+                "summary": "Get all alumnes from  trainer",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/models.AlumneResponse"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not found",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/api/exercicis": {
             "get": {
                 "description": "Retrieves all the exercicis from the database.",
@@ -235,9 +297,123 @@
                     }
                 }
             }
+        },
+        "/api/login": {
+            "post": {
+                "description": "Logs in a user with email and password.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Login",
+                "parameters": [
+                    {
+                        "description": "Email and password",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/handlers.Credentials"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/models.SuccessResponse"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "data": {
+                                            "$ref": "#/definitions/handlers.UserResponse"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "$ref": "#/definitions/models.ErrorResponse"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
+        "handlers.Credentials": {
+            "description": "Data needed when logging in",
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "handlers.UserResponse": {
+            "description": "Data returned when logging in",
+            "type": "object",
+            "properties": {
+                "codiEntrenador": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "nom": {
+                    "type": "string"
+                },
+                "tipusUsuari": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.AlumneResponse": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "nom": {
+                    "type": "string"
+                },
+                "rutinaActual": {
+                    "type": "integer"
+                },
+                "tipusUsuari": {
+                    "type": "string"
+                }
+            }
+        },
         "models.ErrorResponse": {
             "type": "object",
             "properties": {
@@ -270,6 +446,28 @@
             "type": "object",
             "properties": {
                 "data": {}
+            }
+        },
+        "models.UsuariFicticiInput": {
+            "type": "object",
+            "properties": {
+                "nom": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UsuariInput": {
+            "type": "object",
+            "properties": {
+                "nom": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "tipusUsuariID": {
+                    "type": "integer"
+                }
             }
         }
     },

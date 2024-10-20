@@ -11,6 +11,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// @Description Data returned when logging in
+// swagger:model UserResponse
 type UserResponse struct {
 	Nom            string `json:"nom"`
 	Email          string `json:"email"`
@@ -19,6 +21,8 @@ type UserResponse struct {
 	CodiEntrenador string `json:"codiEntrenador"`
 }
 
+// @Description Data needed when creating a new user
+// swagger:model usuariInput
 type usuariInput struct {
 	Nom           string `json:"nom" binding:"required"`
 	Email         string `json:"email" binding:"required"`
@@ -26,81 +30,115 @@ type usuariInput struct {
 	TipusUsuariID int    `json:"tipusUsuariID" binding:"required"`
 }
 
+// @Description Data needed when logging in
+// swagger:model Credentials
+type Credentials struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+// @Summary Login
+// @Description Logs in a user with email and password.
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param input body Credentials true "Email and password"
+// @Success 200 {object} models.SuccessResponse{data=UserResponse}
+// @Failure 400 {object} models.ErrorResponse "Bad request"
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/login [post]
 func (h *Handler) Login(c *gin.Context) {
-	var credentials struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
+	var credentials Credentials
 	var token string
 	var err error
 
 	if err = c.ShouldBindJSON(&credentials); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Bad request"})
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: "Bad request"})
 		return
 	}
 
+	//Gets the user by email and password
 	user, err := h.GetUserByEmailAndPassword(credentials.Email, credentials.Password)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		c.JSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Unauthorized"})
 		return
 	}
 
+	//Generates the JWT token
 	token, err = auth.GenerarToken(user)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Couldn't generate token"})
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Couldn't generate token"})
 		return
 	}
 
+	//Builds the response
 	response := UserResponse{
 		Nom:         user.Nom,
 		Email:       user.Email,
 		Token:       token,
 		TipusUsuari: user.TipusUsuari.Nom,
 	}
+	//If the user is a trainer, add the trainer code
 	if user.TipusUsuari.Nom == "Entrenador" {
 		response.CodiEntrenador = user.CodiEntrenador
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Login successful", "user": response})
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: response})
 }
 
+
+// Gets the user by email and password
 func (h *Handler) GetUserByEmailAndPassword(email string, password string) (*models.Usuari, error) {
 	var user models.Usuari
 	var err error
 
-	if err = h.DB.Where("email = ?", email).Preload("TipusUsuari").First(&user).Error; err != nil {
+	//Checks if exists auser with given email
+	if err = h.DB.Where("email = ?", email).Preload("TipusUsuari").First(&user).Error; err != nil || user.ID == 0 {
 		return nil, err
 	}
 
-	// Verificando la contraseña
+	// Checks if the password matches
 	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
-		return nil, err // La contraseña no coincide
+		return nil, err // The password does not match
 	}
 
 	return &user, nil
 }
 
+// @Summary Register
+// @Description Registers a new user in the database.
+// @Tags Auth
+// @Accept json
+// @Produce json
+// @Param input body models.UsuariInput true "User to register"
+// @Success 200 {object} models.SuccessResponse{data=string}
+// @Failure 400 {object} models.ErrorResponse "Bad request"
+// @Failure 409 {object} models.ErrorResponse "Conflict"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/register [post]
 func (h *Handler) Registre(c *gin.Context) {
 	var userInput usuariInput
 	var err error
 
 	if err = c.ShouldBindJSON(&userInput); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input data", "details": err.Error()})
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	if h.UsuariExisteix(userInput.Email) {
-		c.JSON(http.StatusConflict, gin.H{"error": "User already exists"})
+		c.JSON(http.StatusConflict, models.ErrorResponse{Error: "User already exists"})
 		return
 	}
 	if userInput.TipusUsuariID == 1 {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Cannot register an admin"})
+		c.JSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Cannot register an admin"})
 		return
 	}
 
 	newUser := models.Usuari{Nom: userInput.Nom, Email: userInput.Email, Password: userInput.Password, TipusUsuariID: uint(userInput.TipusUsuariID)}
 
+	//If user is a trainer, generate a unique code
 	if userInput.TipusUsuariID == 3 {
 		var codi string
 		const maxAttempts = 100
@@ -111,7 +149,7 @@ func (h *Handler) Registre(c *gin.Context) {
 				break
 			}
 			if attempts == maxAttempts-1 {
-				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate unique code"})
+				c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to generate unique code"})
 				return
 			}
 		}
@@ -121,14 +159,15 @@ func (h *Handler) Registre(c *gin.Context) {
 
 	// Simulando una función que guardaría los datos del usuario en alguna parte
 	if err = h.SaveUser(newUser); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not register user", "details": err.Error()})
+		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	// Responder éxito si todo va bien
-	c.JSON(http.StatusOK, gin.H{"message": "User registered successfully"})
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: "User registered successfully"})
 }
 
+//Checks if user already exists
 func (h *Handler) UsuariExisteix(email string) bool {
 	var usuari models.Usuari
 	var err error
@@ -139,6 +178,7 @@ func (h *Handler) UsuariExisteix(email string) bool {
 	return true
 }
 
+//Saves the user in the database
 func (h *Handler) SaveUser(usuari models.Usuari) error {
 	var err error
 

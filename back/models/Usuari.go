@@ -38,3 +38,10 @@ type UsuariInput struct {
 type UsuariFicticiInput struct {
 	Nom string
 }
+
+type AlumneResponse struct {
+	ID                    uint                              `json:"id"`
+	Nom                   string                            `json:"nom"`
+	TipusUsuari           string                            `json:"tipusUsuari"`
+	RutinaActual          uint                              `json:"rutinaActual"`
+}

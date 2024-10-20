@@ -18,12 +18,23 @@ type alumneResposta struct {
 	ResultatsRutinaActual []models.UsuariResultatExercici `json:"ResultatsRutinaActual"`
 }
 
+// @Summary Get all alumnes from  trainer
+// @Description Retrieves all the alumnes of a trainer from the database.
+// @Tags Alumnes, Entrenador
+// @Security Bearer
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.SuccessResponse{data=[]models.AlumneResponse}
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
+// @Failure 404 {object} models.ErrorResponse "Not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/entrenador/alumnes [get]
 func (h *Handler) AlumnesEntrenador(c *gin.Context) {
 	var alumnes []models.Usuari
 	var err error
 
 	if err = h.DB.Where("entrenador_id = ?", c.MustGet("id").(uint)).Preload("Alumnes").Preload("TipusUsuari").Preload("Reserves").Find(&alumnes).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -57,20 +68,32 @@ func (h *Handler) AlumnesEntrenador(c *gin.Context) {
 		resposta = append(resposta, tmp)
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": resposta})
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: resposta})
 }
 
+// @Summary Create a student without account
+// @Description Creates a new student in the database.
+// @Tags Alumnes, Entrenador
+// @Security Bearer
+// @Accept json
+// @Produce json
+// @Param input body models.UsuariFicticiInput true "Student to create"
+// @Success 200 {object} models.SuccessResponse{data=models.AlumneResponse}
+// @Failure 400 {object} models.ErrorResponse "Bad request"
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
+// @Failure 409 {object} models.ErrorResponse "Conflict"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
 func (h *Handler) CrearUsuariFictici(c *gin.Context) {
 	var input models.UsuariFicticiInput
 	var err error
 
 	if err = c.ShouldBindJSON(&input); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	if input.Nom == "" {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Nom no pot ser buit"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "Nom no pot ser buit"})
 		return
 	}
 
@@ -82,11 +105,11 @@ func (h *Handler) CrearUsuariFictici(c *gin.Context) {
 	}
 
 	if err = h.DB.Create(&usuari).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": usuari})
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: models.AlumneResponse{ID: usuari.ID, Nom: usuari.Nom, TipusUsuari: usuari.TipusUsuari.Nom}})
 }
 
 func (h *Handler) UpdateUsuariFictici(c *gin.Context) {

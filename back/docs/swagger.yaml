@@ -1,4 +1,37 @@
 definitions:
+  handlers.Credentials:
+    description: Data needed when logging in
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    type: object
+  handlers.UserResponse:
+    description: Data returned when logging in
+    properties:
+      codiEntrenador:
+        type: string
+      email:
+        type: string
+      nom:
+        type: string
+      tipusUsuari:
+        type: string
+      token:
+        type: string
+    type: object
+  models.AlumneResponse:
+    properties:
+      id:
+        type: integer
+      nom:
+        type: string
+      rutinaActual:
+        type: integer
+      tipusUsuari:
+        type: string
+    type: object
   models.ErrorResponse:
     properties:
       error:
@@ -24,9 +57,60 @@ definitions:
     properties:
       data: {}
     type: object
+  models.UsuariFicticiInput:
+    properties:
+      nom:
+        type: string
+    type: object
+  models.UsuariInput:
+    properties:
+      nom:
+        type: string
+      password:
+        type: string
+      tipusUsuariID:
+        type: integer
+    type: object
 info:
   contact: {}
 paths:
+  /api/entrenador/alumnes:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all the alumnes of a trainer from the database.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.AlumneResponse'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get all alumnes from  trainer
+      tags:
+      - Alumnes
+      - Entrenador
   /api/exercicis:
     get:
       consumes:
@@ -166,6 +250,45 @@ paths:
       summary: Get an exercici by ID
       tags:
       - Exercicis
+  /api/login:
+    post:
+      consumes:
+      - application/json
+      description: Logs in a user with email and password.
+      parameters:
+      - description: Email and password
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.Credentials'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/handlers.UserResponse'
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Login
+      tags:
+      - Auth
 securityDefinitions:
   Bearer:
     description: 'Enter the token with the `Bearer: ` prefix, e.g. "Bearer abcde12345".'
