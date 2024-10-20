@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"net/http"
-	"temple-app/auth"
 	"temple-app/models"
 
 	"github.com/gin-gonic/gin"
@@ -13,24 +12,24 @@ func (h *Handler) AfegirExercici(c *gin.Context) {
 	var err error
 
 	if err = h.DB.Where("id = ?", c.Param("id")).First(&rutina).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	if rutina.EntrenadorID != auth.GetUsuari(c) {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+	if rutina.EntrenadorID != c.MustGet("user").(models.Usuari).ID {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Unauthorized"})
 		return
 	}
 
 	var input models.ExerciciRutinaInput
 
 	if err = c.ShouldBindJSON(&input); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	if err = h.DB.Create(&input).Error; err != nil{
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to aappend exercici"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to aappend exercici"})
 		return
 	}
 
@@ -43,12 +42,12 @@ func (h *Handler) LlevarExercici(c *gin.Context) {
 	var err error
 
 	if err = h.DB.Where("id = ?", c.Query("rutinaId")).First(&rutina).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	if rutina.EntrenadorID != auth.GetUsuari(c) {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+	if rutina.EntrenadorID != c.MustGet("user").(models.Usuari).ID {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Unauthorized"})
 		return
 	}
 

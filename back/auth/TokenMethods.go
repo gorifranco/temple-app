@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"strings"
 	"temple-app/models"
+	"temple-app/db"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -40,19 +41,11 @@ func UserAuthMiddleware(tipusAdmesos []string) gin.HandlerFunc {
 			return
 		}
 
-		if len(tipusAdmesos) == 0 {
-			c.Set("id", GetUsuari(c))
-			c.Set("tipusUsuari", claims.TipusUsuari)
-			c.Next()
+		if len(tipusAdmesos) > 0 && !UserTypeValid(c, claims, tipusAdmesos) {
 			return
 		}
 
-		if !UserTypeValid(c, claims, tipusAdmesos) {
-			return
-		}
-
-		c.Set("id", GetUsuari(c))
-		c.Set("tipusUsuari", claims.TipusUsuari)
+		c.Set("user", GetUsuari(c))
 		c.Next()
 	}
 }
@@ -107,7 +100,7 @@ func TokenValid(c *gin.Context, token *jwt.Token, err error) bool {
 	}
 
 	if !token.Valid {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid_token", "message": "Invalid token"})
+		c.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Invalid token"})
 		return false
 	}
 
@@ -117,13 +110,13 @@ func TokenValid(c *gin.Context, token *jwt.Token, err error) bool {
 // UserTypeValid verifica si el tipo de usuario es válido
 func UserTypeValid(c *gin.Context, claims *Claims, tipusAdmesos []string) bool {
 	if !contains(tipusAdmesos, claims.TipusUsuari) {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "access_denied", "message": "Access denied for user type"})
+		c.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Access denied for user type"})
 		return false
 	}
 	return true
 }
 
-func GetUsuari(c *gin.Context) uint {
+func GetUsuari(c *gin.Context) *models.Usuari {
 	claims := &Claims{}
 
 	tokenStr := c.GetHeader("Authorization")
@@ -132,7 +125,13 @@ func GetUsuari(c *gin.Context) uint {
 		return jwtKey, nil
 	})
 
-	return claims.Id
+	var usuari models.Usuari
+	db := db.GetDB()
+	if err := db.Where("id = ?", claims.Id).First(&usuari).Error ; err != nil {
+		return nil
+	}
+
+	return &usuari
 }
 
 func contains(slice []string, val string) bool {

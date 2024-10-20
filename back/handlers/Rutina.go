@@ -3,7 +3,6 @@ package handlers
 import (
 	"fmt"
 	"net/http"
-	"temple-app/auth"
 	"temple-app/models"
 	"time"
 
@@ -31,30 +30,53 @@ type ExerciciRutinaResposta struct {
 	DiaRutina     int    `json:"DiaRutina"`
 }
 
+
+// @Summary Get all rutines
+// @Description Retrieves all the rutines from the database.
+// @Tags Rutines
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.SuccessResponse{data=[]models.RutinaResponse}
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/rutines [get]
 func (h *Handler) IndexRutina(c *gin.Context) {
 	var rutinas []models.Rutina
 	h.DB.Find(&rutinas)
 
-	c.JSON(http.StatusOK, gin.H{"data": rutinas})
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: rutinas})
 }
 
+
+// @Summary Create a new rutine
+// @Description Creates a new rutine in the database.
+// @Tags Rutines
+// @Security Bearer
+// @Accept json
+// @Produce json
+// @Param input body models.RutinaInput true "Rutine to create"
+// @Success 200 {object} models.SuccessResponse{data=models.RutinaResponse}
+// @Failure 400 {object} models.ErrorResponse "Bad request"
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
+// @Failure 409 {object} models.ErrorResponse "Conflict"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/rutines [post]
 func (h *Handler) CreateRutina(c *gin.Context) {
 	var input models.RutinaInput
 	var err error
 
 	if err = c.ShouldBindJSON(&input); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	var rutina models.Rutina
 
 	err = h.DB.Transaction(func(tx *gorm.DB) error {
-		// Crear la rutina
+		// Create the routine
 		rutina = models.Rutina{
 			Nom:          input.Nom,
 			Descripcio:   input.Descripcio,
-			EntrenadorID: c.MustGet("id").(uint),
+			EntrenadorID: c.MustGet("user").(models.Usuari).ID,
 			Cicles:       input.Cicles,
 			DiesDuracio:  input.DiesDuracio,
 		}
@@ -63,7 +85,7 @@ func (h *Handler) CreateRutina(c *gin.Context) {
 			return err
 		}
 
-		// Crear los ejercicios asociados a la rutina
+		// Create the exercises associated with the routine
 		for _, exercici := range input.Exercicis {
 			ex := models.ExerciciRutina{
 				RutinaID:      rutina.ID,
@@ -80,65 +102,100 @@ func (h *Handler) CreateRutina(c *gin.Context) {
 			}
 		}
 
-		// Si todo fue bien, retornar nil para confirmar la transacción
+		// If everything went well, return nil to confirm the transaction
 		return nil
 	})
 
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create rutina or exercicis", "details": err.Error()})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	// Si la transacción fue exitosa, cargar la rutina creada con los ejercicios
+	// If the transaction was successful, load the created routine with the exercises
 	var createdRutina models.Rutina
 	if err = h.DB.Preload("ExercicisRutina").First(&createdRutina, rutina.ID).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to load created rutina"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to load created rutina"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": createdRutina})
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: createdRutina})
 }
+
+
+// @Summary Update a rutine
+// @Description Updates a rutine in the database.
+// @Tags Rutines
+// @Security Bearer
+// @Accept json
+// @Produce json
+// @Param id path int true "ID of the rutine to update"
+// @Param input body models.RutinaInput true "Rutine to update"
+// @Success 200 {object} models.SuccessResponse{data=models.RutinaResponse}
+// @Failure 400 {object} models.ErrorResponse "Bad request"
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
+// @Failure 404 {object} models.ErrorResponse "Not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/rutines/{id} [put]
 func (h Handler) UpdateRutina(c *gin.Context) {
 	var rutina models.Rutina
 	var err error
 
+	// Retrieve the rutine from the database
 	if err = h.DB.Where("id = ?", c.Param("id")).First(&rutina).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "record not found"})
+		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: "record not found"})
 	}
 
 	var input models.RutinaInput
 
 	if err = c.ShouldBindJSON(&input); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
+	// Update the rutine in the database
 	updatedRutina := models.Rutina{Nom: input.Nom, Descripcio: input.Descripcio}
 
-	h.DB.Model(&rutina).Updates(&updatedRutina)
+	if err = h.DB.Model(&rutina).Updates(&updatedRutina).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to update rutina"})
+		return
+	}
 
 	var uu models.Rutina
 	h.DB.Preload("Exercicis").First(&uu, c.Param("id"))
 
-	c.JSON(http.StatusOK, gin.H{"data": uu})
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: uu})
 }
 
+
+// @Summary Delete a rutine
+// @Description Deletes a rutine from the database.
+// @Tags Rutines
+// @Security Bearer
+// @Accept json
+// @Produce json
+// @Param id path int true "ID of the rutine to delete"
+// @Success 200 {object} models.SuccessResponse{data=string}
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
+// @Failure 404 {object} models.ErrorResponse "Not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/rutines/{id} [delete]
 func (h *Handler) DeleteRutina(c *gin.Context) {
 
+	//Starts a new transaction
 	err := h.DB.Transaction(func(tx *gorm.DB) error {
 		var rutina models.Rutina
 		var err error
 
 		if err = tx.Where("id = ?", c.Param("id")).First(&rutina).Error; err != nil {
-			return err // Esto provocará un rollback automático
+			return err
 		}
 
-		// Eliminar los ejercicios asociados
+		// Delete the exercises associated with the routine
 		if err = tx.Where("rutina_id = ?", rutina.ID).Delete(&models.ExerciciRutina{}).Error; err != nil {
 			return err
 		}
 
-		// Eliminar la rutina
+		// Delete the routine
 		if err = tx.Delete(&rutina).Error; err != nil {
 			return err
 		}
@@ -146,19 +203,32 @@ func (h *Handler) DeleteRutina(c *gin.Context) {
 		return nil
 	})
 
-	// Manejo de errores fuera de la transacción
 	if err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete rutina and related exercises"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to delete rutina and related exercises"})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": "success"})
 }
 
+
+// @Summary Get all rutines of an entrenador
+// @Description Retrieves all the rutines of an entrenador from the database.
+// @Tags Rutines
+// @Security Bearer
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.SuccessResponse{data=[]models.RutinaResponse}
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
+// @Failure 404 {object} models.ErrorResponse "Not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/rutines/rutinesEntrenador [get]
 func (h *Handler) RutinesEntrenador(c *gin.Context) {
 	var rutines []models.Rutina
 
-	h.DB.Find(&rutines).Where("entrenador_id = ?", auth.GetUsuari(c))
+
+	//Retrieves all the rutines of the trainer
+	h.DB.Find(&rutines).Where("entrenador_id = ?", c.MustGet("user").(models.Usuari).ID)
 
 	query := `SELECT e.id as ID, e.exercici_id as exerciciID, ex.nom as nom, ordre as ordre, num_series as numSeries, num_repes as numRepes, cicle as cicle,
     percentatge_rm as percentatgeRM, dia_rutina as diaRutina FROM exercicis_rutina e 
@@ -217,19 +287,19 @@ func (h *Handler) CanviarVisibilitat(c *gin.Context) {
 		return
 	}
 
-	if rutina.EntrenadorID != auth.GetUsuari(c) {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+	if rutina.EntrenadorID != c.MustGet("user").(models.Usuari).ID {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Unauthorized"})
 		return
 	}
 
 	rutina.Publica = !rutina.Publica
 
 	if err = h.DB.Model(&rutina).Update("publica", rutina.Publica).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to update rutina"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to update rutina"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": rutina})
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: rutina})
 }
 
 func (h *Handler) AcabarRutina(c *gin.Context) {
@@ -278,25 +348,27 @@ func (h *Handler) AssignarRutina(c *gin.Context) {
 	var input models.UsuariRutinaInput
 
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	if err = h.DB.Where("id = ?", input.RutinaID).First(&rutina).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "record not found"})
+		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: "record not found"})
 		return
 	}
 
 	if err = h.DB.Where("id = ?", input.AlumneID).First(&alumne).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "record not found"})
+		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: "record not found"})
 		return
 	}
 
-	if rutina.EntrenadorID != c.MustGet("id").(uint) {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+	if rutina.EntrenadorID != c.MustGet("user").(models.Usuari).ID {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Unauthorized"})
 		return
 	}
 
+
+	//Ends the current user's routine before starting a new one
 	var r models.UsuariRutina
 	if err = h.DB.Where("data_finalitzacio is null and usuari_id = ?", alumne.ID).First(&r).Error; err != nil {
 		var now = time.Now()
@@ -307,9 +379,9 @@ func (h *Handler) AssignarRutina(c *gin.Context) {
 	var nova = models.UsuariRutina{UsuariID: alumne.ID, RutinaID: rutina.ID, DataInici: time.Now()}
 
 	if err = h.DB.Create(&nova).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create new user rutina"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to create new user rutina"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"status": "success"})
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
 }
