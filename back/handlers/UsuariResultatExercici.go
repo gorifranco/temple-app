@@ -7,11 +7,25 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+
+// @Summary Save the results of a day of the current routine
+// @Description Saves the results of a day of the current routine in the database.
+// @Tags Exercises
+// @Security Bearer
+// @Accept json
+// @Produce json
+// @Param id path int true "ID of the routine to save the results of"
+// @Param input body []models.UsuariResultatExerciciInput true "Results to save"
+// @Success 200 {object} models.SuccessResponse{data=string}
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
+// @Failure 404 {object} models.ErrorResponse "Not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/entrenador/guardarResultats [post]
 func (h *Handler) GuardarResultats(c *gin.Context) {
 	var resultats []models.UsuariResultatExerciciInput
 
 	if err := c.ShouldBindJSON(&resultats); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -41,8 +55,8 @@ func (h *Handler) GuardarResultats(c *gin.Context) {
 	}
 
 	for _, u := range usuariIDs {
-		if u.ID != c.MustGet("id").(uint) && u.EntrenadorID != c.MustGet("id").(uint) {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		if u.ID != c.MustGet("id").(uint) && u.EntrenadorID != c.MustGet("user").(models.Usuari).ID {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Unauthorized"})
 			return
 		}
 	}
@@ -64,12 +78,12 @@ func (h *Handler) GuardarResultats(c *gin.Context) {
 			Pes:              resultat.Pes,
 		}).Error; err != nil {
 			tx.Rollback()
-			c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to create resultat"})
+			c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to create resultat"})
 			return
 		}
 	}
 
 	tx.Commit()
 
-	c.JSON(http.StatusOK, gin.H{"data": "success"})
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
 }

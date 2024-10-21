@@ -29,7 +29,7 @@ func (h *Handler) SolicitarUnio(cx *gin.Context) {
 		return
 	}
 
-	solicitud := models.SolicitudUnioSala{SalaID: input.SalaID, UsuariID: auth.GetUsuari(cx)}
+	solicitud := models.SolicitudUnioSala{SalaID: input.SalaID, UsuariID: cx.MustGet("user").(models.Usuari).ID}
 
 	if err = h.DB.Create(&solicitud).Error; err != nil {
 		cx.AbortWithStatusJSON(400, gin.H{"error": err.Error()})

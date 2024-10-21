@@ -2,113 +2,165 @@ package handlers
 
 import (
 	"net/http"
-	"temple-app/auth"
 	"temple-app/models"
 
 	"github.com/gin-gonic/gin"
 )
 
-func (h *Handler) SolicitudsEntrenador(cx *gin.Context) {
+// @Summary Get all pending solicitudes
+// @Description Retrieves all the pending solicitudes from the database.
+// @Tags Solicitudes
+// @Security Bearer
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.SuccessResponse{data=[]models.SolicitudUnioEntrenadorResponse}
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
+// @Failure 404 {object} models.ErrorResponse "Not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/solicitudes/solicitudsEntrenador [get]
+func (h *Handler) SolicitudsEntrenador(c *gin.Context) {
 	var entrenador models.Usuari
 
-	if err := h.DB.Where("entrenador_id = ?", auth.GetUsuari(cx)).First(&entrenador).Error; err != nil {
-		cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := h.DB.Where("entrenador_id = ?", c.MustGet("user").(models.Usuari).ID).First(&entrenador).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	cx.JSON(http.StatusOK, gin.H{"data": entrenador.SolicitudsUnioEntrenador})
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: entrenador.SolicitudsUnioEntrenador})
 }
 
-func (h *Handler) SolicitarUnioEntrenador(cx *gin.Context) {
+
+// @Summary Create a new pending solicitude
+// @Description Creates a new pending solicitude in the database.
+// @Tags Solicitudes
+// @Security Bearer
+// @Accept json
+// @Produce json
+// @Param input body models.SolicitudUnioEntrenadorInput true "Solicitude to create"
+// @Success 200 {object} models.SuccessResponse{data=models.SolicitudUnioEntrenadorResponse}
+// @Failure 400 {object} models.ErrorResponse "Bad request"
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
+// @Failure 409 {object} models.ErrorResponse "Conflict"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/solicituds [post]
+func (h *Handler) SolicitarUnioEntrenador(c *gin.Context) {
 	var input models.SolicitudUnioEntrenadorInput
 	var entrenador models.Usuari
 	var err error
 
-	if err = cx.ShouldBindJSON(&input); err != nil {
-		cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err = c.ShouldBindJSON(&input); err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	//Entrenador no existeix
 	if err = h.DB.Where("codiEntrenador = ?", input.CodiEntrenador).First(&entrenador).Error; err != nil {
-		cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	//Usuari ja està en la sala
-	var usuari models.Usuari
-	h.DB.Where("ID = ?", auth.GetUsuari(cx)).First(usuari)
 
-	if usuari.EntrenadorID != nil {
-		cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": `L'usuari ja té un entrenador`})
+
+	if c.MustGet("user").(models.Usuari).EntrenadorID != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "L'usuari ja té un entrenador"})
 		return
 	}
 
-	solicitud := models.SolicitudUnioEntrenador{EntrenadorID: entrenador.ID, UsuariID: usuari.ID}
+	solicitud := models.SolicitudUnioEntrenador{EntrenadorID: entrenador.ID, UsuariID: c.MustGet("user").(models.Usuari).ID}
 
 	if err = h.DB.Create(&solicitud).Error; err != nil {
-		cx.AbortWithStatusJSON(400, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	cx.JSON(http.StatusOK, gin.H{"data": "success"})
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
 }
 
-func (h *Handler) AcceptarSolicitudUnioEntrenador(cx *gin.Context) {
+
+// @Summary Accept a pending solicitude
+// @Description Accepts a pending solicitude in the database.
+// @Tags Solicitudes
+// @Security Bearer
+// @Accept json
+// @Produce json
+// @Param id path int true "ID of the pending solicitude to accept"
+// @Success 200 {object} models.SuccessResponse{data=string}
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
+// @Failure 404 {object} models.ErrorResponse "Not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/solicitudes/{id}/accept [put]
+func (h *Handler) AcceptarSolicitudUnioEntrenador(c *gin.Context) {
 	var entrenador models.Usuari
 	var solicitud models.SolicitudUnioEntrenador
 	var err error
 	var usuari models.Usuari
 
-	if err = h.DB.Where("id = ?", cx.Param("solicitud_id")).First(&solicitud).Error; err != nil {
-		cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "No existeix la solicitud"})
+	if err = h.DB.Where("id = ?", c.Param("id")).First(&solicitud).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "No existeix la solicitud"})
 		return
 	}
 
 	if err = h.DB.Where("ID = ?", solicitud.EntrenadorID).First(entrenador).Error; err != nil {
-		cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	if entrenador.ID != auth.GetUsuari(cx) {
-		cx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+	if entrenador.ID != c.MustGet("user").(models.Usuari).ID {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Unauthorized"})
 		return
 	}
 
 	//Usuari ja es troba dins el grup
 	for _, alumne := range entrenador.Alumnes {
 		if alumne.ID == usuari.ID {
-			cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "L'usuari ja es troba dins la sala"})
+			c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "L'usuari ja es troba dins la sala"})
 			return
 		}
 	}
 
 	//Inserir usuari en la sala
 	entrenador.Alumnes = append(entrenador.Alumnes, usuari)
-	h.DB.Model(&entrenador).Update("alumnes", entrenador.Alumnes)
-	h.DB.Delete(&solicitud)
-
-	cx.JSON(http.StatusOK, gin.H{"data": "success"})
-}
-
-func (h *Handler) DeclinarSolicitudUnioEntrenador(cx *gin.Context) {
-	var solicitud models.SolicitudUnioEntrenador
-	var err error
-
-	if err = h.DB.Where("id = ?", cx.Param("solicitud_id")).First(&solicitud).Error; err != nil {
-		cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "No existeix la solicitud"})
+	 if err = h.DB.Model(&entrenador).Update("alumnes", entrenador.Alumnes).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to update entrenador"})
 		return
 	}
 
-	if auth.GetUsuari(cx) != solicitud.EntrenadorID {
-		cx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+	h.DB.Delete(&solicitud)
+
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
+}
+
+
+// @Summary Decline a pending solicitude
+// @Description Declines a pending solicitude in the database.
+// @Tags Solicitudes
+// @Security Bearer
+// @Accept json
+// @Produce json
+// @Param id path int true "ID of the pending solicitude to decline"
+// @Success 200 {object} models.SuccessResponse{data=string}
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
+// @Failure 404 {object} models.ErrorResponse "Not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/solicitudes/{id}/decline [put]
+func (h *Handler) DeclinarSolicitudUnioEntrenador(c *gin.Context) {
+	var solicitud models.SolicitudUnioEntrenador
+	var err error
+
+	if err = h.DB.Where("id = ?", c.Param("id")).First(&solicitud).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "No existeix la solicitud"})
+		return
+	}
+
+	if c.MustGet("user").(models.Usuari).ID != solicitud.EntrenadorID {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Unauthorized"})
 		return
 	}
 
 	if err = h.DB.Delete(&solicitud).Error; err != nil {
-		cx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete solicitud"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to delete solicitud"})
 		return
 	}
 
-	cx.JSON(http.StatusOK, gin.H{"data": "success"})
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
 }
