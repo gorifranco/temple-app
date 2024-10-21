@@ -34,6 +34,7 @@ func (h *Handler) GuardarResultats(c *gin.Context) {
 		ID           uint
 	}
 
+	//Creates a set to avoid duplicate IDs
 	set := make(map[int]struct{})
 	for _, resultat := range resultats {
 		set[int(resultat.UsuariRutinaID)] = struct{}{}

@@ -1,4 +1,12 @@
 definitions:
+  gorm.DeletedAt:
+    properties:
+      time:
+        type: string
+      valid:
+        description: Valid is true if Time is not NULL
+        type: boolean
+    type: object
   handlers.Credentials:
     description: Data needed when logging in
     properties:
@@ -23,18 +31,65 @@ definitions:
     type: object
   models.AlumneResponse:
     properties:
+      ID:
+        type: integer
+      Nom:
+        type: string
+      Reserves:
+        items:
+          $ref: '#/definitions/models.ReservaResponse'
+        type: array
+      ResultatsRutinaActual:
+        items:
+          $ref: '#/definitions/models.UsuariResultatExerciciResponse'
+        type: array
+      RutinaActual:
+        type: integer
+      TipusUsuari:
+        type: string
+    type: object
+  models.ConfiguracioEntrenador:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      duracioSessions:
+        type: integer
+      entrenadorID:
+        type: integer
       id:
         type: integer
-      nom:
-        type: string
-      rutinaActual:
+      maxAlumnesPerSessio:
         type: integer
-      tipusUsuari:
+      updatedAt:
         type: string
     type: object
   models.ErrorResponse:
     properties:
       error:
+        type: string
+    type: object
+  models.Exercici:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      exercicisRutina:
+        description: ExercicisRutina es una lista de rutinas que utilizan este exercici.
+        items:
+          $ref: '#/definitions/models.ExerciciRutina'
+        type: array
+      id:
+        type: integer
+      nom:
+        description: |-
+          Nom es el nombre del exercici.
+          required: true
+          example: Extensión de tríceps en polea
+        type: string
+      updatedAt:
         type: string
     type: object
   models.ExerciciInput:
@@ -53,9 +108,304 @@ definitions:
       nom:
         type: string
     type: object
+  models.ExerciciRutina:
+    properties:
+      cicle:
+        type: integer
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      diaRutina:
+        type: integer
+      exercici:
+        $ref: '#/definitions/models.Exercici'
+      exerciciID:
+        type: integer
+      id:
+        type: integer
+      numRepes:
+        type: integer
+      numSeries:
+        type: integer
+      ordre:
+        type: integer
+      percentatgeRM:
+        type: integer
+      rutinaID:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  models.ExerciciRutinaInput:
+    properties:
+      cicle:
+        type: integer
+      diaRutina:
+        type: integer
+      exerciciID:
+        type: integer
+      numRepes:
+        type: integer
+      numSeries:
+        type: integer
+      ordre:
+        type: integer
+      percentatgeRM:
+        type: integer
+    type: object
+  models.ExerciciRutinaResponse:
+    properties:
+      cicle:
+        type: integer
+      diaRutina:
+        type: integer
+      exerciciID:
+        type: integer
+      id:
+        type: integer
+      nom:
+        type: string
+      numRepes:
+        type: integer
+      numSeries:
+        type: integer
+      ordre:
+        type: integer
+      percentatgeRM:
+        type: integer
+    type: object
+  models.HorarisEntrenador:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      desde:
+        type: string
+      diaSetmana:
+        type: integer
+      entrenadorID:
+        type: integer
+      fins:
+        type: string
+      id:
+        type: integer
+      updatedAt:
+        type: string
+    type: object
+  models.Reserva:
+    properties:
+      confirmada:
+        type: boolean
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      entrenadorID:
+        type: integer
+      hora:
+        type: string
+      id:
+        type: integer
+      updatedAt:
+        type: string
+      usuariID:
+        type: integer
+    type: object
+  models.ReservaResponse:
+    properties:
+      Confirmada:
+        type: boolean
+      Hora:
+        type: string
+      ID:
+        type: integer
+      UsuariID:
+        type: integer
+    type: object
+  models.Rutina:
+    properties:
+      cicles:
+        type: integer
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      descripcio:
+        type: string
+      diesDuracio:
+        type: integer
+      entrenadorID:
+        type: integer
+      exercicisRutina:
+        items:
+          $ref: '#/definitions/models.ExerciciRutina'
+        type: array
+      id:
+        type: integer
+      nom:
+        type: string
+      publica:
+        type: boolean
+      updatedAt:
+        type: string
+    type: object
+  models.RutinaInput:
+    properties:
+      cicles:
+        type: integer
+      descripcio:
+        type: string
+      diesDuracio:
+        type: integer
+      exercicis:
+        items:
+          $ref: '#/definitions/models.ExerciciRutinaInput'
+        type: array
+      nom:
+        type: string
+    type: object
+  models.RutinaResponse:
+    properties:
+      cicles:
+        type: integer
+      diesDuracio:
+        type: integer
+      exercicis:
+        items:
+          $ref: '#/definitions/models.ExerciciRutinaResponse'
+        type: array
+      id:
+        type: integer
+      nom:
+        type: string
+    type: object
+  models.Sala:
+    properties:
+      admin:
+        $ref: '#/definitions/models.Usuari'
+      adminID:
+        type: integer
+      codiSala:
+        type: string
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      nom:
+        type: string
+      reserves:
+        items:
+          $ref: '#/definitions/models.Reserva'
+        type: array
+      updatedAt:
+        type: string
+      usuaris:
+        items:
+          $ref: '#/definitions/models.Usuari'
+        type: array
+    type: object
+  models.SalaInput:
+    properties:
+      nom:
+        type: string
+    type: object
+  models.SolicitudUnioEntrenador:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      entrenadorID:
+        type: integer
+      id:
+        type: integer
+      updatedAt:
+        type: string
+      usuariID:
+        type: integer
+    type: object
+  models.SolicitudUnioEntrenadorInput:
+    properties:
+      codiEntrenador:
+        type: string
+    type: object
   models.SuccessResponse:
     properties:
       data: {}
+    type: object
+  models.TipusUsuari:
+    properties:
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      id:
+        type: integer
+      nom:
+        type: string
+      updatedAt:
+        type: string
+    type: object
+  models.Usuari:
+    properties:
+      alumnes:
+        items:
+          $ref: '#/definitions/models.Usuari'
+        type: array
+      codiEntrenador:
+        type: string
+      configuracioEntrenador:
+        $ref: '#/definitions/models.ConfiguracioEntrenador'
+      createdAt:
+        type: string
+      deletedAt:
+        $ref: '#/definitions/gorm.DeletedAt'
+      email:
+        type: string
+      entrenador:
+        $ref: '#/definitions/models.Usuari'
+      entrenadorID:
+        type: integer
+      horarisEntrenador:
+        items:
+          $ref: '#/definitions/models.HorarisEntrenador'
+        type: array
+      id:
+        type: integer
+      nom:
+        type: string
+      password:
+        type: string
+      reserves:
+        items:
+          $ref: '#/definitions/models.Reserva'
+        type: array
+      sales:
+        items:
+          $ref: '#/definitions/models.Sala'
+        type: array
+      salesAdministrades:
+        items:
+          $ref: '#/definitions/models.Sala'
+        type: array
+      solicitudsUnioEntrenador:
+        items:
+          $ref: '#/definitions/models.SolicitudUnioEntrenador'
+        type: array
+      telefon:
+        type: string
+      tipusUsuari:
+        allOf:
+        - $ref: '#/definitions/models.TipusUsuari'
+        description: 1 = administrador, 2 = basic , 3 = entrenador, 4 = fictici
+      tipusUsuariID:
+        type: integer
+      updatedAt:
+        type: string
     type: object
   models.UsuariFicticiInput:
     properties:
@@ -69,6 +419,43 @@ definitions:
       password:
         type: string
       tipusUsuariID:
+        type: integer
+    type: object
+  models.UsuariResultatExerciciInput:
+    properties:
+      dia:
+        type: string
+      exerciciRutinaID:
+        type: integer
+      pes:
+        type: number
+      repeticions:
+        type: integer
+      series:
+        type: integer
+      usuariRutinaID:
+        type: integer
+    type: object
+  models.UsuariResultatExerciciResponse:
+    properties:
+      Dia:
+        type: string
+      ExerciciRutinaID:
+        type: integer
+      ID:
+        type: integer
+      Pes:
+        type: number
+      Repeticions:
+        type: integer
+      Series:
+        type: integer
+    type: object
+  models.UsuariRutinaInput:
+    properties:
+      alumneID:
+        type: integer
+      rutinaID:
         type: integer
     type: object
 info:
@@ -109,8 +496,55 @@ paths:
       - Bearer: []
       summary: Get all alumnes from  trainer
       tags:
-      - Alumnes
       - Entrenador
+  /api/entrenador/guardarResultats:
+    post:
+      consumes:
+      - application/json
+      description: Saves the results of a day of the current routine in the database.
+      parameters:
+      - description: ID of the routine to save the results of
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Results to save
+        in: body
+        name: input
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/models.UsuariResultatExerciciInput'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Save the results of a day of the current routine
+      tags:
+      - Exercises
   /api/exercicis:
     get:
       consumes:
@@ -289,6 +723,904 @@ paths:
       summary: Login
       tags:
       - Auth
+  /api/register:
+    post:
+      consumes:
+      - application/json
+      description: Registers a new user in the database.
+      parameters:
+      - description: User to register
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.UsuariInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Register
+      tags:
+      - Auth
+  /api/rutines:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all the rutines from the database.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.RutinaResponse'
+                  type: array
+              type: object
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get all rutines
+      tags:
+      - Rutines
+    post:
+      consumes:
+      - application/json
+      description: Creates a new rutine in the database.
+      parameters:
+      - description: Rutine to create
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.RutinaInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.RutinaResponse'
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Create a new rutine
+      tags:
+      - Rutines
+  /api/rutines/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a rutine from the database.
+      parameters:
+      - description: ID of the rutine to delete
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Delete a rutine
+      tags:
+      - Rutines
+    put:
+      consumes:
+      - application/json
+      description: Updates a rutine in the database.
+      parameters:
+      - description: ID of the rutine to update
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Rutine to update
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.RutinaInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.RutinaResponse'
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Update a rutine
+      tags:
+      - Rutines
+  /api/rutines/{id}/canviarVisibilitat:
+    put:
+      consumes:
+      - application/json
+      description: Changes the visibility of a rutine in the database.
+      parameters:
+      - description: ID of the rutine to change the visibility
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Rutina'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Change the visibility of a rutine
+      tags:
+      - Rutines
+  /api/rutines/assignarRutina:
+    post:
+      consumes:
+      - application/json
+      description: Assigns a rutine to an alumne in the database.
+      parameters:
+      - description: Alumne to assign the rutine to
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.UsuariRutinaInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Assign a rutine to an alumne
+      tags:
+      - Rutines
+  /api/rutines/rutinesEntrenador:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all the rutines of an entrenador from the database.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.RutinaResponse'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get all rutines of an entrenador
+      tags:
+      - Rutines
+  /api/rutines/rutinesPubliques:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all the public rutines from the database.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.RutinaResponse'
+                  type: array
+              type: object
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get all public rutines
+      tags:
+      - Rutines
+  /api/sales:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all the salas from the database.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Sala'
+                  type: array
+              type: object
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get all salas
+      tags:
+      - Sales
+    post:
+      consumes:
+      - application/json
+      description: Creates a new sala in the database.
+      parameters:
+      - description: Sala to create
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.SalaInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Sala'
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create a new sala
+      tags:
+      - Sales
+  /api/sales/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a sala from the database.
+      parameters:
+      - description: ID of the sala to delete
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Delete a sala
+      tags:
+      - Sales
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a sala from the database by its ID.
+      parameters:
+      - description: ID of the sala to retrieve
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Sala'
+              type: object
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get a sala
+      tags:
+      - Sales
+    put:
+      consumes:
+      - application/json
+      description: Updates a sala in the database.
+      parameters:
+      - description: ID of the sala to update
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Sala to update
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.SalaInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Sala'
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Update a sala
+      tags:
+      - Sales
+  /api/sales/salesUsuari:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all the sales of an entrenador from the database.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Sala'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get all sales of an entrenador
+      tags:
+      - Sales
+  /api/solicitudes/{id}/accept:
+    put:
+      consumes:
+      - application/json
+      description: Accepts a pending solicitude in the database.
+      parameters:
+      - description: ID of the pending solicitude to accept
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Accept a pending solicitude
+      tags:
+      - Solicitudes
+  /api/solicitudes/{id}/decline:
+    put:
+      consumes:
+      - application/json
+      description: Declines a pending solicitude in the database.
+      parameters:
+      - description: ID of the pending solicitude to decline
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Decline a pending solicitude
+      tags:
+      - Solicitudes
+  /api/solicitudes/solicitudsEntrenador:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all the pending solicitudes from the database.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.SolicitudUnioEntrenador'
+                  type: array
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get all pending solicitudes
+      tags:
+      - Solicitudes
+  /api/solicituds:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new pending solicitude in the database.
+      parameters:
+      - description: Solicitude to create
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.SolicitudUnioEntrenadorInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.SolicitudUnioEntrenador'
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Create a new pending solicitude
+      tags:
+      - Solicitudes
+  /api/users:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all the users from the database.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.Usuari'
+                  type: array
+              type: object
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get all users
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      description: Creates a new user in the database.
+      parameters:
+      - description: User to create
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.UsuariInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Usuari'
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Create a new user
+      tags:
+      - Users
+  /api/users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a user from the database.
+      parameters:
+      - description: ID of the user to delete
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Delete a user
+      tags:
+      - Users
+    get:
+      consumes:
+      - application/json
+      description: Retrieves a user from the database by its ID.
+      parameters:
+      - description: ID of the user to retrieve
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Usuari'
+              type: object
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Get a user by ID
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Updates a user in the database.
+      parameters:
+      - description: ID of the user to update
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User to update
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.UsuariInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Usuari'
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Update a user
+      tags:
+      - Users
 securityDefinitions:
   Bearer:
     description: 'Enter the token with the `Bearer: ` prefix, e.g. "Bearer abcde12345".'

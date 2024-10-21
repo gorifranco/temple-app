@@ -10,37 +10,16 @@ import (
 	"gorm.io/gorm"
 )
 
-type RutinaResposta struct {
-	ID          uint                     `json:"ID"`
-	Nom         string                   `json:"Nom"`
-	Exercicis   []ExerciciRutinaResposta `json:"Exercicis"`
-	Cicles      int                      `json:"Cicles"`
-	DiesDuracio int                      `json:"DiesDuracio"`
-}
-
-type ExerciciRutinaResposta struct {
-	ID            uint   `json:"ID"`
-	ExerciciID    uint   `json:"ExerciciID"`
-	Nom           string `json:"Nom"`
-	Ordre         int    `json:"Ordre"`
-	NumSeries     int    `json:"NumSeries"`
-	NumRepes      int    `json:"NumRepes"`
-	Cicle         int    `json:"Cicle"`
-	PercentatgeRM int    `json:"PercentatgeRM"`
-	DiaRutina     int    `json:"DiaRutina"`
-}
-
-
 // @Summary Get all rutines
 // @Description Retrieves all the rutines from the database.
 // @Tags Rutines
 // @Accept json
 // @Produce json
-// @Success 200 {object} models.SuccessResponse{data=[]models.Rutina}
+// @Success 200 {object} models.SuccessResponse{data=[]models.RutinaResponse}
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
 // @Router /api/rutines [get]
 func (h *Handler) IndexRutina(c *gin.Context) {
-	var rutinas []models.Rutina
+	var rutinas []models.RutinaResponse
 	h.DB.Find(&rutinas)
 
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: rutinas})
@@ -54,7 +33,7 @@ func (h *Handler) IndexRutina(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param input body models.RutinaInput true "Rutine to create"
-// @Success 200 {object} models.SuccessResponse{data=RutinaResposta}
+// @Success 200 {object} models.SuccessResponse{data=models.RutinaResponse}
 // @Failure 400 {object} models.ErrorResponse "Bad request"
 // @Failure 401 {object} models.ErrorResponse "Unauthorized"
 // @Failure 409 {object} models.ErrorResponse "Conflict"
@@ -130,7 +109,7 @@ func (h *Handler) CreateRutina(c *gin.Context) {
 // @Produce json
 // @Param id path int true "ID of the rutine to update"
 // @Param input body models.RutinaInput true "Rutine to update"
-// @Success 200 {object} models.SuccessResponse{data=RutinaResposta}
+// @Success 200 {object} models.SuccessResponse{data=models.RutinaResponse}
 // @Failure 400 {object} models.ErrorResponse "Bad request"
 // @Failure 401 {object} models.ErrorResponse "Unauthorized"
 // @Failure 404 {object} models.ErrorResponse "Not found"
@@ -218,7 +197,7 @@ func (h *Handler) DeleteRutina(c *gin.Context) {
 // @Security Bearer
 // @Accept json
 // @Produce json
-// @Success 200 {object} models.SuccessResponse{data=[]RutinaResposta}
+// @Success 200 {object} models.SuccessResponse{data=[]models.RutinaResponse}
 // @Failure 401 {object} models.ErrorResponse "Unauthorized"
 // @Failure 404 {object} models.ErrorResponse "Not found"
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
@@ -235,10 +214,10 @@ func (h *Handler) RutinesEntrenador(c *gin.Context) {
     INNER JOIN exercicis ex ON ex.id = e.exercici_id 
     WHERE e.rutina_id = ? AND e.deleted_at IS NULL`
 
-	var rutinesResposta []RutinaResposta
+	var rutinesResposta []models.RutinaResponse
 
 	for _, rutina := range rutines {
-		var ex []ExerciciRutinaResposta
+		var ex []models.ExerciciRutinaResponse
 		rows, err := h.DB.Raw(query, rutina.ID).Rows()
 		if err != nil {
 			fmt.Println("Error executing query:", err)
@@ -247,7 +226,7 @@ func (h *Handler) RutinesEntrenador(c *gin.Context) {
 		defer rows.Close()
 
 		for rows.Next() {
-			var exercici ExerciciRutinaResposta
+			var exercici models.ExerciciRutinaResponse
 			err := rows.Scan(&exercici.ID, &exercici.ExerciciID, &exercici.Nom, &exercici.Ordre, &exercici.NumSeries, &exercici.NumRepes,
 				&exercici.Cicle, &exercici.PercentatgeRM, &exercici.DiaRutina)
 			if err != nil {
@@ -258,7 +237,7 @@ func (h *Handler) RutinesEntrenador(c *gin.Context) {
 			ex = append(ex, exercici)
 		}
 
-		rutinesResposta = append(rutinesResposta, RutinaResposta{
+		rutinesResposta = append(rutinesResposta, models.RutinaResponse{
 			ID:          rutina.ID,
 			Nom:         rutina.Nom,
 			Cicles:      rutina.Cicles,
@@ -276,7 +255,7 @@ func (h *Handler) RutinesEntrenador(c *gin.Context) {
 // @Tags Rutines
 // @Accept json
 // @Produce json
-// @Success 200 {object} models.SuccessResponse{data=[]RutinaResposta}
+// @Success 200 {object} models.SuccessResponse{data=[]models.RutinaResponse}
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
 // @Router /api/rutines/rutinesPubliques [get]
 func (h *Handler) RutinesPubliques(c *gin.Context) {

@@ -14,7 +14,7 @@ import (
 // @Tags Users
 // @Accept json
 // @Produce json
-// @Success 200 {object} models.SuccessResponse{data=[]models.UsuariResponse}
+// @Success 200 {object} models.SuccessResponse{data=[]models.Usuari}
 // @Failure 500 {object} models.ErrorResponse "Internal server error"	
 // @Router /api/users [get]
 func (h *Handler) IndexUsuari(c *gin.Context) {
@@ -30,7 +30,7 @@ func (h *Handler) IndexUsuari(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "ID of the user to retrieve"
-// @Success 200 {object} models.SuccessResponse{data=models.UsuariResponse}
+// @Success 200 {object} models.SuccessResponse{data=models.Usuari}
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
 // @Router /api/users/{id} [get]
 func (h *Handler) FindUsuari(c *gin.Context) {
@@ -51,7 +51,7 @@ func (h *Handler) FindUsuari(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param input body models.UsuariInput true "User to create"
-// @Success 200 {object} models.SuccessResponse{data=models.UsuariResponse}
+// @Success 200 {object} models.SuccessResponse{data=models.Usuari}
 // @Failure 400 {object} models.ErrorResponse "Bad request"
 // @Failure 409 {object} models.ErrorResponse "Conflict"
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
@@ -94,7 +94,7 @@ func (h *Handler) CreateUsuari(c *gin.Context) {
 // @Produce json
 // @Param id path int true "ID of the user to update"
 // @Param input body models.UsuariInput true "User to update"
-// @Success 200 {object} models.SuccessResponse{data=models.UsuariResponse}
+// @Success 200 {object} models.SuccessResponse{data=models.Usuari}
 // @Failure 400 {object} models.ErrorResponse "Bad request"
 // @Failure 401 {object} models.ErrorResponse "Unauthorized"
 // @Failure 404 {object} models.ErrorResponse "Not found"

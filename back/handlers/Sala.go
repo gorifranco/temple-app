@@ -1,3 +1,4 @@
+
 package handlers
 
 import (
@@ -15,7 +16,7 @@ import (
 // @Tags Sales
 // @Accept json
 // @Produce json
-// @Success 200 {object} models.SuccessResponse{data=[]models.SalaResponse}
+// @Success 200 {object} models.SuccessResponse{data=[]models.Sala}
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
 // @Router /api/sales [get]
 func (h *Handler) IndexSala(c *gin.Context) {
@@ -32,7 +33,7 @@ func (h *Handler) IndexSala(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param id path int true "ID of the sala to retrieve"
-// @Success 200 {object} models.SuccessResponse{data=models.SalaResponse}
+// @Success 200 {object} models.SuccessResponse{data=models.Sala}
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
 // @Router /api/sales/{id} [get]
 func (h *Handler) FindSala(c *gin.Context) {
@@ -53,7 +54,7 @@ func (h *Handler) FindSala(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param input body models.SalaInput true "Sala to create"
-// @Success 200 {object} models.SuccessResponse{data=models.SalaResponse}
+// @Success 200 {object} models.SuccessResponse{data=models.Sala}
 // @Failure 400 {object} models.ErrorResponse "Bad request"
 // @Failure 409 {object} models.ErrorResponse "Conflict"
 // @Failure 500 {object} models.ErrorResponse "Internal server error"	
@@ -105,7 +106,7 @@ func (h *Handler) CreateSala(c *gin.Context) {
 // @Produce json
 // @Param id path int true "ID of the sala to update"
 // @Param input body models.SalaInput true "Sala to update"
-// @Success 200 {object} models.SuccessResponse{data=models.SalaResponse}
+// @Success 200 {object} models.SuccessResponse{data=models.Sala}
 // @Failure 400 {object} models.ErrorResponse "Bad request"
 // @Failure 401 {object} models.ErrorResponse "Unauthorized"
 // @Failure 404 {object} models.ErrorResponse "Not found"
@@ -174,7 +175,7 @@ func (h *Handler) DeleteSala(c *gin.Context) {
 // @Security Bearer
 // @Accept json
 // @Produce json
-// @Success 200 {object} models.SuccessResponse{data=[]models.SalaResponse}
+// @Success 200 {object} models.SuccessResponse{data=[]models.Sala}
 // @Failure 401 {object} models.ErrorResponse "Unauthorized"
 // @Failure 404 {object} models.ErrorResponse "Not found"
 // @Failure 500 {object} models.ErrorResponse "Internal server error"

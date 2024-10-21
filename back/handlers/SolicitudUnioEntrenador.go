@@ -13,7 +13,7 @@ import (
 // @Security Bearer
 // @Accept json
 // @Produce json
-// @Success 200 {object} models.SuccessResponse{data=[]models.SolicitudUnioEntrenadorResponse}
+// @Success 200 {object} models.SuccessResponse{data=[]models.SolicitudUnioEntrenador}
 // @Failure 401 {object} models.ErrorResponse "Unauthorized"
 // @Failure 404 {object} models.ErrorResponse "Not found"
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
@@ -37,7 +37,7 @@ func (h *Handler) SolicitudsEntrenador(c *gin.Context) {
 // @Accept json
 // @Produce json
 // @Param input body models.SolicitudUnioEntrenadorInput true "Solicitude to create"
-// @Success 200 {object} models.SuccessResponse{data=models.SolicitudUnioEntrenadorResponse}
+// @Success 200 {object} models.SuccessResponse{data=models.SolicitudUnioEntrenador}
 // @Failure 400 {object} models.ErrorResponse "Bad request"
 // @Failure 401 {object} models.ErrorResponse "Unauthorized"
 // @Failure 409 {object} models.ErrorResponse "Conflict"

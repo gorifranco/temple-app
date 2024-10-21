@@ -8,19 +8,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type alumneResposta struct {
-	ID                    uint                            `json:"ID"`
-	Nom                   string                          `json:"Nom"`
-	Alumnes               []models.Usuari                 `json:"Alumnes"`
-	TipusUsuari           string                          `json:"TipusUsuari"`
-	Reserves              []models.Reserva                `json:"Reserves"`
-	RutinaActual          uint                            `json:"RutinaActual"`
-	ResultatsRutinaActual []models.UsuariResultatExercici `json:"ResultatsRutinaActual"`
-}
-
 // @Summary Get all alumnes from  trainer
 // @Description Retrieves all the alumnes of a trainer from the database.
-// @Tags Alumnes, Entrenador
+// @Tags Entrenador
 // @Security Bearer
 // @Accept json
 // @Produce json
@@ -28,12 +18,13 @@ type alumneResposta struct {
 // @Failure 401 {object} models.ErrorResponse "Unauthorized"
 // @Failure 404 {object} models.ErrorResponse "Not found"
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Example 200 {object} models.SuccessResponse{data=[{"ID": 4, "Nom": "Tomeu", "Alumnes": null, "TipusUsuari": "Fictici", "Reserves": [], "RutinaActual": 2, "ResultatsRutinaActual": []},]}
 // @Router /api/entrenador/alumnes [get]
 func (h *Handler) AlumnesEntrenador(c *gin.Context) {
 	var alumnes []models.Usuari
 	var err error
 
-	if err = h.DB.Where("entrenador_id = ?", c.MustGet("id").(uint)).Preload("Alumnes").Preload("TipusUsuari").Preload("Reserves").Find(&alumnes).Error; err != nil {
+	if err = h.DB.Where("entrenador_id = ?", c.MustGet("user").(*models.Usuari).ID).Preload("Alumnes").Preload("TipusUsuari").Preload("Reserves").Find(&alumnes).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: err.Error()})
 		return
 	}
@@ -42,16 +33,32 @@ func (h *Handler) AlumnesEntrenador(c *gin.Context) {
  ure.exercici_rutina_id as exercici_rutina_id from usuari_resultat_exercici ure
   inner join usuari_rutina ur on ur.id = ure.usuari_rutina_id where ur.data_finalitzacio is null and Usuari_id = 1;`
 
-	var resposta []alumneResposta
+	var resposta []models.AlumneResponse
 	for _, alumne := range alumnes {
-		var resultatsRutinaActual []models.UsuariResultatExercici
+		var resultatsRutinaActual []models.UsuariResultatExerciciResponse
 		var rutina models.UsuariRutina
+
+		// Transformar Reserves a ReservaResponse
+		var reservesResponse []models.ReservaResponse
+		if len(reservesResponse) == 0 {
+			reservesResponse = []models.ReservaResponse{}
+		}
+		for _, reserva := range alumne.Reserves {
+			reservesResponse = append(reservesResponse, models.ReservaResponse{
+				ID:         reserva.ID,
+				Hora:       reserva.Hora,
+				Confirmada: reserva.Confirmada,
+				UsuariID:   reserva.UsuariID,
+				// Otros campos que quieras incluir
+			})
+		}
+
 		err = h.DB.Where("usuari_id = ? and data_finalitzacio is null", alumne.ID).First(&rutina).Error
-		var tmp = alumneResposta{
+		tmp := models.AlumneResponse{
 			ID:          alumne.ID,
 			Nom:         alumne.Nom,
 			TipusUsuari: alumne.TipusUsuari.Nom,
-			Reserves:    alumne.Reserves,
+			Reserves:    reservesResponse,
 		}
 		if err == nil {
 			tmp.RutinaActual = rutina.RutinaID
@@ -60,7 +67,7 @@ func (h *Handler) AlumnesEntrenador(c *gin.Context) {
 		}
 
 		if err := h.DB.Raw(query, alumne.ID).Scan(&resultatsRutinaActual).Error; err != nil {
-			tmp.ResultatsRutinaActual = []models.UsuariResultatExercici{}
+			tmp.ResultatsRutinaActual = []models.UsuariResultatExerciciResponse{}
 		} else {
 			tmp.ResultatsRutinaActual = resultatsRutinaActual
 		}
@@ -179,7 +186,7 @@ func (h *Handler) ExpulsarUsuari(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"data": "success"})
 }
 
-func (h *Handler) FindAlumneEntrenador(c *gin.Context) {
+/* func (h *Handler) FindAlumneEntrenador(c *gin.Context) {
 	var alumne models.Usuari
 	var err error
 	var entrenador models.Usuari
@@ -203,7 +210,7 @@ func (h *Handler) FindAlumneEntrenador(c *gin.Context) {
 
 	h.DB.Where("UsuariID = ? and data_finalitzacio is null", alumne.ID).First(&rutina)
 
-	var resposta = alumneResposta{
+	var resposta = models.AlumneResponse{
 		ID:           alumne.ID,
 		Nom:          alumne.Nom,
 		Reserves:     alumne.Reserves,
@@ -212,3 +219,4 @@ func (h *Handler) FindAlumneEntrenador(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"data": resposta})
 }
+ */

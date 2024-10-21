@@ -87,7 +87,7 @@ func Routing() *gin.Engine {
 	router.GET("/api/exercicis", handler.IndexExercici)
 	router.GET("/api/exercicis/:id", handler.FindExercici)
 
-	rutines := router.Group("/api/rutines", auth.UserAuthMiddleware([]string{"Entrenador"}))
+	rutines := router.Group("/api/rutines", auth.UserAuthMiddleware([]string{"Entrenador", "Administrador"}))
 	{
 		rutines.GET("", handler.IndexRutina)
 		rutines.POST("", handler.CreateRutina)

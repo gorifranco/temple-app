@@ -30,3 +30,15 @@ type ExerciciRutinaInput struct {
 	PercentatgeRM int  `json:"percentatgeRM"`
 	DiaRutina     int  `json:"diaRutina"`
 }
+
+type ExerciciRutinaResponse struct {
+	ID            uint   `json:"id"`
+	Nom           string `json:"nom"`
+	Ordre         int    `json:"ordre"`
+	NumSeries     int    `json:"numSeries"`
+	NumRepes      int    `json:"numRepes"`
+	Cicle         int    `json:"cicle"`
+	PercentatgeRM int    `json:"percentatgeRM"`
+	DiaRutina     int    `json:"diaRutina"`
+	ExerciciID    uint   `json:"exerciciID"`
+}

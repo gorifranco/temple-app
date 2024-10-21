@@ -18,7 +18,7 @@ import (
 // @Example 200 {object} models.SuccessResponse{data=[{"id": 10, "nom": "Extensión de tríceps en polea"}, {"id": 11, "nom": "Sentadilla"}]}
 func (h *Handler) IndexExercici(c *gin.Context) {
 	var exercicis []models.ExerciciResponse
-	if err := h.DB.Table("exercicis").Select("id, nom").Scan(&exercicis).Error; err != nil {
+	if err := h.DB.Table("exercicis").Select("id, nom").Where("deleted_at IS NULL").Scan(&exercicis).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
 		return
 	}

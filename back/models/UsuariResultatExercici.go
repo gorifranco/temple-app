@@ -28,3 +28,12 @@ type UsuariResultatExerciciInput struct {
 	Series           int       `json:"series"`
 	Pes              float32   `json:"pes"`
 }
+
+type UsuariResultatExerciciResponse struct {
+	ID               uint      `json:"ID"`
+	Dia              time.Time `json:"Dia"`
+	Repeticions      int       `json:"Repeticions"`
+	Series           int       `json:"Series"`
+	Pes              float32   `json:"Pes"`
+	ExerciciRutinaID uint      `json:"ExerciciRutinaID"`
+}

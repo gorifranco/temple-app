@@ -1,11 +1,12 @@
 package auth
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
-	"temple-app/models"
 	"temple-app/db"
+	"temple-app/models"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -95,7 +96,7 @@ func TokenValid(c *gin.Context, token *jwt.Token, err error) bool {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "token_expired", "message": "The authentication token has expired. Please log in again."})
 			return false
 		}
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "invalid_token", "message": "Invalid token"})
+		c.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{Error: err.Error()})
 		return false
 	}
 
