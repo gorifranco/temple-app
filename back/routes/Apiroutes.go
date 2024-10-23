@@ -89,7 +89,6 @@ func Routing() *gin.Engine {
 
 	rutines := router.Group("/api/rutines", auth.UserAuthMiddleware([]string{"Entrenador", "Administrador"}))
 	{
-		rutines.GET("", handler.IndexRutina)
 		rutines.POST("", handler.CreateRutina)
 		rutines.PUT("/:id", handler.UpdateRutina)
 		rutines.DELETE("/:id", handler.DeleteRutina)
@@ -98,6 +97,12 @@ func Routing() *gin.Engine {
 		rutines.GET("/rutinesEntrenador", handler.RutinesEntrenador)
 		rutines.GET("/rutinesPubliques", handler.RutinesPubliques)
 		rutines.PUT("/:id/canviarVisibilitat", handler.CanviarVisibilitat)
+	}
+
+	//Rutes admin
+	admin := router.Group("/api/admin", auth.UserAuthMiddleware([]string{"Administrador"}))
+	{
+		admin.GET("/rutines", handler.IndexRutina)
 	}
 
 	router.POST("/api/login", handler.Login)

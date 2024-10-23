@@ -461,6 +461,34 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/admin/rutines:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all the rutines from the database.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.RutinaResponse'
+                  type: array
+              type: object
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get all rutines
+      tags:
+      - Rutines
   /api/entrenador/alumnes:
     get:
       consumes:
@@ -763,31 +791,6 @@ paths:
       tags:
       - Auth
   /api/rutines:
-    get:
-      consumes:
-      - application/json
-      description: Retrieves all the rutines from the database.
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/models.SuccessResponse'
-            - properties:
-                data:
-                  items:
-                    $ref: '#/definitions/models.RutinaResponse'
-                  type: array
-              type: object
-        "500":
-          description: Internal server error
-          schema:
-            $ref: '#/definitions/models.ErrorResponse'
-      summary: Get all rutines
-      tags:
-      - Rutines
     post:
       consumes:
       - application/json

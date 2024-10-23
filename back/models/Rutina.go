@@ -28,9 +28,10 @@ type RutinaInput struct {
 }
 
 type RutinaResponse struct {
-	ID          uint                     `json:"id"`
-	Nom         string                   `json:"nom"`
-	Cicles      int                      `json:"cicles"`
-	DiesDuracio int                      `json:"diesDuracio"`
-	Exercicis   []ExerciciRutinaResponse `json:"exercicis"`
+	ID           uint                     `json:"id"`
+	Nom          string                   `json:"nom"`
+	Cicles       int                      `json:"cicles"`
+	DiesDuracio  int                      `json:"diesDuracio"`
+	Exercicis    []ExerciciRutinaResponse `json:"exercicis"`
+	EntrenadorID uint                     `json:"entrenadorID"`
 }
