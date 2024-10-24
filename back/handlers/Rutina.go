@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
+	"sort"
 	"temple-app/models"
 	"time"
 
@@ -320,7 +322,6 @@ func (h *Handler) CanviarVisibilitat(c *gin.Context) {
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: rutina})
 }
 
-
 // @Summary Assign a rutine to an alumne
 // @Description Assigns a rutine to an alumne in the database.
 // @Tags Rutines
@@ -431,4 +432,73 @@ func (h *Handler) AssignarRutina(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
+}
+
+func (h *Handler) RutinaValidator(rutina models.Rutina) error {
+
+	if rutina.Nom == "" {
+		return errors.New("nom no pot ser buit")
+	}
+	if rutina.Cicles <= 0 {
+		return errors.New("cicles no pot estar buit")
+	}
+	if rutina.DiesDuracio <= 0 {
+		return errors.New("DiesDuracio no pot estar buit")
+	}
+	if rutina.DiesDuracio > 7 {
+		return errors.New("DiesDuracio no pot ser superior a 7")
+	}
+	if len(rutina.ExercicisRutina) == 0 {
+		return errors.New("exercicis no pot estar buit")
+	}
+
+	//IDs of the exercises
+	var ids []uint
+	if err := h.DB.Table("exercicis").Where("deleted_at IS NULL").Pluck("id", &ids).Error; err != nil {
+		return fmt.Errorf("error al recuperar IDs de exercicis: %v", err)
+	}
+
+	// Convert the slice to a map for faster lookups
+	exerciseIDMap := make(map[uint]bool)
+	for _, id := range ids {
+		exerciseIDMap[id] = true
+	}
+
+	// Initializa the map of ordres
+	ordres := make(map[uint][]uint)
+
+	// Validates every exercise
+	for _, exercici := range rutina.ExercicisRutina {
+		if !exerciseIDMap[exercici.ExerciciID] {
+			return errors.New("exercici no existeix")
+		}
+		if exercici.NumRepes <= 0 {
+			return errors.New("NumRepes no pot estar buit")
+		}
+		if exercici.Cicle <= 0 {
+			return errors.New("cicle no pot estar buit")
+		}
+		if exercici.Cicle > rutina.Cicles {
+			return errors.New("cicle de l'exercici no coincideix amb els cicles de la rutina")
+		}
+
+		// Guardar el ordre en el mapa de ordres
+		ordres[exercici.Cicle] = append(ordres[exercici.Cicle], uint(exercici.Ordre))
+	}
+
+	// Validar que los ordres sean consecutivos en cada cicle
+	for _, ordresCicle := range ordres {
+		if len(ordresCicle) > 1 {
+			sort.Slice(ordresCicle, func(i, j int) bool {
+				return ordresCicle[i] < ordresCicle[j]
+			})
+			for i := 1; i < len(ordresCicle); i++ {
+				if ordresCicle[i] != ordresCicle[i-1]+1 {
+					return errors.New("els ordres no estan consecutius")
+				}
+			}
+		}
+	}
+
+	return nil
 }

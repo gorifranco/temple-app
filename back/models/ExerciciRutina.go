@@ -9,12 +9,12 @@ type ExerciciRutina struct {
 	RutinaID      uint `gorm:"not null"`
 	ExerciciID    uint `gorm:"not null"`
 	Exercici      Exercici
-	Ordre         int `gorm:"not null"`
-	NumSeries     int `gorm:"not null"`
-	NumRepes      int `gorm:"not null"`
-	Cicle         int `gorm:"not null"`
-	PercentatgeRM int
-	DiaRutina     int `gorm:"not null"`
+	Ordre         uint `gorm:"not null"`
+	NumSeries     uint `gorm:"not null"`
+	NumRepes      uint `gorm:"not null"`
+	Cicle         uint `gorm:"not null"`
+	PercentatgeRM uint
+	DiaRutina     uint `gorm:"not null"`
 }
 
 func (ExerciciRutina) TableName() string {
@@ -23,22 +23,22 @@ func (ExerciciRutina) TableName() string {
 
 type ExerciciRutinaInput struct {
 	ExerciciID    uint `json:"exerciciID"`
-	Ordre         int  `json:"ordre"`
-	NumSeries     int  `json:"numSeries"`
-	NumRepes      int  `json:"numRepes"`
-	Cicle         int  `json:"cicle"`
-	PercentatgeRM int  `json:"percentatgeRM"`
-	DiaRutina     int  `json:"diaRutina"`
+	Ordre         uint  `json:"ordre"`
+	NumSeries     uint  `json:"numSeries"`
+	NumRepes      uint  `json:"numRepes"`
+	Cicle         uint  `json:"cicle"`
+	PercentatgeRM uint  `json:"percentatgeRM"`
+	DiaRutina     uint  `json:"diaRutina"`
 }
 
 type ExerciciRutinaResponse struct {
 	ID            uint   `json:"id"`
 	Nom           string `json:"nom"`
-	Ordre         int    `json:"ordre"`
-	NumSeries     int    `json:"numSeries"`
-	NumRepes      int    `json:"numRepes"`
-	Cicle         int    `json:"cicle"`
-	PercentatgeRM int    `json:"percentatgeRM"`
-	DiaRutina     int    `json:"diaRutina"`
+	Ordre         uint    `json:"ordre"`
+	NumSeries     uint    `json:"numSeries"`
+	NumRepes      uint    `json:"numRepes"`
+	Cicle         uint    `json:"cicle"`
+	PercentatgeRM uint    `json:"percentatgeRM"`
+	DiaRutina     uint    `json:"diaRutina"`
 	ExerciciID    uint   `json:"exerciciID"`
 }
