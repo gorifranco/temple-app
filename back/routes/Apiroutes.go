@@ -66,7 +66,7 @@ func Routing() *gin.Engine {
 		entrenador.GET("/alumnes", handler.AlumnesEntrenador)
 		entrenador.POST("/usuarisFicticis", handler.CrearUsuariFictici)
 		entrenador.PUT("/usuarisFicticis/:id", handler.UpdateUsuariFictici)
-		entrenador.GET("/expulsarUsuari/:id", handler.ExpulsarUsuari)
+		entrenador.PUT("/alumnes/:id/expulsar", handler.ExpulsarUsuari)
 		entrenador.GET("/reserves", handler.ReservesEntrenador)
 		entrenador.POST("/assignarRutina", handler.AssignarRutina)
 		entrenador.POST("/acabarRutina", handler.AcabarRutina)

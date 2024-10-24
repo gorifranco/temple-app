@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"net/http"
-	"temple-app/auth"
 	"temple-app/models"
 
 	"github.com/gin-gonic/gin"
@@ -119,23 +118,31 @@ func (h *Handler) CrearUsuariFictici(c *gin.Context) {
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: models.AlumneResponse{ID: usuari.ID, Nom: usuari.Nom, TipusUsuari: usuari.TipusUsuari.Nom}})
 }
 
+
+// @Summary Update a user without account
+// @Description Updates a user in the database.
+// @Tags Entrenador
+// @Accept json
+// @Produce json
+// @Param id path int true "ID of the user to update"
+// @Param input body models.UsuariInput true "User to update"
+// @Success 200 {object} models.SuccessResponse{data=models.Usuari}
+// @Failure 400 {object} models.ErrorResponse "Bad request"
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
+// @Failure 404 {object} models.ErrorResponse "Not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/entrenador/usuarisFicticis/{id} [put]
 func (h *Handler) UpdateUsuariFictici(c *gin.Context) {
 	var usuari models.Usuari
 	var err error
 
-	var entrenador models.Usuari
-	if err = h.DB.Where("id = ?", auth.GetUsuari(c)).First(&entrenador).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: err.Error()})
-		return
-	}
-
-	if usuari.EntrenadorID != &entrenador.ID || usuari.TipusUsuariID != 4 {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Unauthorized"})
-		return
-	}
-
 	if err = h.DB.Where("id = ?", c.Param("id")).First(&usuari).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: "record not found"})
+		return
+	}
+
+	if usuari.TipusUsuariID != 4 || usuari.EntrenadorID != nil && *usuari.EntrenadorID != c.MustGet("user").(*models.Usuari).ID {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Unauthorized"})
 		return
 	}
 
@@ -146,16 +153,33 @@ func (h *Handler) UpdateUsuariFictici(c *gin.Context) {
 		return
 	}
 
+	if input.Nom == "" {
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "Nom no pot ser buit"})
+		return
+	}
+
 	updatedUsuari := models.Usuari{Nom: input.Nom}
 
-	h.DB.Model(&usuari).Updates(&updatedUsuari)
+	if err = h.DB.Model(&usuari).Updates(&updatedUsuari).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to update usuari"})
+		return
+	}
 
-	var uu models.Usuari
-	h.DB.First(&uu, c.Param("id"))
-
-	c.JSON(http.StatusOK, gin.H{"data": uu})
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
 }
 
+
+// @Summary Kiks a user from his trainer
+// @Description Kiks a user from the database.
+// @Tags Entrenador
+// @Accept json
+// @Produce json
+// @Param id path int true "ID of the user to delete"
+// @Success 200 {object} models.SuccessResponse{data=string}
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
+// @Failure 404 {object} models.ErrorResponse "Not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/entrenador/alumnes/{id}/expulsar [put]
 func (h *Handler) ExpulsarUsuari(c *gin.Context) {
 	var usuari models.Usuari
 	var err error
@@ -163,27 +187,27 @@ func (h *Handler) ExpulsarUsuari(c *gin.Context) {
 	if err = h.DB.Where("id = ?", c.Param("id")).First(&usuari).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: "record not found"})
 		return
-	}
+	}	
 
-	var entrenador models.Usuari
-	if err = h.DB.Where("id = ?", c.Copy().MustGet("user").(*models.Usuari).ID).First(&entrenador).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: err.Error()})
-		return
-	}
-
-	if *usuari.EntrenadorID != entrenador.ID {
+	if *usuari.EntrenadorID != c.MustGet("user").(*models.Usuari).ID {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Unauthorized"})
 		return
 	}
 
 	usuari.EntrenadorID = nil
-	h.DB.Save(&usuari)
-
-	if usuari.TipusUsuari.Nom == "Fictici" {
-		h.DB.Delete(&usuari)
+	if err = h.DB.Save(&usuari).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to update usuari"})
+		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": "success"})
+	if usuari.TipusUsuariID == 4 {
+		if err = h.DB.Delete(&usuari).Error; err != nil {
+			c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to delete usuari"})
+			return
+		}
+	}
+
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
 }
 
 /* func (h *Handler) FindAlumneEntrenador(c *gin.Context) {
