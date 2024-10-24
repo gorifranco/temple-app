@@ -5,6 +5,7 @@ import (
 	"temple-app/models"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // @Summary Get all pending solicitudes
@@ -22,14 +23,13 @@ func (h *Handler) SolicitudsEntrenador(c *gin.Context) {
 	var solicituds []models.SolicitudUnioEntrenadorResponse
 
 	if err := h.DB.Table("solicituds_unio_entrenador").Select("id, usuari_id, entrenador_id").
-	Where("entrenador_id = ?", c.MustGet("user").(*models.Usuari).ID).Scan(&solicituds).Error; err != nil {
+		Where("entrenador_id = ?", c.MustGet("user").(*models.Usuari).ID).Scan(&solicituds).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: solicituds})
 }
-
 
 // @Summary Create a new pending solicitude
 // @Description Creates a new pending solicitude in the database.
@@ -81,7 +81,6 @@ func (h *Handler) SolicitarUnioEntrenador(c *gin.Context) {
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
 }
 
-
 // @Summary Accept a pending solicitude
 // @Description Accepts a pending solicitude in the database.
 // @Tags Solicitudes
@@ -95,46 +94,44 @@ func (h *Handler) SolicitarUnioEntrenador(c *gin.Context) {
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
 // @Router /api/solicitudes/{id}/accept [put]
 func (h *Handler) AcceptarSolicitudUnioEntrenador(c *gin.Context) {
-	var entrenador models.Usuari
 	var solicitud models.SolicitudUnioEntrenador
 	var err error
-	var usuari models.Usuari
 
 	if err = h.DB.Where("id = ?", c.Param("id")).First(&solicitud).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "No existeix la solicitud"})
 		return
 	}
 
-	if err = h.DB.Where("ID = ?", solicitud.EntrenadorID).First(entrenador).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
-		return
-	}
-
-	if entrenador.ID != c.MustGet("user").(models.Usuari).ID {
+	if solicitud.EntrenadorID != c.MustGet("user").(*models.Usuari).ID {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Unauthorized"})
 		return
 	}
 
 	//Usuari ja es troba dins el grup
-	for _, alumne := range entrenador.Alumnes {
-		if alumne.ID == usuari.ID {
-			c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "L'usuari ja es troba dins la sala"})
-			return
-		}
+	if err = h.DB.Table("usuaris").Where("entrenador_id = ? and id = ?", c.MustGet("user").(*models.Usuari).ID, solicitud.UsuariID).First(models.Usuari{}).Error; err == nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "L'usuari ja es troba dins la sala"})
+		return
 	}
 
-	//Inserir usuari en la sala
-	entrenador.Alumnes = append(entrenador.Alumnes, usuari)
-	 if err = h.DB.Model(&entrenador).Update("alumnes", entrenador.Alumnes).Error; err != nil {
+	err = h.DB.Transaction(func(tx *gorm.DB) error {
+		//Inserir usuari en la sala
+		if err = h.DB.Table("usuaris").Where("id = ?", solicitud.UsuariID).Update("entrenador_id", c.MustGet("user").(*models.Usuari).ID).Error; err != nil {
+			return err
+		}
+
+		if err = h.DB.Delete(&solicitud).Error; err != nil {
+			return err
+		}
+		return nil
+	})
+
+	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to update entrenador"})
 		return
 	}
 
-	h.DB.Delete(&solicitud)
-
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
 }
-
 
 // @Summary Decline a pending solicitude
 // @Description Declines a pending solicitude in the database.
@@ -157,7 +154,7 @@ func (h *Handler) DeclinarSolicitudUnioEntrenador(c *gin.Context) {
 		return
 	}
 
-	if c.MustGet("user").(models.Usuari).ID != solicitud.EntrenadorID {
+	if c.MustGet("user").(*models.Usuari).ID != solicitud.EntrenadorID {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Unauthorized"})
 		return
 	}

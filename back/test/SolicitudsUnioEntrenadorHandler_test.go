@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"strconv"
 	"testing"
 
 	"temple-app/handlers"
@@ -22,14 +23,12 @@ func CrearSolicitudUnioEntrenador(usuariID uint, entrenadorID uint) models.Solic
 	return solicitud
 }
 
-
 func EliminarDadesSolicitudesEntrenador() {
 	GetDBTest().Exec("delete from solicituds_unio_entrenador")
 	EliminarDadesAlumnes()
 }
 
-
-//Index
+// Index
 func TestSolicitudsEntrenador(t *testing.T) {
 	defer func() {
 		EliminarDadesSolicitudesEntrenador()
@@ -39,19 +38,18 @@ func TestSolicitudsEntrenador(t *testing.T) {
 	router := gin.Default()
 	db := GetDBTest()
 	handler := handlers.NewHandler(db)
-	
+
 	codi := "1234"
 	entrenador := CrearUsuariTest("Entrenador Test", 3, &codi)
 	usuari := CrearUsuariTest("Usuari Test", 3, &codi)
 	solicitud := CrearSolicitudUnioEntrenador(usuari.ID, entrenador.ID)
-	
+
 	router.Use(func(c *gin.Context) {
 		c.Set("user", &entrenador)
 		c.Next()
 	})
 
 	router.GET("/api/solicituds", handler.SolicitudsEntrenador)
-
 
 	w := httptest.NewRecorder()
 	req, _ := http.NewRequest("GET", "/api/solicituds", nil)
@@ -67,8 +65,7 @@ func TestSolicitudsEntrenador(t *testing.T) {
 	assert.Equal(t, solicitud.UsuariID, response["data"][0].UsuariID)
 }
 
-
-//Create
+// Create
 func TestSolicitarUnioEntrenador(t *testing.T) {
 	defer func() {
 		EliminarDadesSolicitudesEntrenador()
@@ -119,4 +116,87 @@ func TestSolicitarUnioEntrenador(t *testing.T) {
 	router.ServeHTTP(w3, req3)
 
 	assert.Equal(t, http.StatusBadRequest, w3.Code)
+}
+
+// Accept
+func TestAcceptSolicitudUnioEntrenador(t *testing.T) {
+	defer func() {
+		EliminarDadesSolicitudesEntrenador()
+	}()
+
+	gin.SetMode(gin.TestMode)
+	router := gin.Default()
+	db := GetDBTest()
+	handler := handlers.NewHandler(db)
+
+	codi := "1234"
+	usuari := CrearUsuariTest("Usuari Test", 3, &codi)
+	entrenador := CrearEntrenador() //[0]-> entrenador, [1]->Alumne1, [2]->Alumne2
+	solicitud1 := CrearSolicitudUnioEntrenador(usuari.ID, entrenador[0].ID)
+
+	router.Use(func(c *gin.Context) {
+		c.Set("user", &entrenador[0])
+		c.Next()
+	})
+
+	router.PUT("/api/solicituds/:id/aceptar", handler.AcceptarSolicitudUnioEntrenador)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("PUT", "/api/solicituds/"+strconv.Itoa(int(solicitud1.ID))+"/aceptar", nil)
+
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	var count int64
+	handler.DB.Table("usuaris").Where("entrenador_id = ?", entrenador[0].ID).Count(&count)
+	assert.Equal(t, int64(3), count)
+
+	w2 := httptest.NewRecorder()
+	req2, _ := http.NewRequest("PUT", "/api/solicituds/"+strconv.Itoa(int(solicitud1.ID))+"/aceptar", nil)
+
+	router.ServeHTTP(w2, req2)
+	assert.Equal(t, http.StatusBadRequest, w2.Code)
+
+}
+
+
+// Decline
+func TestDeclineSolicitudUnioEntrenador(t *testing.T) {
+	defer func() {
+		EliminarDadesSolicitudesEntrenador()
+	}()
+
+	gin.SetMode(gin.TestMode)
+	router := gin.Default()
+	db := GetDBTest()
+	handler := handlers.NewHandler(db)
+
+	codi := "1234"
+	usuari := CrearUsuariTest("Usuari Test", 3, &codi)
+	entrenador := CrearUsuariTest("Usuari Test 2", 2, &codi)
+	solicitud1 := CrearSolicitudUnioEntrenador(usuari.ID, entrenador.ID)
+
+	router.Use(func(c *gin.Context) {
+		c.Set("user", &entrenador)
+		c.Next()
+	})
+
+	router.PUT("/api/solicituds/:id/declinar", handler.DeclinarSolicitudUnioEntrenador)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("PUT", "/api/solicituds/"+strconv.Itoa(int(solicitud1.ID))+"/declinar", nil)
+
+	router.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+	var count int64
+	handler.DB.Table("usuaris").Where("entrenador_id = ?", entrenador.ID).Count(&count)
+	assert.Equal(t, int64(0), count)
+
+
+	w2 := httptest.NewRecorder()
+	req2, _ := http.NewRequest("PUT", "/api/solicituds/"+strconv.Itoa(int(solicitud1.ID))+"/declinar", nil)
+
+	router.ServeHTTP(w2, req2)
+	assert.Equal(t, http.StatusBadRequest, w2.Code)
 }
