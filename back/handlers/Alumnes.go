@@ -104,7 +104,7 @@ func (h *Handler) CrearUsuariFictici(c *gin.Context) {
 		return
 	}
 
-	usuariID := c.MustGet("id").(uint)
+	usuariID := c.MustGet("user").(*models.Usuari).ID
 	usuari := models.Usuari{
 		Nom:           input.Nom,
 		EntrenadorID:  &usuariID,
@@ -125,24 +125,24 @@ func (h *Handler) UpdateUsuariFictici(c *gin.Context) {
 
 	var entrenador models.Usuari
 	if err = h.DB.Where("id = ?", auth.GetUsuari(c)).First(&entrenador).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	if usuari.EntrenadorID != &entrenador.ID || usuari.TipusUsuariID != 4 {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		c.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Unauthorized"})
 		return
 	}
 
 	if err = h.DB.Where("id = ?", c.Param("id")).First(&usuari).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "record not found"})
+		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: "record not found"})
 		return
 	}
 
 	var input models.UsuariFicticiInput
 
 	if err = c.ShouldBindJSON(&input); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -161,18 +161,18 @@ func (h *Handler) ExpulsarUsuari(c *gin.Context) {
 	var err error
 
 	if err = h.DB.Where("id = ?", c.Param("id")).First(&usuari).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "record not found"})
+		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: "record not found"})
 		return
 	}
 
 	var entrenador models.Usuari
-	if err = h.DB.Where("id = ?", c.Copy().MustGet("id").(uint)).First(&entrenador).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
+	if err = h.DB.Where("id = ?", c.Copy().MustGet("user").(*models.Usuari).ID).First(&entrenador).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	if *usuari.EntrenadorID != entrenador.ID {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		c.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Unauthorized"})
 		return
 	}
 

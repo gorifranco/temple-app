@@ -320,6 +320,20 @@ func (h *Handler) CanviarVisibilitat(c *gin.Context) {
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: rutina})
 }
 
+
+// @Summary Assign a rutine to an alumne
+// @Description Assigns a rutine to an alumne in the database.
+// @Tags Rutines
+// @Security Bearer
+// @Accept json
+// @Produce json
+// @Param input body models.UsuariRutinaInput true "Alumne to assign the rutine to"
+// @Success 200 {object} models.SuccessResponse{data=string}
+// @Failure 400 {object} models.ErrorResponse "Bad request"
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
+// @Failure 404 {object} models.ErrorResponse "Not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/rutines/assignarRutina [post]
 func (h *Handler) AcabarRutina(c *gin.Context) {
 
 	type inputStruct struct {

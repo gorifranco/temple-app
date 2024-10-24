@@ -64,7 +64,6 @@ func Routing() *gin.Engine {
 	entrenador := router.Group("/api/entrenador", auth.UserAuthMiddleware([]string{"Entrenador"}))
 	{
 		entrenador.GET("/alumnes", handler.AlumnesEntrenador)
-		/* 		entrenador.GET("/alumnes/:id", handler.FindAlumneEntrenador) */
 		entrenador.POST("/usuarisFicticis", handler.CrearUsuariFictici)
 		entrenador.PUT("/usuarisFicticis/:id", handler.UpdateUsuariFictici)
 		entrenador.GET("/expulsarUsuari/:id", handler.ExpulsarUsuari)
@@ -73,9 +72,10 @@ func Routing() *gin.Engine {
 		entrenador.POST("/acabarRutina", handler.AcabarRutina)
 		entrenador.POST("/guardarHorariEntrenador", handler.GuardarHorariEntrenador)
 		entrenador.POST("/guardarConfiguracioEntrenador", handler.GuardarConfiguracioEntrenador)
+		entrenador.GET("/solicitudsUnio", handler.SolicitudsEntrenador)
 	}
 
-	router.POST("/api/solicitarUnioEntrenador", auth.UserAuthMiddleware([]string{}), handler.SolicitarUnioEntrenador)
+	router.POST("/api/solicitudUnioEntrenador", auth.UserAuthMiddleware([]string{}), handler.SolicitarUnioEntrenador)
 	router.GET("/api/configuracioEntrenador", auth.UserAuthMiddleware([]string{}), handler.FindConfiguracioEntrenador)
 	router.POST("api/guardarResultats", auth.UserAuthMiddleware([]string{}), handler.GuardarResultats)
 

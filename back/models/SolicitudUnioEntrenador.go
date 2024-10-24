@@ -17,3 +17,9 @@ func (SolicitudUnioEntrenador) TableName() string {
 type SolicitudUnioEntrenadorInput struct {
 	CodiEntrenador string `json:"codiEntrenador"`
 }
+
+type SolicitudUnioEntrenadorResponse struct {
+	ID           uint `json:"id"`
+	UsuariID     uint `json:"usuariID"`
+	EntrenadorID uint `json:"entrenadorID"`
+}

@@ -19,14 +19,15 @@ import (
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
 // @Router /api/solicitudes/solicitudsEntrenador [get]
 func (h *Handler) SolicitudsEntrenador(c *gin.Context) {
-	var entrenador models.Usuari
+	var solicituds []models.SolicitudUnioEntrenadorResponse
 
-	if err := h.DB.Where("entrenador_id = ?", c.MustGet("user").(models.Usuari).ID).First(&entrenador).Error; err != nil {
+	if err := h.DB.Table("solicituds_unio_entrenador").Select("id, usuari_id, entrenador_id").
+	Where("entrenador_id = ?", c.MustGet("user").(*models.Usuari).ID).Scan(&solicituds).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, models.SuccessResponse{Data: entrenador.SolicitudsUnioEntrenador})
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: solicituds})
 }
 
 
@@ -47,26 +48,30 @@ func (h *Handler) SolicitarUnioEntrenador(c *gin.Context) {
 	var input models.SolicitudUnioEntrenadorInput
 	var entrenador models.Usuari
 	var err error
+	var s2 models.SolicitudUnioEntrenador
 
 	if err = c.ShouldBindJSON(&input); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	//Entrenador no existeix
-	if err = h.DB.Where("codiEntrenador = ?", input.CodiEntrenador).First(&entrenador).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
+	//Entrenador no existeix
+	if err = h.DB.Where("codi_entrenador = ?", input.CodiEntrenador).First(&entrenador).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
+		return
+	}
 
-
-	if c.MustGet("user").(models.Usuari).EntrenadorID != nil {
+	if c.MustGet("user").(*models.Usuari).EntrenadorID != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "L'usuari ja té un entrenador"})
 		return
 	}
 
-	solicitud := models.SolicitudUnioEntrenador{EntrenadorID: entrenador.ID, UsuariID: c.MustGet("user").(models.Usuari).ID}
+	solicitud := models.SolicitudUnioEntrenador{EntrenadorID: entrenador.ID, UsuariID: c.MustGet("user").(*models.Usuari).ID}
+
+	if err = h.DB.Where("entrenador_id = ? and usuari_id = ?", entrenador.ID, c.MustGet("user").(*models.Usuari).ID).First(&s2).Error; err == nil {
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "Ja hi ha una solicitud pendent"})
+		return
+	}
 
 	if err = h.DB.Create(&solicitud).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})

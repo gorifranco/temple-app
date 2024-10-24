@@ -31,6 +31,7 @@ func CrearEntrenador() []models.Usuari {
 }
 
 func EliminarDadesAlumnes() {
+	GetDBTest().Exec("delete from usuaris where nom like 'Alumne Test%'")
 	GetDBTest().Exec("delete from usuaris")
 	GetDBTest().Exec("delete from usuari_rutina")
 	GetDBTest().Exec("delete from usuari_resultat_exercici")
@@ -52,7 +53,7 @@ func TestAlumnesEntrenador(t *testing.T) {
 
 	//Introdueix l'id de l'entrenador al router
 	router.Use(func(c *gin.Context) {
-        c.Set("id", entrenador.ID)
+        c.Set("user", &entrenador)
         c.Next()
     })
 
@@ -92,7 +93,7 @@ func TestCreateUsuariFictici(t *testing.T) {
 	entrenador := CrearEntrenador()[0]
 
 	router.Use(func(c *gin.Context) {
-        c.Set("id", entrenador.ID)
+        c.Set("user", &entrenador)
         c.Next()
     })
 
