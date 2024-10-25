@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -66,7 +67,11 @@ func (h *Handler) CreateRutina(c *gin.Context) {
 		return
 	}
 	if errs := h.RutinaValidator(&input); len(errs) > 0 {
-		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: errs})
+		v, err := json.Marshal(errs)
+		if err != nil{
+			c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "Datos incorrectos"})
+		}
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: v})
 		return
 	}
 
