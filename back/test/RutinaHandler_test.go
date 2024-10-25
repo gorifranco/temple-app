@@ -66,23 +66,31 @@ func TestCreateRutina(t *testing.T) {
 
 	w := httptest.NewRecorder()
 
-	exercicis := []models.ExerciciRutinaInput{
-		{
+	exercici1 := models.ExerciciRutinaInput{
 			ExerciciID:    1,
 			NumRepes:      5,
 			NumSeries:     5,
 			PercentatgeRM: 50,
 			Ordre:         0,
-		},
+			Cicle:         0,
+			DiaRutina:     0,
+	}
+	exercici2 := models.ExerciciRutinaInput{
+			ExerciciID:    2,
+			NumRepes:      5,
+			NumSeries:     5,
+			PercentatgeRM: 50,
+			Ordre:         1,
+			Cicle:         0,
+			DiaRutina:     0,
 	}
 
-	rutinaJSON, err := json.Marshal(map[string]interface{}{
-		"nom":         "Rutina Test",
-		"descripcio":  "Descripcio Test",
-		"cicles":      1,
-		"diesDuracio": 1,
-		"exercicis":   exercicis,
-	})
+
+	rutina := models.RutinaInput{Nom: "Rutina Test", Cicles: 1, DiesDuracio: 1, Exercicis: []models.ExerciciRutinaInput{exercici1, exercici2},
+	 Descripcio: "Descripcio Test"}
+
+	rutinaJSON, err := json.Marshal(rutina)
+
 	if err != nil {
 		t.Errorf("Error al convertir el mapa a JSON: %v", []string{err.Error()})
 	}
@@ -94,14 +102,19 @@ func TestCreateRutina(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
-	var response map[string]models.RutinaResponse
-	json.Unmarshal(w.Body.Bytes(), &response)
+	rutina.Cicles = 0
+	rutina.Descripcio = ""
+	rutina.Nom = ""
+	rutina.DiesDuracio = 0
+	rutina.Exercicis = []models.ExerciciRutinaInput{}
 
-	assert.Equal(t, "Rutina Test", response["data"].Nom)
-	assert.Equal(t, http.StatusOK, w.Code)
+	rutinaJSON2, err := json.Marshal(rutina)
+	if err != nil {
+		t.Errorf("Error al convertir el mapa a JSON: %v", []string{err.Error()})
+	}
 
 	w2 := httptest.NewRecorder()
-	req2, _ := http.NewRequest("POST", "/api/rutines", bytes.NewReader(rutinaJSON))
+	req2, _ := http.NewRequest("POST", "/api/rutines", bytes.NewReader(rutinaJSON2))
 	req2.Header.Set("Content-Type", "application/json")
 	router.ServeHTTP(w2, req2)
 

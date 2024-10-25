@@ -65,6 +65,10 @@ func (h *Handler) CreateRutina(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
+	if errs := h.RutinaValidator(&input); len(errs) > 0 {
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: errs})
+		return
+	}
 
 	var rutina models.Rutina
 
@@ -434,28 +438,29 @@ func (h *Handler) AssignarRutina(c *gin.Context) {
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
 }
 
-func (h *Handler) RutinaValidator(rutina models.Rutina) error {
+func (h *Handler) RutinaValidator(rutina *models.RutinaInput) []error {
+	var errs []error
 
 	if rutina.Nom == "" {
-		return errors.New("nom no pot ser buit")
+		errs = append(errs, errors.New("nom no pot ser buit"))
 	}
 	if rutina.Cicles <= 0 {
-		return errors.New("cicles no pot estar buit")
+		errs = append(errs, errors.New("cicles no pot estar buit"))
 	}
 	if rutina.DiesDuracio <= 0 {
-		return errors.New("DiesDuracio no pot estar buit")
+		errs = append(errs, errors.New("DiesDuracio no pot estar buit"))
 	}
 	if rutina.DiesDuracio > 7 {
-		return errors.New("DiesDuracio no pot ser superior a 7")
+		errs = append(errs, errors.New("DiesDuracio no pot ser superior a 7"))
 	}
-	if len(rutina.ExercicisRutina) == 0 {
-		return errors.New("exercicis no pot estar buit")
+	if len(rutina.Exercicis) == 0 {
+		errs = append(errs, errors.New("exercicis no pot estar buit"))
 	}
 
 	//IDs of the exercises
 	var ids []uint
 	if err := h.DB.Table("exercicis").Where("deleted_at IS NULL").Pluck("id", &ids).Error; err != nil {
-		return fmt.Errorf("error al recuperar IDs de exercicis: %v", err)
+		errs = append(errs, fmt.Errorf("error al recuperar IDs de exercicis: %v", err))
 	}
 
 	// Convert the slice to a map for faster lookups
@@ -468,18 +473,18 @@ func (h *Handler) RutinaValidator(rutina models.Rutina) error {
 	ordres := make(map[uint][]uint)
 
 	// Validates every exercise
-	for _, exercici := range rutina.ExercicisRutina {
+	for _, exercici := range rutina.Exercicis {
 		if !exerciseIDMap[exercici.ExerciciID] {
-			return errors.New("exercici no existeix")
+			errs = append(errs, errors.New("exercici no existeix"))
 		}
 		if exercici.NumRepes <= 0 {
-			return errors.New("NumRepes no pot estar buit")
+			errs = append(errs, errors.New("NumRepes no pot estar buit"))
 		}
 		if exercici.Cicle <= 0 {
-			return errors.New("cicle no pot estar buit")
+			errs = append(errs, errors.New("cicle no pot estar buit"))
 		}
 		if exercici.Cicle > rutina.Cicles {
-			return errors.New("cicle de l'exercici no coincideix amb els cicles de la rutina")
+			errs = append(errs, errors.New("cicle de l'exercici no coincideix amb els cicles de la rutina"))
 		}
 
 		// Guardar el ordre en el mapa de ordres
@@ -494,11 +499,11 @@ func (h *Handler) RutinaValidator(rutina models.Rutina) error {
 			})
 			for i := 1; i < len(ordresCicle); i++ {
 				if ordresCicle[i] != ordresCicle[i-1]+1 {
-					return errors.New("els ordres no estan consecutius")
+					errs = append(errs, errors.New("els ordres no estan consecutius"))
 				}
 			}
 		}
 	}
 
-	return nil
+	return errs
 }
