@@ -33,8 +33,6 @@ export default function ViewRutina(props: propsType) {
     const dispatch = useDispatch();
     const exercicis = useSelector((state: RootState) => state.exercicis);
 
-    console.log(rutina)
-
     function editarRutina() {
         console.log("editar")
     }

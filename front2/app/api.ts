@@ -5,7 +5,7 @@ import { AuthContextType } from './AuthContext';
 import Toast from 'react-native-toast-message';
 
 const api = axios.create({
-  baseURL: 'http://192.168.130.67:8080/api',
+  baseURL: 'http://localhost:8080/api',
   timeout: 10000,
 });
 
