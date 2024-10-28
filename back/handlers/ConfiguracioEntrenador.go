@@ -41,9 +41,13 @@ func (h *Handler) FindConfiguracioEntrenador(c *gin.Context) {
 		
 		//Creates the response of the shedule
 		for _, h := range horaris {
+			if h.DiaSetmana == 0 {
+				c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "DiaSetmana no vàlid"})
+				return
+			}
 			horariResposta = append(horariResposta, models.HorariResponse{
 				ID:          h.ID,
-				DiaSetmana:  h.DiaSetmana,
+				DiaSetmana:  uint(h.DiaSetmana),
 				Desde:       h.Desde.Format("15:04"),
 				Fins:        h.Fins.Format("15:04"),
 			})
@@ -77,9 +81,13 @@ func (h *Handler) FindConfiguracioEntrenador(c *gin.Context) {
 	
 	//Creates the response of the shedule
 	for _, h := range horaris {
+		if h.DiaSetmana == 0 {
+			c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "DiaSetmana no vàlid"})
+			return
+		}
 		horariResposta = append(horariResposta, models.HorariResponse{
 			ID:          h.ID,
-			DiaSetmana:  h.DiaSetmana,
+			DiaSetmana:  uint(h.DiaSetmana),
 			Desde:       h.Desde.Format("15:04"),
 			Fins:        h.Fins.Format("15:04"),
 		})
@@ -112,6 +120,11 @@ func (h *Handler) GuardarConfiguracioEntrenador(c *gin.Context) {
 
 	if err = c.ShouldBindJSON(&configuracio); err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	if configuracio.DuracioSessions == 0 || configuracio.MaxAlumnesPerSessio == 0 {
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "DuracioSessions o MaxAlumnesPerSessio no vàlid"})
 		return
 	}
 

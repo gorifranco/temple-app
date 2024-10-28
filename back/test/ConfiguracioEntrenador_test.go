@@ -1,6 +1,8 @@
 package test
 
 import (
+	"bytes"
+	"encoding/json"
 	"net/http"
 	"net/http/httptest"
 	"temple-app/handlers"
@@ -20,6 +22,7 @@ func DeleteConfig() {
 	GetDBTest().Exec("delete from configuracio_entrenador")
 }
 
+// Get config
 func TestFindConfigEntrenador(t *testing.T) {
 	defer func() {
 		DeleteConfig()
@@ -50,7 +53,6 @@ func TestFindConfigEntrenador(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, w.Code)
 
-
 	router2 := gin.Default()
 	router2.Use(func(c *gin.Context) {
 		c.Set("user", &entrenador[1])
@@ -78,4 +80,58 @@ func TestFindConfigEntrenador(t *testing.T) {
 	router3.ServeHTTP(w3, req3)
 
 	assert.Equal(t, http.StatusBadRequest, w3.Code)
+}
+
+// Guardar Configuracio
+func TestGuardarConfigEntrenador(t *testing.T) {
+	defer func() {
+		DeleteConfig()
+		EliminarDadesAlumnes()
+	}()
+
+	gin.SetMode(gin.TestMode)
+	router1 := gin.Default()
+	db := GetDBTest()
+	handler := handlers.NewHandler(db)
+
+	codi := "1234"
+	entrenador := CrearUsuariTest("Entrenador Test", 3, &codi, nil)
+
+	router1.Use(func(c *gin.Context) {
+		c.Set("user", &entrenador)
+		c.Next()
+	})
+
+	configJSON1, err2 := json.Marshal(map[string]interface{}{
+		"duracioSessions":     30,
+		"maxAlumnesPerSessio": 4,
+	})
+
+	if err2 != nil {
+		t.Errorf("Error al convertir el mapa a JSON: %v", []string{err2.Error()})
+	}
+
+	router1.POST("/api/entrenador/guardarConfiguracioEntrenador", handler.GuardarConfiguracioEntrenador)
+
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/api/entrenador/guardarConfiguracioEntrenador", bytes.NewReader(configJSON1))
+
+	router1.ServeHTTP(w, req)
+
+	assert.Equal(t, http.StatusOK, w.Code)
+
+	configJSON2, err2 := json.Marshal(map[string]interface{}{
+		"duracioSessions":     0,
+	})
+
+	if err2 != nil {
+		t.Errorf("Error al convertir el mapa a JSON: %v", []string{err2.Error()})
+	}
+
+	w2 := httptest.NewRecorder()
+	req2, _ := http.NewRequest("POST", "/api/entrenador/guardarConfiguracioEntrenador", bytes.NewReader(configJSON2))
+
+	router1.ServeHTTP(w2, req2)
+
+	assert.Equal(t, http.StatusBadRequest, w2.Code)
 }

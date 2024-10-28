@@ -28,7 +28,7 @@ type ConfiguracioEntrenadorResponse struct {
 
 type HorariResponse struct {
 	ID          uint   `json:"ID"`
-	DiaSetmana  int    `json:"DiaSetmana"`
+	DiaSetmana  uint    `json:"DiaSetmana"`
 	Desde       string `json:"Desde"`
 	Fins        string `json:"Fins"`
 }
