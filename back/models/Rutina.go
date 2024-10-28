@@ -33,5 +33,4 @@ type RutinaResponse struct {
 	Cicles       uint                      `json:"cicles"`
 	DiesDuracio  uint                      `json:"diesDuracio"`
 	Exercicis    []ExerciciRutinaResponse `json:"exercicis"`
-	EntrenadorID uint                     `json:"entrenadorID"`
 }

@@ -55,7 +55,7 @@ func TestCreateRutina(t *testing.T) {
 	handler := handlers.NewHandler(db)
 
 	codi := "1234"
-	entrenador := CrearUsuariTest("Entrenador Test", 3, &codi)
+	entrenador := CrearUsuariTest("Entrenador Test", 3, &codi, nil)
 
 	router.Use(func(c *gin.Context) {
 		c.Set("user", &entrenador)

@@ -19,10 +19,10 @@ func CrearEntrenador() []models.Usuari {
 
 	codi := "1234"
 	c2 := ""
-	entrenador := CrearUsuariTest("Entrenador Test", 3, &codi)
+	entrenador := CrearUsuariTest("Entrenador Test", 3, &codi, nil)
 
-	alumne1 := CrearUsuariTest("Alumne Test 1", 2, &c2)
-	alumne2 := CrearUsuariTest("Alumne Test 2", 4, &c2)
+	alumne1 := CrearUsuariTest("Alumne Test 1", 2, &c2, &entrenador.ID)
+	alumne2 := CrearUsuariTest("Alumne Test 2", 4, &c2, &entrenador.ID)
 
 	entrenador.Alumnes = []models.Usuari{alumne1, alumne2}
 

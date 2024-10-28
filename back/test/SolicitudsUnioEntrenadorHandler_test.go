@@ -40,8 +40,8 @@ func TestSolicitudsEntrenador(t *testing.T) {
 	handler := handlers.NewHandler(db)
 
 	codi := "1234"
-	entrenador := CrearUsuariTest("Entrenador Test", 3, &codi)
-	usuari := CrearUsuariTest("Usuari Test", 3, &codi)
+	entrenador := CrearUsuariTest("Entrenador Test", 3, &codi, nil)
+	usuari := CrearUsuariTest("Usuari Test", 3, &codi, nil)
 	solicitud := CrearSolicitudUnioEntrenador(usuari.ID, entrenador.ID)
 
 	router.Use(func(c *gin.Context) {
@@ -76,8 +76,8 @@ func TestSolicitarUnioEntrenador(t *testing.T) {
 	handler := handlers.NewHandler(db)
 
 	codi := "1234"
-	CrearUsuariTest("Entrenador Test", 3, &codi)
-	usuari := CrearUsuariTest("Usuari Test", 3, &codi)
+	CrearUsuariTest("Entrenador Test", 3, &codi, nil)
+	usuari := CrearUsuariTest("Usuari Test", 3, &codi, nil)
 
 	router.Use(func(c *gin.Context) {
 		c.Set("user", &usuari)
@@ -130,7 +130,7 @@ func TestAcceptSolicitudUnioEntrenador(t *testing.T) {
 	handler := handlers.NewHandler(db)
 
 	codi := "1234"
-	usuari := CrearUsuariTest("Usuari Test", 3, &codi)
+	usuari := CrearUsuariTest("Usuari Test", 3, &codi, nil)
 	entrenador := CrearEntrenador() //[0]-> entrenador, [1]->Alumne1, [2]->Alumne2
 	solicitud1 := CrearSolicitudUnioEntrenador(usuari.ID, entrenador[0].ID)
 
@@ -172,8 +172,8 @@ func TestDeclineSolicitudUnioEntrenador(t *testing.T) {
 	handler := handlers.NewHandler(db)
 
 	codi := "1234"
-	usuari := CrearUsuariTest("Usuari Test", 3, &codi)
-	entrenador := CrearUsuariTest("Usuari Test 2", 2, &codi)
+	usuari := CrearUsuariTest("Usuari Test", 3, &codi, nil)
+	entrenador := CrearUsuariTest("Usuari Test 2", 2, &codi, nil)
 	solicitud1 := CrearSolicitudUnioEntrenador(usuari.ID, entrenador.ID)
 
 	router.Use(func(c *gin.Context) {

@@ -8,7 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
 // @Summary Get the configuration of the trainer
 // @Description Retrieves the configuration of the trainer from the database.
 // @Tags Entrenador
@@ -27,7 +26,7 @@ func (h *Handler) FindConfiguracioEntrenador(c *gin.Context) {
 	var err error
 
 	//If user is a trainer will retrieve his own configuration
-	if c.MustGet("user").(*models.Usuari).TipusUsuari.Nom == "Entrenador" {
+	if c.MustGet("user").(*models.Usuari).TipusUsuariID == 3 {
 		//Gets the config
 		if err = h.DB.Where("entrenador_id = ?", c.MustGet("user").(*models.Usuari).ID).First(&configuracio).Error; err != nil {
 			c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: "Configuració no trobada"})
@@ -65,13 +64,13 @@ func (h *Handler) FindConfiguracioEntrenador(c *gin.Context) {
 	}
 
 	//Gets the shedules of the trainer
-	if err = h.DB.Where("entrenador_id = ?", c.MustGet("user").(*models.Usuari).EntrenadorID).Find(&horaris).Error; err != nil {
+	if err = h.DB.Where("entrenador_id = ?", *c.MustGet("user").(*models.Usuari).EntrenadorID).Find(&horaris).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	//Gets the config of the trainer
-	if err = h.DB.Where("entrenador_id = ?", c.MustGet("user").(*models.Usuari).EntrenadorID).First(&configuracio).Error; err != nil {
+	if err = h.DB.Where("entrenador_id = ?", *c.MustGet("user").(*models.Usuari).EntrenadorID).First(&configuracio).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: err.Error()})
 		return
 	}
@@ -112,18 +111,18 @@ func (h *Handler) GuardarConfiguracioEntrenador(c *gin.Context) {
 	var err error
 
 	if err = c.ShouldBindJSON(&configuracio); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	if err = h.DB.Model(&models.ConfiguracioEntrenador{}).Where("entrenador_id = ?", c.MustGet("id").(uint)).
+	if err = h.DB.Model(&models.ConfiguracioEntrenador{}).Where("entrenador_id = ?", c.MustGet("user").(*models.Usuari).ID).
 		Updates(&models.ConfiguracioEntrenador{DuracioSessions: configuracio.DuracioSessions, MaxAlumnesPerSessio: configuracio.MaxAlumnesPerSessio}).Error; err != nil {
 			
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Failed to update configuracio entrenador"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to update configuracio entrenador"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": "success"})
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
 }
 
 
