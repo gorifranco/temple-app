@@ -8,25 +8,36 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+
+// @Summary Get all reservations
+// @Description Retrieves all the reservations from the database.
+// @Security Bearer
+// @Tags Reservations
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.SuccessResponse{data=[]models.ReservaResponse}
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/reservations [get]
 func (h *Handler) IndexReserva(c *gin.Context) {
-	var reserves []models.Reserva
-	h.DB.Preload("TipusUsuari").Find(&reserves)
+	var reserves []models.ReservaResponse
+	h.DB.Table("reserves").Select("id, usuari_id, hora, confirmed").Scan(&reserves)
 
-	c.JSON(http.StatusOK, gin.H{"data": reserves})
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: reserves})
 }
 
-func (h *Handler) FindReserva(c *gin.Context) {
-	var reserva models.Reserva
-	var err error
-
-	if err = h.DB.Preload("Usuari").Where("id = ?", c.Param("id")).First(&reserva).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{"data": reserva})
-}
-
+// @Summary Creates a new reservation
+// @Description Creates a new reservation in the database.
+// @Security Bearer
+// @Tags Reservations
+// @Accept json
+// @Produce json
+// @Param input body models.ReservaInput true "Reservation to create"
+// @Success 200 {object} models.SuccessResponse{data=models.ReservaResponse}
+// @Failure 400 {object} models.ErrorResponse "Bad request"
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
+// @Failure 409 {object} models.ErrorResponse "Conflict"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/reservations [post]
 func (h *Handler) CreateReserva(c *gin.Context) {
 	var input models.ReservaInput
 	var usuari models.Usuari
@@ -34,36 +45,29 @@ func (h *Handler) CreateReserva(c *gin.Context) {
 
 	// Parsear JSON
 	if err = c.ShouldBindJSON(&input); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 	// Si se envía el campo Usuari
 	if input.UsuariID != nil {
 		// Comprobar si el usuario existe
 		if err = h.DB.Where("id = ?", *input.UsuariID).First(&usuari).Error; err != nil {
-			c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "Usuario no encontrado"})
+			c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: "Usuario no encontrado"})
 			return
 		}
 
-		// Verificar que el usuario es entrenador
-		if c.MustGet("id").(uint) == *usuari.EntrenadorID {
+		// Verificar que el usuario es su entrenador
+		if c.MustGet("user").(*models.Usuari).ID == *usuari.EntrenadorID {
 			// Crear reserva
 			tmp := time.Date(input.Hora.Year(), input.Hora.Month(), input.Hora.Day(), input.Hora.Hour(), input.Hora.Minute(), 0, 0, time.Local)
-			reserva := models.Reserva{Hora: tmp, UsuariID: *input.UsuariID, EntrenadorID: c.MustGet("id").(uint)}
-			err = h.DB.Create(&reserva).Error
-
-			if err != nil {
-				c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Error al crear reserva"})
+			reserva := models.Reserva{Hora: tmp, UsuariID: *input.UsuariID, EntrenadorID: c.MustGet("user").(*models.Usuari).ID}
+			 if err = h.DB.Create(&reserva).Error; err != nil {
+				c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "Error al crear reserva"})
 				return
 			}
-			c.JSON(http.StatusOK, gin.H{"data": reserva.ID})
+			c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
 			return
 		}
-	}
-	// Buscar el usuario a partir del ID del contexto
-	if err = h.DB.Where("id = ?", c.MustGet("id").(uint)).First(&usuari).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Usuario no encontrado"})
-		return
 	}
 	// Comprobar si el número de reservas en esa hora ha alcanzado el máximo
 	query := `
@@ -78,13 +82,13 @@ func (h *Handler) CreateReserva(c *gin.Context) {
 
 	var isBelowMax bool
 	if err = h.DB.Raw(query, usuari.EntrenadorID, usuari.EntrenadorID, input.Hora).Scan(&isBelowMax).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Error en la consulta SQL"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "Error en la consulta SQL"})
 		return
 	}
 
 	// Si ya se alcanzó el máximo número de alumnos
 	if !isBelowMax {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Número máximo de alumnos alcanzado para esta hora"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "Número máximo de alumnos alcanzado para esta hora"})
 		return
 	}
 	// Crear reserva si hay espacio disponible
@@ -94,12 +98,12 @@ func (h *Handler) CreateReserva(c *gin.Context) {
 	}
 
 	if err = h.DB.Create(&reserva).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Error al crear la reserva"})
+		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Error al crear la reserva"})
 		return
 	}
 
 	// Respuesta de éxito
-	c.JSON(http.StatusOK, gin.H{"data": "success"})
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
 }
 
 func (h *Handler) UpdateReserva(c *gin.Context) {
@@ -107,14 +111,14 @@ func (h *Handler) UpdateReserva(c *gin.Context) {
 	var err error
 
 	if err = h.DB.Where("id = ?", c.Param("id")).First(&reserva).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "record not found"})
+		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: "record not found"})
 		return
 	}
 
 	var input models.ReservaInput
 
 	if err = c.ShouldBindJSON(&input); err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
@@ -122,10 +126,10 @@ func (h *Handler) UpdateReserva(c *gin.Context) {
 
 	h.DB.Model(&reserva).Updates(&updatedReserva)
 
-	var uu models.Reserva
+	var uu models.ReservaResponse
 	h.DB.Preload("Usuari").First(&uu, c.Param("id"))
 
-	c.JSON(http.StatusOK, gin.H{"data": uu})
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: uu})
 }
 
 func (h *Handler) DeleteReserva(c *gin.Context) {
@@ -133,23 +137,23 @@ func (h *Handler) DeleteReserva(c *gin.Context) {
 	var err error
 
 	if err = h.DB.Where("id = ?", c.Param("id")).First(&reserva).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": "record not found"})
+		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	if err = h.DB.Delete(&reserva).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"Error": "Error borrant la reserva"})
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "Error borrant la reserva"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": "success"})
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
 }
 
 func (h *Handler) ReservesEntrenador(c *gin.Context) {
 	var reserves []models.Reserva
 	var err error
 
-	if err = h.DB.Where("entrenador_id = ?", c.MustGet("id").(uint)).Where("hora >= ?", time.Now().Truncate(24*time.Hour)).Find(&reserves).Error; err != nil {
+	if err = h.DB.Where("entrenador_id = ?", c.MustGet("user").(*models.Usuari).ID).Where("hora >= ?", time.Now().Truncate(24*time.Hour)).Find(&reserves).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}

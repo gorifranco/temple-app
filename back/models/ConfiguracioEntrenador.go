@@ -19,3 +19,16 @@ type ConfiguracioEntrenadorInput struct {
 	DuracioSessions     uint `json:"duracioSessions"`
 	MaxAlumnesPerSessio uint `json:"maxAlumnesPerSessio"`
 }
+
+type ConfiguracioEntrenadorResponse struct {
+	DuracioSessions     uint   `json:"DuracioSessions"`
+	MaxAlumnesPerSessio uint   `json:"MaxAlumnesPerSessio"`
+	Horaris             []HorariResponse `json:"Horaris"`
+}
+
+type HorariResponse struct {
+	ID          uint   `json:"ID"`
+	DiaSetmana  int    `json:"DiaSetmana"`
+	Desde       string `json:"Desde"`
+	Fins        string `json:"Fins"`
+}
