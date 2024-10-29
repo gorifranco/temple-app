@@ -3,12 +3,13 @@ import { AntDesign, EvilIcons } from '@expo/vector-icons'
 import { useState, useContext } from 'react'
 import TextInput from '@/components/inputs/TextInput'
 import { nameValidator } from '@/helpers/nameValidator'
-import AuthContext, { AuthContextType } from '@/app/AuthContext'
 import { Redirect } from 'expo-router';
 import { useThemeStyles } from '@/themes/theme'
 import CloseButton from '../buttons/CloseButton'
 // import Share from 'react-native-share';
 import { useAxios } from '@/app/api';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 
 interface propsType {
     modalVisible: boolean
@@ -17,6 +18,7 @@ interface propsType {
 }
 
 export default function ModalAfegirUsuari(props: propsType) {
+    const auth = useSelector((state: RootState) => state.auth);
     const themeStyles = useThemeStyles()
     const { modalVisible, closeModal, crearUsuariFictici } = props
     const [crearFictici, setCrearFictici] = useState(false)
@@ -25,16 +27,6 @@ export default function ModalAfegirUsuari(props: propsType) {
         nom: '',
     });
     const api = useAxios();
-    const authContext = useContext<AuthContextType | undefined>(AuthContext);
-
-    if (!authContext) {
-        throw new Error("AuthProvider is missing. Please wrap your component tree with AuthProvider.");
-    }
-
-    const { user } = authContext;
-    if (!user) {
-        return <Redirect href="/(auth)" />
-    }
 
     function submit() {
         const nameError = nameValidator(nom)
@@ -77,7 +69,7 @@ export default function ModalAfegirUsuari(props: propsType) {
             {!crearFictici ? (
                 <View style={[themeStyles.background, { height: '100%' }]}>
                     <Text style={themeStyles.titol1}>Afegir alumne</Text>
-                    <Text style={themeStyles.text}>Codi d'entrenador: #{user.codiEntrenador}</Text>
+                    <Text style={themeStyles.text}>Codi d'entrenador: #{auth?.user?.CodiEntrenador ?? ''}</Text>
                     <Pressable
                         onPress={() => {
                             // share()

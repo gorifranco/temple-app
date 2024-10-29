@@ -1,26 +1,25 @@
+import { RootState } from '@/store';
 import axios from 'axios';
-import { useContext } from 'react';
-import AuthContext from './AuthContext';
-import { AuthContextType } from './AuthContext';
 import Toast from 'react-native-toast-message';
+import { useSelector } from 'react-redux';
+
 
 const api = axios.create({
-  baseURL: 'http://localhost:8080/api',
+  baseURL: 'http://192.168.130.67:8080/api',
   timeout: 10000,
 });
 
 export const useAxios = () => {
-  const authContext = useContext<AuthContextType | undefined>(AuthContext);
+  const auth = useSelector((state:RootState) => state.auth)
 
-  if (!authContext) {
+  if (!auth) {
     throw new Error("AuthProvider is missing. Please wrap your component tree with AuthProvider.");
   }
-  const { user } = authContext;
 
   api.interceptors.request.use(
     (config) => {
-      if (user && user.token) {
-        config.headers.Authorization = `Bearer ${user.token}`;
+      if (auth.token) {
+        config.headers.Authorization = `Bearer ${auth.token}`;
       }
       return config;
     },

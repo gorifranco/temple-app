@@ -6,12 +6,13 @@ import (
 	"strings"
 	"temple-app/db"
 	"temple-app/models"
+	"os"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
 
-var jwtKey = []byte("gfnicolawpass")
+var jwtKey = []byte(os.Getenv("API_TOKEN"))
 
 type Claims struct {
 	Id          uint   `json:"id"`

@@ -3,8 +3,6 @@ import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect, useContext } from 'react';
 import 'react-native-reanimated';
-import { AuthProvider } from './AuthContext'
-import AuthContext, { AuthContextType } from './AuthContext';
 import Toast from 'react-native-toast-message';
 import { Provider } from 'react-redux';
 import store from '../store';
@@ -14,6 +12,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { PaperProvider } from 'react-native-paper';
 import { useAppTheme } from '@/themes/theme';
 import { Linking } from 'react-native';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -21,26 +21,20 @@ export default function RootLayout() {
 
   function StackLayout() {
     const router = useRouter();
-    const authContext = useContext<AuthContextType | undefined>(AuthContext)
-
-    if (!authContext) {
-      throw new Error("AuthProvider is missing. Please wrap your component tree with AuthProvider.");
-    }
-
-    const { user } = authContext;
+    const auth = useSelector((state: RootState) => state.auth);
 
     useEffect(() => {
 
-      if (!user) {
+      if (!auth.user || !auth.token) { 
         router.replace('/');
-      } else if (user.tipusUsuari === 'Basic') {
+      } else if (auth.user.TipusUsuari === 'Basic') {
         router.replace('/(basic)');
-      } else if (user.tipusUsuari === 'Entrenador') {
+      } else if (auth.user.TipusUsuari === 'Entrenador') {
         router.replace('/(entrenador)');
-      } else if (user.tipusUsuari === 'Administrador') {
+      } else if (auth.user.TipusUsuari === 'Administrador') {
         router.replace('/(admin)');
       }
-    }, [user]);
+    }, [auth.user]);
 
     return (
       <Stack screenOptions={{ navigationBarHidden: true }}>
@@ -95,14 +89,12 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <PaperProvider theme={theme}>
-        <AuthProvider>
           <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
               <StackLayout />
             </PersistGate>
             <Toast />
           </Provider>
-        </AuthProvider>
       </PaperProvider>
     </GestureHandlerRootView>
   );

@@ -6,6 +6,10 @@ export interface SalaType {
   Usuaris: UsuariType[]|null
 }
 
+export interface TokenType{
+  token: string;
+}
+
 export interface UsuariType {
   ID: number;
   Nom: string;

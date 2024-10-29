@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"errors"
 	"net/http"
 	"temple-app/models"
 	"time"
@@ -38,7 +39,7 @@ func (h *Handler) FindConfiguracioEntrenador(c *gin.Context) {
 			c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: "Horaris no trobats"})
 			return
 		}
-		
+
 		//Creates the response of the shedule
 		for _, h := range horaris {
 			if h.DiaSetmana == 0 {
@@ -46,10 +47,10 @@ func (h *Handler) FindConfiguracioEntrenador(c *gin.Context) {
 				return
 			}
 			horariResposta = append(horariResposta, models.HorariResponse{
-				ID:          h.ID,
-				DiaSetmana:  uint(h.DiaSetmana),
-				Desde:       h.Desde.Format("15:04"),
-				Fins:        h.Fins.Format("15:04"),
+				ID:         h.ID,
+				DiaSetmana: uint(h.DiaSetmana),
+				Desde:      h.Desde.Format("15:04"),
+				Fins:       h.Fins.Format("15:04"),
 			})
 		}
 
@@ -63,7 +64,7 @@ func (h *Handler) FindConfiguracioEntrenador(c *gin.Context) {
 	}
 
 	//Is user is no a trainer will retireve the config of his trainer
-	if(c.MustGet("user").(*models.Usuari).EntrenadorID == nil) {
+	if c.MustGet("user").(*models.Usuari).EntrenadorID == nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "No tens entrenador assignat"})
 	}
 
@@ -78,7 +79,7 @@ func (h *Handler) FindConfiguracioEntrenador(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: err.Error()})
 		return
 	}
-	
+
 	//Creates the response of the shedule
 	for _, h := range horaris {
 		if h.DiaSetmana == 0 {
@@ -86,13 +87,13 @@ func (h *Handler) FindConfiguracioEntrenador(c *gin.Context) {
 			return
 		}
 		horariResposta = append(horariResposta, models.HorariResponse{
-			ID:          h.ID,
-			DiaSetmana:  uint(h.DiaSetmana),
-			Desde:       h.Desde.Format("15:04"),
-			Fins:        h.Fins.Format("15:04"),
+			ID:         h.ID,
+			DiaSetmana: uint(h.DiaSetmana),
+			Desde:      h.Desde.Format("15:04"),
+			Fins:       h.Fins.Format("15:04"),
 		})
 	}
-	
+
 	//Retrieves the response
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: models.ConfiguracioEntrenadorResponse{
 		DuracioSessions:     configuracio.DuracioSessions,
@@ -130,14 +131,13 @@ func (h *Handler) GuardarConfiguracioEntrenador(c *gin.Context) {
 
 	if err = h.DB.Model(&models.ConfiguracioEntrenador{}).Where("entrenador_id = ?", c.MustGet("user").(*models.Usuari).ID).
 		Updates(&models.ConfiguracioEntrenador{DuracioSessions: configuracio.DuracioSessions, MaxAlumnesPerSessio: configuracio.MaxAlumnesPerSessio}).Error; err != nil {
-			
+
 		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to update configuracio entrenador"})
 		return
 	}
 
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
 }
-
 
 // @Summary Saves the schedule of the trainer
 // @Description Saves the schedule of the trainer in the database.
@@ -154,8 +154,7 @@ func (h *Handler) GuardarConfiguracioEntrenador(c *gin.Context) {
 // @Router /api/entrenador/guardarHorariEntrenador [post]
 func (h *Handler) GuardarHorariEntrenador(c *gin.Context) {
 	var horari []models.HorarisEntrenadorInput
-	var horarisPrevis []models.HorarisEntrenador
-	var newHorari []models.HorarisEntrenador
+	var newHorari []models.HorarisEntrenadorResponse
 	var err error
 
 	if err = c.ShouldBindJSON(&horari); err != nil {
@@ -165,51 +164,27 @@ func (h *Handler) GuardarHorariEntrenador(c *gin.Context) {
 
 	tx := h.DB.Begin()
 
-	if err = tx.Where("entrenador_id = ?", c.MustGet("user").(*models.Usuari).ID).Find(&horarisPrevis).Error; err != nil{
+	if err = tx.Exec("delete from horaris_entrenador where entrenador_id = ?", c.MustGet("user").(*models.Usuari).ID).Error; err != nil {
 		tx.Rollback()
 		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
-	if len(horarisPrevis) > 0 {
-		if err = tx.Delete(&horarisPrevis).Error; err != nil{
-			tx.Rollback()
-			c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to delete previous horaris"})
-			return
-		}
+	if err = ValidarHoraris(horari); err != nil {
+		tx.Rollback()
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
+		return
 	}
+
 	for _, h := range horari {
-		if h.DiaSetmana < 0 || h.DiaSetmana > 6 {
-			tx.Rollback()
-			c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "DiaSetmana no vàlid"})
-			return
-		}
-
-		desde, err := time.Parse("15:04", h.Desde)
-		if err != nil {
-			tx.Rollback()
-			c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "Format de 'Desde' no vàlid. Ha de ser 'hh:mm'"})
-			return
-		}
-		desde = time.Date(2000, time.January, 1, desde.Hour(), desde.Minute(), 0, 0, time.Local)
-
-		fins, err := time.Parse("15:04", h.Fins)
-		if err != nil {
-			tx.Rollback()
-			c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "Format de 'Fins' no vàlid. Ha de ser 'hh:mm'"})
-			return
-		}
-		fins = time.Date(2000, time.January, 1, fins.Hour(), fins.Minute(), 0, 0, time.Local)
-
-		newHorari = append(newHorari, models.HorarisEntrenador{
-			EntrenadorID: c.MustGet("id").(uint),
-			DiaSetmana:   h.DiaSetmana,
-			Desde:        desde,
-			Fins:         fins,
+		newHorari = append(newHorari, models.HorarisEntrenadorResponse{
+			DiaSetmana: uint(h.DiaSetmana),
+			Desde:      h.Desde,
+			Fins:       h.Fins,
 		})
 	}
 
-	if err = tx.Create(&newHorari).Error; err != nil{
+	if err = tx.Create(&newHorari).Error; err != nil {
 		tx.Rollback()
 		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to create new horaris"})
 		return
@@ -218,4 +193,30 @@ func (h *Handler) GuardarHorariEntrenador(c *gin.Context) {
 	tx.Commit()
 
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
+}
+
+func ValidarHoraris(horaris []models.HorarisEntrenadorInput) error {
+
+	for _, horari := range horaris {
+		if horari.DiaSetmana < 0 || horari.DiaSetmana > 6 {
+			return errors.New("DiaSetmana no vàlid")
+		}
+
+		desde, err := time.Parse("15:04", horari.Desde)
+		if err != nil {
+			return err
+		}
+		desde = time.Date(2000, time.January, 1, desde.Hour(), desde.Minute(), 0, 0, time.Local)
+
+		fins, err := time.Parse("15:04", horari.Fins)
+		if err != nil {
+			return err
+		}
+		fins = time.Date(2000, time.January, 1, fins.Hour(), fins.Minute(), 0, 0, time.Local)
+
+		if desde.After(fins) {
+			return errors.New("desde no pot ser major que Fins")
+		}
+	}
+	return nil
 }

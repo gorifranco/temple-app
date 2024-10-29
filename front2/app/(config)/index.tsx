@@ -1,6 +1,5 @@
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import React, { useContext, useState } from 'react';
-import AuthContext, { AuthContextType } from '../AuthContext';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useThemeStyles } from '@/themes/theme';
 import TextInput from '@/components/inputs/TextInput';
@@ -10,11 +9,13 @@ import { persistor } from '../../store';
 import { ConfigType } from '@/types/apiTypes';
 import HorariConfig from '@/components/viewers/HorariConfig';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+import { useDispatch } from 'react-redux';
+import { logoutRedux } from '@/store/authSlice';
 
 export default function Index() {
     const themeStyles = useThemeStyles();
-    const authContext = useContext<AuthContextType | undefined>(AuthContext);
+    const dispatch = useDispatch();
+    const auth = useSelector((state: RootState) => state.auth);
     const config = useSelector((state: RootState) => state.config);
     const [errors, setErrors] = useState({
         duracioSessions: "",
@@ -23,10 +24,9 @@ export default function Index() {
     });
     const [configTmp, setConfigTmp] = useState<ConfigType>(config);
 
-    if (!authContext) {
+    if (!auth.user) {
         throw new Error("AuthProvider is missing. Please wrap your component tree with AuthProvider.");
     }
-    const { logout } = authContext;
 
     async function borrarStorage() {
         try {
@@ -48,7 +48,7 @@ export default function Index() {
             <ScrollView>
                 <Pressable
                     style={themeStyles.button1}
-                    onPress={() => logout()}>
+                    onPress={() => dispatch(logoutRedux())}>
                     <Text style={themeStyles.button1Text}>Logout</Text>
                 </Pressable>
                 <Pressable

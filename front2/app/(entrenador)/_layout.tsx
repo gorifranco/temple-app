@@ -1,8 +1,5 @@
 import React from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
-import AuthContext, { AuthContextType } from '../AuthContext';
 import { useContext } from 'react';
 import { Redirect } from 'expo-router';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
@@ -10,20 +7,16 @@ import HomeScreen from './index';
 import ConfigScreen from '../(config)/index';
 import StatsScreen from "../(stats)/index";
 import { useAppTheme } from '@/themes/theme';
-
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 
 const Tabs = createMaterialTopTabNavigator();
 
 export default function EntrenadorLayout({ children }: { children: React.ReactNode }) {
   const theme = useAppTheme()
-  const authContext = useContext<AuthContextType | undefined>(AuthContext);
+  const auth = useSelector((state: RootState) => state.auth);
 
-  if (!authContext) {
-    throw new Error("AuthProvider is missing. Please wrap your component tree with AuthProvider.");
-  }
-
-  const { user } = authContext;
-  if(!user){
+  if(!auth.user){
     return <Redirect href="/(auth)" />
   }
   

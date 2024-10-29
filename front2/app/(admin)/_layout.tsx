@@ -3,24 +3,20 @@ import React from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
-import AuthContext, { AuthContextType } from '../AuthContext';
 import { useContext } from 'react';
 import { Redirect } from 'expo-router';
 import HomeScreen from './index';
 import ConfigScreen from '../(config)/index';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store';
 
 const Tabs = createBottomTabNavigator();
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const colorScheme = useColorScheme();
-  const authContext = useContext<AuthContextType | undefined>(AuthContext);
+  const auth = useSelector((state: RootState) => state.auth);
 
-  if (!authContext) {
-    throw new Error("AuthProvider is missing. Please wrap your component tree with AuthProvider.");
-  }
-
-  const { user } = authContext;
-  if(!user){
+  if(!auth.token){
     return <Redirect href="/(auth)" />
   }
 

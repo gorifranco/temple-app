@@ -22,3 +22,10 @@ type HorarisEntrenadorInput struct {
 	Desde      string `json:"desde"`
 	Fins       string `json:"fins"`
 }
+
+type HorarisEntrenadorResponse struct {
+	ID          uint   `json:"ID"`
+	DiaSetmana  uint   `json:"diaSetmana"`
+	Desde       string `json:"desde"`
+	Fins        string `json:"fins"`
+}

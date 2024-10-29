@@ -8,6 +8,7 @@ import reservesReducer from './reservesSlice';
 import salesReducer from './salesSlice';
 import rutinesReducer from './rutinesSlice';
 import configReducer from './configSlice';
+import authReducer from './authSlice';
 
 // Configuración de persistencia
 const persistConfig = {
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
   sales: salesReducer,
   rutines: rutinesReducer,
   config: configReducer,
+  auth: authReducer,
 });
 
 // Aplica persistencia a los reducers
