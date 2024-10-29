@@ -12,11 +12,16 @@ import TextInput from '@/components/inputs/TextInput';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useAxios } from '@/app/api';
 import { useThemeStyles } from '@/themes/theme';
-import { login, logout } from '@/services/authService';
+import { useDispatch } from 'react-redux';
+import { login } from '@/services/authService';
+import { AppDispatch } from '@/store';
+import Toast from 'react-native-toast-message';
+
 
 export default function Index() {
   const themeStyles = useThemeStyles();
   const api = useAxios();
+  const dispatch = useDispatch<AppDispatch>();
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [errors, setErrors] = useState({
@@ -33,10 +38,13 @@ export default function Index() {
       setErrors({ ...errors, password: passwordError })
       return
     }
-    //login
-      const result:boolean = login(email, password);
-      result ? router.replace('/') : router.replace('/(auth)');
-      router.replace('/');
+    const result: boolean = await dispatch(login({ email, password })).unwrap();
+    result ? router.replace('/') : Toast.show({
+      type: 'error',
+      text1: 'Error login',
+      position: 'top',
+    });
+
   };
 
   return (

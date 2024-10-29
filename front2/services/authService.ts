@@ -1,26 +1,21 @@
-import { useAxios } from "@/app/api";
-import { useDispatch } from "react-redux";
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { api } from "@/app/api";
 import { loginRedux, logoutRedux } from "@/store/authSlice";
+import { RootState } from "../store";
+import { useDispatch } from "react-redux";
 
-
-export function login(email: string, password: string):boolean {
-  const api = useAxios();
-  const dispatch = useDispatch();
-
-  api.post("/api/login", { email, password })
-    .then((response) => {
-      dispatch(loginRedux(response.data))
-      return true
-    })
-    .catch(() => {
-      return false;
-    });
-
-    return false;
-}
+export const login = createAsyncThunk<
+  boolean,
+  { email: string; password: string },
+  { state: RootState }
+>("auth/login", async ({ email, password }, { dispatch, getState }) => {
+  const response = await api.post("/login", { email, password });
+  console.log(response.data.data)
+  dispatch(loginRedux(response.data.data));
+  return response.status == 200 ? true : false;
+});
 
 export function logout() {
   const dispatch = useDispatch();
   dispatch(logoutRedux());
-  return true;
 }

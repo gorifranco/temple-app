@@ -8,7 +8,7 @@ import (
 type HorarisEntrenador struct {
 	gorm.Model
 	EntrenadorID uint
-	DiaSetmana   int       `gorm:"not null;check:dia_setmana >= 0 AND dia_setmana <= 6"`
+	DiaSetmana   uint       `gorm:"not null;check:dia_setmana >= 0 AND dia_setmana <= 6"`
 	Desde        time.Time `gorm:"not null"`
 	Fins         time.Time `gorm:"not null"`
 }
@@ -18,7 +18,7 @@ func (HorarisEntrenador) TableName() string {
 }
 
 type HorarisEntrenadorInput struct {
-	DiaSetmana int    `json:"diaSetmana"`
+	DiaSetmana uint    `json:"diaSetmana"`
 	Desde      string `json:"desde"`
 	Fins       string `json:"fins"`
 }

@@ -42,10 +42,6 @@ func (h *Handler) FindConfiguracioEntrenador(c *gin.Context) {
 
 		//Creates the response of the shedule
 		for _, h := range horaris {
-			if h.DiaSetmana == 0 {
-				c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "DiaSetmana no vàlid"})
-				return
-			}
 			horariResposta = append(horariResposta, models.HorariResponse{
 				ID:         h.ID,
 				DiaSetmana: uint(h.DiaSetmana),
@@ -198,10 +194,6 @@ func (h *Handler) GuardarHorariEntrenador(c *gin.Context) {
 func ValidarHoraris(horaris []models.HorarisEntrenadorInput) error {
 
 	for _, horari := range horaris {
-		if horari.DiaSetmana < 0 || horari.DiaSetmana > 6 {
-			return errors.New("DiaSetmana no vàlid")
-		}
-
 		desde, err := time.Parse("15:04", horari.Desde)
 		if err != nil {
 			return err

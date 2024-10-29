@@ -1,11 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 interface UserInput {
-  ID: number;
-  Nom: string;
-  Email: string;
-  TipusUsuari: string;
-  CodiEntrenador: string;
+  nom: string;
+  email: string;
+  tipusUsuari: string;
+  codiEntrenador: string;
 }
 
 const authSlice = createSlice({
@@ -18,11 +17,10 @@ const authSlice = createSlice({
     loginRedux: (state, action) => {
       state.token = action.payload.token;
       const user:UserInput = {
-        ID: action.payload.user.id,
-        Nom: action.payload.user.nom,
-        Email: action.payload.user.email,
-        TipusUsuari: action.payload.user.tipusUsuari,
-        CodiEntrenador: action.payload.user.codiEntrenador,
+        nom: action.payload.nom,
+        email: action.payload.email,
+        tipusUsuari: action.payload.tipusUsuari,
+        codiEntrenador: action.payload.codiEntrenador,
       }
       state.user = user;
     },

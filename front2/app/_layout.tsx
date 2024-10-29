@@ -27,11 +27,11 @@ export default function RootLayout() {
 
       if (!auth.user || !auth.token) { 
         router.replace('/');
-      } else if (auth.user.TipusUsuari === 'Basic') {
+      } else if (auth.user.tipusUsuari === 'Basic') {
         router.replace('/(basic)');
-      } else if (auth.user.TipusUsuari === 'Entrenador') {
+      } else if (auth.user.tipusUsuari === 'Entrenador') {
         router.replace('/(entrenador)');
-      } else if (auth.user.TipusUsuari === 'Administrador') {
+      } else if (auth.user.tipusUsuari === 'Administrador') {
         router.replace('/(admin)');
       }
     }, [auth.user]);
