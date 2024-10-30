@@ -126,7 +126,7 @@ export default function CrearRutina() {
                                 error={errors.Dies != ""}
                                 errorText={errors.Dies}
                                 label="Dies"
-                                keyboardType="numeric"
+                                inputMode="numeric"
                                 style={{ width: "100%" }}
                                 value={dies ? dies.toString() : ""}
                                 onChangeText={(text: string) => setDies(Number(text.replace(/[^0-7]/g, '')))}
@@ -139,7 +139,7 @@ export default function CrearRutina() {
                                 error={errors.Cicles != ""}
                                 label="Cicles"
                                 style={{ width: "100%" }}
-                                keyboardType="numeric"
+                                inputMode="numeric"
                                 value={cicles ? cicles.toString() : ""}
                                 onChangeText={(text: string) => setCicles(Number(text.replace(/[^0-9]/g, '')))}
                             />
@@ -184,7 +184,7 @@ export default function CrearRutina() {
                                                     errorText={errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.NumSeries}
                                                     label={<Text style={{ fontSize: 12 }}>Series</Text>}
                                                     style={{ width: 65 }}
-                                                    keyboardType="numeric"
+                                                    inputMode="numeric"
                                                     value={exercici.NumSeries === 0 ? "" : exercici.NumSeries.toString()}
                                                     onChangeText={(text: string) => {
                                                         const updatedExercicisElegits = [...exercicisElegits];
@@ -204,7 +204,7 @@ export default function CrearRutina() {
                                                     errorText={errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.NumRepes}
                                                     label={<Text style={{ fontSize: 12 }}>Repes</Text>}
                                                     style={{ width: 65 }}
-                                                    keyboardType="numeric"
+                                                    inputMode="numeric"
                                                     value={exercici.NumRepes === 0 ? "" : exercici.NumRepes.toString()}
                                                     onChangeText={(text: string) => {
                                                         const updatedExercicisElegits = [...exercicisElegits];
@@ -224,7 +224,7 @@ export default function CrearRutina() {
                                                 <TextInput
                                                     errorText={errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.PercentatgeRM !== ""}
                                                     label={<Text style={{ fontSize: 12 }}>% RM</Text>}
-                                                    keyboardType="numeric"
+                                                    inputMode="numeric"
                                                     style={{ width: 65 }}
                                                     value={exercici.PercentatgeRM === 0 ? "" : exercici.PercentatgeRM.toString()}
                                                     onChangeText={(text: string) => {

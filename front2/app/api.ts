@@ -4,7 +4,7 @@ import Toast from "react-native-toast-message";
 import { useSelector } from "react-redux";
 
 export const api = axios.create({
-  baseURL: "http://localhost:8080/api",
+  baseURL: "http://192.168.130.67:8080/api",
   timeout: 10000,
 });
 

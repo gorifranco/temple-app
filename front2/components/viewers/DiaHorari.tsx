@@ -35,7 +35,7 @@ export default function DiaHorari(props: propsType) {
                         style={{ width: "45%" }}>
                         <TextInput
                             label="Desde"
-                            returnKeyType="next"
+                            enterKeyHint="next"
                             value={horari.Desde ? horari.Desde : "_ _ : _ _"}
                             error={errors[i] ? !!errors[i].errDesde : false}
                             errorText={errors[i] ? errors[i].errDesde : ""}
@@ -54,7 +54,7 @@ export default function DiaHorari(props: propsType) {
                         <TextInput
                             label="Fins"
                             editable={false}
-                            returnKeyType="next"
+                            enterKeyHint="next"
                             value={horari.Fins ? horari.Fins : "_ _ : _ _"}
                             error={errors[i] ? !!errors[i].errFins : false}
                             errorText={errors[i] ? errors[i].errFins : ""}

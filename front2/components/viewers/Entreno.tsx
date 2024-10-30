@@ -40,19 +40,19 @@ export default function Entreno(props: propsType) {
                             <TextInput
                                 label={<Text style={{ fontSize: 12 }}>Series</Text>}
                                 style={{ width: 65 }}
-                                keyboardType="numeric"
+                                inputMode="numeric"
                                 value={diaActual == diaSeleccionat && setmanaSeleccionada == setmanaActual ? resultats.filter(f => f.ExerciciRutinaID == e.ExerciciID)[0].Series.toString() : e.NumSeries.toString()}
                                 onChangeText={(text: string) => {setResultats(resultats.map(f => f.ExerciciRutinaID == e.ExerciciID ? { ExerciciRutinaID: f.ExerciciRutinaID, Repeticions: f.Repeticions, Series: Number(text.replace(/[^0-9]/g, '')), Pes: f.Pes } : f))}} />
                             <TextInput
                                 label={<Text style={{ fontSize: 12 }}>Repes</Text>}
                                 style={{ width: 65 }}
-                                keyboardType="numeric"
+                                inputMode="numeric"
                                 value={diaActual == diaSeleccionat && setmanaSeleccionada == setmanaActual ? resultats.filter(f => f.ExerciciRutinaID == e.ExerciciID)[0].Repeticions.toString() : e.NumRepes.toString()}
                                 onChangeText={(text: string) => {setResultats(resultats.map(f => f.ExerciciRutinaID == e.ExerciciID ? { ExerciciRutinaID: f.ExerciciRutinaID, Repeticions: Number(text.replace(/[^0-9]/g, '')), Series: f.Series, Pes: f.Pes } : f))}} />
                             <TextInput
                                 label={<Text style={{ fontSize: 12 }}>Pes</Text>}
                                 style={{ width: 65 }}
-                                keyboardType="numeric"
+                                inputMode="numeric"
                                 value={diaActual == diaSeleccionat && setmanaSeleccionada == setmanaActual ? resultats.filter(f => f.ExerciciRutinaID == e.ExerciciID)[0].Pes.toString() + "Kg" : e.PercentatgeRM.toString() + "%"}
                                 onChangeText={(text: string) => {setResultats(resultats.map(f => f.ExerciciRutinaID == e.ExerciciID ? { ExerciciRutinaID: f.ExerciciRutinaID, Repeticions: f.Repeticions, Series: f.Series, Pes: Number(text.replace(/[^0-9]/g, '')) } : f))}} />
                         </View>

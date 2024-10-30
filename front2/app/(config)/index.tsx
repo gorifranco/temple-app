@@ -65,13 +65,13 @@ export default function Index() {
                     <TextInput
                         containerStyle={{ width: 68 }}
                         inputStyle={{ textAlign: "right" }}
-                        returnKeyType="done"
+                        enterKeyHint="done"
                         value={configTmp.DuracioSessions}
                         onChangeText={(text: string) => setConfigTmp({ ...configTmp, DuracioSessions: Number(text.replace(/[^0-9]/g, '')) })}
                         error={!!errors.duracioSessions}
                         errorText={errors.duracioSessions}
                         autoCapitalize="none"
-                        keyboardType="numeric"
+                        inputMode="numeric"
                         maxLength={3}
                     />
                 </View>
@@ -82,13 +82,13 @@ export default function Index() {
                         maxLength={3}
                         containerStyle={{ width: 68 }}
                         inputStyle={{ textAlign: "right" }}
-                        returnKeyType="done"
+                        enterKeyHint="done"
                         value={configTmp.MaxAlumnesPerSessio}
                         onChangeText={(text: string) => setConfigTmp({ ...configTmp, MaxAlumnesPerSessio: Number(text.replace(/[^0-9]/g, '')) })}
                         error={!!errors.maxAlumnesPerSessio}
                         errorText={errors.maxAlumnesPerSessio}
                         autoCapitalize="none"
-                        keyboardType="numeric"
+                        inputMode="numeric"
                     />
                 </View>
 

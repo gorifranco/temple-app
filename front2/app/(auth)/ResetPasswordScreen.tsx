@@ -29,7 +29,7 @@ export default function ResetPasswordScreen() {
       <Header>Restore Password</Header>
       <TextInput
         label="E-mail address"
-        returnKeyType="done"
+        enterKeyHint="done"
         value={email.value}
         onChangeText={(text:string) => setEmail({ value: text, error: '' })}
         error={!!email.error}
@@ -37,7 +37,7 @@ export default function ResetPasswordScreen() {
         autoCapitalize="none"
         autoCompleteType="email"
         textContentType="emailAddress"
-        keyboardType="email-address"
+        inputMode="email"
         description="You will receive email with password reset link."
       />
       <Button

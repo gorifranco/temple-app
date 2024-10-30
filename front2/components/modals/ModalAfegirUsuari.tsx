@@ -69,7 +69,7 @@ export default function ModalAfegirUsuari(props: propsType) {
             {!crearFictici ? (
                 <View style={[themeStyles.background, { height: '100%' }]}>
                     <Text style={themeStyles.titol1}>Afegir alumne</Text>
-                    <Text style={themeStyles.text}>Codi d'entrenador: #{auth?.user?.CodiEntrenador ?? ''}</Text>
+                    <Text style={themeStyles.text}>Codi d'entrenador: #{auth?.user?.codiEntrenador ?? ''}</Text>
                     <Pressable
                         onPress={() => {
                             // share()
@@ -94,7 +94,7 @@ export default function ModalAfegirUsuari(props: propsType) {
                     <View style={{ width: "80%", alignSelf: "center" }}>
                         <TextInput
                             label="Nom"
-                            returnKeyType="next"
+                            enterKeyHint="next"
                             value={nom}
                             onChangeText={(text: string) => setNom(text)}
                             error={!!errors.nom}

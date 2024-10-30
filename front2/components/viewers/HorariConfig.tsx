@@ -19,7 +19,7 @@ export default function HorariConfig() {
     const dies = ["Dilluns", "Dimarts", "Dimecres", "Dijous", "Divendres", "Dissabte", "Diumenge"];
 
     useEffect(() => {
-        if (horaris.length > 0) {
+        if (horaris && horaris.length > 0) {
             const transformedHoraris = transformHoraris(horaris);
             setHorarisMap(transformedHoraris);
         }

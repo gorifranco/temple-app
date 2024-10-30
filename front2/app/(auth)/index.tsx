@@ -9,13 +9,13 @@ import Background from '@/components/Background';
 import Logo from '@/components/Logo';
 import Header from '@/components/Header';
 import TextInput from '@/components/inputs/TextInput';
-import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useAxios } from '@/app/api';
 import { useThemeStyles } from '@/themes/theme';
 import { useDispatch } from 'react-redux';
 import { login } from '@/services/authService';
 import { AppDispatch } from '@/store';
 import Toast from 'react-native-toast-message';
+import { Pressable } from 'react-native';
 
 
 export default function Index() {
@@ -53,7 +53,7 @@ export default function Index() {
       <Header>Welcome back.</Header>
       <TextInput
         label="Email"
-        returnKeyType="next"
+        enterKeyHint="next"
         value={email}
         onChangeText={(text: string) => setEmail(text)}
         error={!!errors.email}
@@ -61,12 +61,12 @@ export default function Index() {
         autoCapitalize="none"
         autoCompleteType="email"
         textContentType="emailAddress"
-        keyboardType="email-address"
+        inputMode="email"
         containerStyle={{ width: "80%", marginBottom: 10 }}
       />
       <TextInput
         label="Password"
-        returnKeyType="done"
+        enterKeyHint="done"
         value={password}
         onChangeText={(text: string) => setPassword(text)}
         error={!!errors.password}
@@ -75,11 +75,15 @@ export default function Index() {
         containerStyle={{ width: "80%", marginBottom: 7 }}
       />
       <View>
-        <TouchableOpacity
+        <Pressable
+          style={({ pressed }) => [
+            {
+              opacity: pressed ? 0.2 : 1,
+            },]}
           onPress={() => router.replace('/ResetPasswordScreen')}
         >
           <Text style={{ width: "100%", marginBottom: 24, alignItems: "flex-end" }}>Forgot your password?</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
       <Button mode="contained" onPress={onLoginPressed}>
         Login

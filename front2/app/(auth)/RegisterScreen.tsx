@@ -57,7 +57,7 @@ export default function RegisterScreen() {
       <Header>Create Account</Header>
       <TextInput
         label="Name"
-        returnKeyType="next"
+        enterKeyHint="next"
         value={nom}
         onChangeText={(text:string) => setNom(text)}
         error={!!errors.nom}
@@ -65,7 +65,7 @@ export default function RegisterScreen() {
       />
       <TextInput
         label="Email"
-        returnKeyType="next"
+        enterKeyHint="next"
         value={email}
         onChangeText={(text:string) => setEmail(text)}
         error={!!errors.email}
@@ -73,11 +73,11 @@ export default function RegisterScreen() {
         autoCapitalize="none"
         autoCompleteType="email"
         textContentType="emailAddress"
-        keyboardType="email-address"
+        inputMode="email"
       />
       <TextInput
         label="Password"
-        returnKeyType="done"
+        enterKeyHint="done"
         value={password}
         onChangeText={(text:string) => setPassword(text)}
         error={!!errors.password}
