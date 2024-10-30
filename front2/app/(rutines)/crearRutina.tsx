@@ -1,34 +1,29 @@
 import { View, Text, Pressable, StyleSheet } from 'react-native';
 import React, { useState } from 'react';
 import BackButton from '@/components/buttons/BackButton';
-import { ExerciciRutinaType, ExerciciType } from '@/types/apiTypes';
-import { useAxios } from '@/app/api';
-import { useDispatch } from 'react-redux';
+import { ExerciciRutinaType } from '@/types/apiTypes';
 import TextInput from '@/components/inputs/TextInput';
 import { ScrollView } from 'react-native-gesture-handler';
-import Entypo from '@expo/vector-icons/Entypo';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown'
 import AutocompleteExercicis from '@/components/inputs/selects/AutocompleteExercicis';
 import BarraDies from '@/components/BarraDies';
 import { exercicisValidator, nomSalaValidator, descripcioValidator, ciclesValidator, diesValidator } from '@/helpers/validators';
 import { ExerciciErrorType, RutinaType } from '@/types/apiTypes';
-import { router } from 'expo-router';
-import Toast from 'react-native-toast-message';
-import { afegirRutina } from '@/store/rutinesSlice';
 import { useThemeStyles } from '@/themes/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useAppDispatch } from '@/store/reduxHooks';
+import { createRutina } from '@/store/rutinesSlice';
 
 
 export default function CrearRutina() {
     const themeStyles = useThemeStyles();
-    const api = useAxios();
+    const dispatch = useAppDispatch();
     const [cicles, setCicles] = useState<(Number | null)>(null);
     const [dies, setDies] = useState(1);
     const [currentDia, setCurrentDia] = useState(0);
     const [exercicisElegits, setExercicisElegits] = useState<(ExerciciRutinaType)[]>([]);
     const [nom, setNom] = useState("");
     const [descripcio, setDescripcio] = useState("");
-    const dispatch = useDispatch();
     const [errorsExercicis, setErrorsExercicis] = useState(new Map<number, ExerciciErrorType>());
     const [errors, setErrors] = useState({
         Nom: "",
@@ -58,23 +53,7 @@ export default function CrearRutina() {
                 DiesDuracio: dies,
                 Exercicis: exercicisEnviats,
             }
-            const response = await api.post(`/rutines`, dataRutina)
-            if (response.status === 200) {
-                Toast.show({
-                    type: 'success',
-                    text1: 'Rutina creada',
-                    position: 'top',
-                });
-                dataRutina.ID = response.data.data.ID
-                dispatch(afegirRutina({ id: response.data.data.ID, data: response.data.data }))
-                router.replace("/(entrenador)")
-            } else {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Error creant la rutina',
-                    position: 'top',
-                });
-            }
+            dispatch(createRutina({ rutina: dataRutina }))
         }
     }
 

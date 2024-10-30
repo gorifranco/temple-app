@@ -1,57 +1,60 @@
-import {
-  createSlice,
-  PayloadAction,
-} from "@reduxjs/toolkit";
-import {
-ExercicisState,
-ExerciciType
-} from "../types/apiTypes";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ExerciciType } from "../types/apiTypes";
+import { api } from "@/app/api";
+import { RootState } from ".";
+
+interface ExercicisState {
+  exercicis: ExerciciType[];
+  status: "idle" | "pending" | "succeeded" | "failed";
+  error: string | null;
+}
+
+const initialState: ExercicisState = {
+  exercicis: [],
+  status: "idle",
+  error: null,
+};
+
+// Define the async thunk
+export const getExercicis = createAsyncThunk<
+  ExerciciType[], // Expected result type
+  void, // No parameters required here
+  { state: RootState }
+>("entrenador/getExercicis", async (_, { rejectWithValue }) => {
+    const response = await api.get("/entrenador/exercicis");
+    return response.status == 200 ? response.data.data : rejectWithValue(response.data.error ?? "Failed to create alumne");
+});
 
 const exercicisSlice = createSlice({
-    name: "exercicis",
-    initialState: {} as ExercicisState,
-    reducers: {
-      setExercicis(state: ExercicisState, action: PayloadAction<ExercicisState>) {
-        return action.payload;
-      },
-      updateReserves(
-        state: ExercicisState,
-        action: PayloadAction<{ data: ExerciciType[] }>
-      ) {
-        const { data } = action.payload;
-  
-        // Si no hay datos, vaciamos el estado
-        if (!data || data.length === 0) {
-          Object.keys(state).forEach((key) => {
-            delete state[Number(key)];
-          });
-        } else {
-          // Primero, creamos un nuevo estado basado en los datos recibidos
-          const newState: ExercicisState = {};
-  
-          for (let i = 0; i < data.length; i++) {
-            const reserva = data[i];
-            newState[reserva.ID] = reserva;
-          }
-  
-          // Reemplazamos el estado anterior con el nuevo
-          Object.keys(state).forEach((key) => {
-            const numericKey = Number(key);
-            if (!newState[numericKey]) {
-              delete state[numericKey];
-            }
-          });
-  
-          // Ahora asignamos el nuevo estado (actualizado) al estado actual
-          Object.assign(state, newState);
+  name: "exercicis",
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
+      .addCase(getExercicis.pending, (state) => {
+        state.status = "pending";
+      })
+      .addCase(
+        getExercicis.fulfilled,
+        (state, action: PayloadAction<ExerciciType[]>) => {
+          state.status = "succeeded";
+          state.exercicis = action.payload;
         }
-      },
-    },
-  });
+      )
+      .addCase(getExercicis.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload as string;
+      });
+  },
+});
 
-  export function getExerciciByID (state: ExercicisState, exerciciID: number) {
-    return state[exerciciID];
-};
-  
-  export const { setExercicis } = exercicisSlice.actions;
-  export default exercicisSlice.reducer;
+export const selectAllExercicis = (state: RootState) =>
+  state.exercicis.exercicis;
+export const selectExerciciByID = (state: RootState, exerciciID: number) =>
+  state.exercicis.exercicis.find((exercici) => exercici.ID === exerciciID);
+
+export const selectExercicisStatus = (state: RootState) =>
+  state.exercicis.status;
+export const selectExercicisError = (state: RootState) => state.exercicis.error;
+
+export default exercicisSlice.reducer;

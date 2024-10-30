@@ -79,7 +79,7 @@ func (h *Handler) AlumnesEntrenador(c *gin.Context) {
 
 // @Summary Create a student without account
 // @Description Creates a new student in the database.
-// @Tags Alumnes, Entrenador
+// @Tags Alumnes
 // @Security Bearer
 // @Accept json
 // @Produce json
@@ -89,6 +89,7 @@ func (h *Handler) AlumnesEntrenador(c *gin.Context) {
 // @Failure 401 {object} models.ErrorResponse "Unauthorized"
 // @Failure 409 {object} models.ErrorResponse "Conflict"
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/entrenador/usuarisFicticis [post]
 func (h *Handler) CrearUsuariFictici(c *gin.Context) {
 	var input models.UsuariFicticiInput
 	var err error

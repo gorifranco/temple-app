@@ -1,19 +1,16 @@
-import { RutinaType } from '@/types/apiTypes'
 import { View, Text, Pressable } from 'react-native'
 import React, { useState } from 'react'
-import { StyleSheet } from 'react-native'
 import FletxaDesplegar from '@/components/icons/FletxaDesplegar'
 import BarraDies from '../BarraDies'
 import ModalConfirmacio from '../modals/ModalConfirmacio'
-import { useAxios } from '@/app/api'
 import Toast from 'react-native-toast-message'
-import { deleteRutina } from '@/store/rutinesSlice'
-import { useDispatch } from 'react-redux'
-import { RootState } from '@/store'
-import { useSelector } from 'react-redux'
 import { router } from 'expo-router'
 import { useThemeStyles } from '@/themes/theme'
-import { getExerciciByID } from '@/store/exercicisSlice'
+import { useAppDispatch, useAppSelector } from '@/store/reduxHooks'
+import { deleteRutina, selectRutinaById } from '@/store/rutinesSlice'
+import { api } from '@/app/api'
+import { selectAllExercicis } from '@/store/exercicisSlice'
+import { ExerciciType } from '@/types/apiTypes'
 
 
 interface propsType {
@@ -28,10 +25,9 @@ export default function ViewRutina(props: propsType) {
     const [desplegat, setDesplegat] = useState(false)
     const [dia, setDia] = useState(0)
     const [modalVisible, setModalVisible] = useState(false)
-    const rutina = useSelector((state: RootState) => state.rutines[Number(rutinaID)])
-    const api = useAxios();
-    const dispatch = useDispatch();
-    const exercicis = useSelector((state: RootState) => state.exercicis);
+    const rutina = useAppSelector(state => selectRutinaById(state, rutinaID));
+    const dispatch = useAppDispatch();
+    const exercicis:ExerciciType[] = useAppSelector(selectAllExercicis);
 
     function editarRutina() {
         console.log("editar")
@@ -49,22 +45,8 @@ export default function ViewRutina(props: propsType) {
         }
     }
 
-    async function eliminarRutina() {
-        const response = await api.delete(`/rutines/${rutina.ID}`)
-        if (response.status === 200) {
-            Toast.show({
-                type: 'success',
-                text1: 'Rutina eliminada',
-                position: 'top',
-            });
-            dispatch(deleteRutina({ id: rutina.ID }))
-        } else {
-            Toast.show({
-                type: 'error',
-                text1: 'Error eliminant la rutina',
-                position: 'top',
-            });
-        }
+    async function handleEliminarRutina() {
+        dispatch(deleteRutina({ id: rutina!.ID }))
     }
 
     return rutina &&  (
@@ -93,7 +75,7 @@ export default function ViewRutina(props: propsType) {
                     </View>
                     {rutina.Exercicis && rutina.Exercicis.map((exercici, i) => {
                         if (exercici.DiaRutina == dia && exercici.Cicle == 0) {
-                            const e = exercici.ExerciciID ? getExerciciByID(exercicis, exercici.ExerciciID) : null;
+                            const e = exercici.ExerciciID ? exercicis.find(exercici => exercici.ID === exercici.ID) : null;
                             return (
                                 <View key={i} style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginTop: 10, width: "95%" }}>
                                     {e != null && <Text style={[themeStyles.text, { width: "50%" }]}>{e.Nom}</Text>}
@@ -132,7 +114,7 @@ export default function ViewRutina(props: propsType) {
                 closeModal={() => setModalVisible(false)}
                 missatge={versio == 0 ? "Estàs segur que vols eliminar la rutina?" : "Es donarà per finalitzada la rutina"}
                 titol={versio == 0 ? 'Eliminar rutina' : 'Acabar rutina'}
-                confirmar={() => { versio == 0 ? eliminarRutina() : handleAcabar() }} />
+                confirmar={() => { versio == 0 ? handleEliminarRutina() : handleAcabar() }} />
         </View>
     )
 }

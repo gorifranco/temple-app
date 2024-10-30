@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { View, StyleSheet } from 'react-native'
+import { View } from 'react-native'
 import { Text } from 'react-native-paper'
 import Background from '@/components/Background'
 import Logo from '@/components/Logo'
@@ -11,12 +11,10 @@ import { emailValidator } from '@/helpers/emailValidator'
 import { passwordValidator } from '@/helpers/passwordValidator'
 import { nameValidator } from '@/helpers/nameValidator'
 import { Link, router } from 'expo-router';
-import { useAxios } from '@/app/api'
 import { useThemeStyles } from '@/themes/theme'
 
 export default function RegisterScreen() {
   const themeStyles = useThemeStyles()
-  const api = useAxios();
   const [nom, setNom] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -37,17 +35,7 @@ export default function RegisterScreen() {
         password: passwordError
       })
       return
-    }
-
-    try {
-      const response = await api.post('/register', { nom, email, password });
-      const token = response.data.token;
-
-      router.replace('/');
-    } catch (error) {
-      console.error('Error logging in', error);
-    }
-    
+    }    
   }
 
   return (

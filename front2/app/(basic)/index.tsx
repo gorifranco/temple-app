@@ -4,8 +4,6 @@ import { Calendar, LocaleConfig } from 'react-native-calendars';
 import { Picker } from '@react-native-picker/picker';
 import { Text } from 'react-native';
 import { ActivityIndicator } from 'react-native';
-import { useAxios } from '../api';
-import * as types from '../../types/apiTypes';
 
 
 // Configurar el idioma
@@ -19,25 +17,11 @@ LocaleConfig.locales['es'] = {
 LocaleConfig.defaultLocale = 'es';
 
 export default function Index() {
-  const api = useAxios();
-  const [sales, setSales] = useState<types.SalaType[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedDay, setSelectedDay] = useState('');
   const [selectedHour, setSelectedHour] = useState('');
 
   useEffect(() => {
-    async function fetchSales() {
-      try {
-        const response = await api.get<{ data: types.SalaType[] }>('/sales/salesUsuari');
-        setSales(response.data.data || []);
-      } catch (error) {
-        console.error('Error fetching sales:', error);
-      } finally {
-        setLoading(false);
-      }
-    }
-  
-    fetchSales();
   }, []);
 
   const handleDayPress = (day: { dateString: React.SetStateAction<string>; }) => {
@@ -54,65 +38,63 @@ export default function Index() {
 
   if (loading) {
     return <ActivityIndicator size="large" color="#00ff00" />
-  } else if (!loading && sales.length == 0) {
-    return <Text>Encara no ets a cap sala</Text>
-  } else {
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.calendarContainer}>1
-          <Calendar
-            firstDay={1}
-            onDayPress={handleDayPress}
-            markedDates={{
-              [selectedDay]: { selected: true, marked: true, selectedColor: 'blue' }
-            }}
-          />
-        </View>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={selectedHour}
-            onValueChange={(itemValue) => setSelectedHour(itemValue)}
-            style={styles.picker}
-          >
-            <Picker.Item label="Selecciona una hora" value="" />
-            <Picker.Item label="08:00" value="08:00" />
-            <Picker.Item label="09:00" value="09:00" />
-            <Picker.Item label="10:00" value="10:00" />
-            <Picker.Item label="11:00" value="11:00" />
-            <Picker.Item label="12:00" value="12:00" />
-            <Picker.Item label="13:00" value="13:00" />
-            <Picker.Item label="14:00" value="14:00" />
-            <Picker.Item label="15:00" value="15:00" />
-            <Picker.Item label="16:00" value="16:00" />
-            <Picker.Item label="17:00" value="17:00" />
-            <Picker.Item label="18:00" value="18:00" />
-            <Picker.Item label="19:00" value="19:00" />
-            <Picker.Item label="20:00" value="20:00" />
-          </Picker>
-        </View>
-        <View style={styles.buttonContainer}>
-          <Pressable
-            onPress={() => {
-              handleSubmit()
-            }}
-            style={({ pressed }) => [
-              {
-                backgroundColor: pressed ? 'rgb(210, 230, 255)' : 'white',
-              },
-              styles.wrapperCustom,
-            ]}>
-            {({ pressed }) => (
-              <Text style={styles.buttonText}>Reservar</Text>
-            )}
-          </Pressable>
-        </View>
-        <Text style={styles.text}>Pròxims entrenos</Text>
-        <Text style={styles.text}>Entrenos setmanals disponibles</Text>
-      </SafeAreaView>
-    );
-  };
+  }
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.calendarContainer}>1
+        <Calendar
+          firstDay={1}
+          onDayPress={handleDayPress}
+          markedDates={{
+            [selectedDay]: { selected: true, marked: true, selectedColor: 'blue' }
+          }}
+        />
+      </View>
+      <View style={styles.pickerContainer}>
+        <Picker
+          selectedValue={selectedHour}
+          onValueChange={(itemValue) => setSelectedHour(itemValue)}
+          style={styles.picker}
+        >
+          <Picker.Item label="Selecciona una hora" value="" />
+          <Picker.Item label="08:00" value="08:00" />
+          <Picker.Item label="09:00" value="09:00" />
+          <Picker.Item label="10:00" value="10:00" />
+          <Picker.Item label="11:00" value="11:00" />
+          <Picker.Item label="12:00" value="12:00" />
+          <Picker.Item label="13:00" value="13:00" />
+          <Picker.Item label="14:00" value="14:00" />
+          <Picker.Item label="15:00" value="15:00" />
+          <Picker.Item label="16:00" value="16:00" />
+          <Picker.Item label="17:00" value="17:00" />
+          <Picker.Item label="18:00" value="18:00" />
+          <Picker.Item label="19:00" value="19:00" />
+          <Picker.Item label="20:00" value="20:00" />
+        </Picker>
+      </View>
+      <View style={styles.buttonContainer}>
+        <Pressable
+          onPress={() => {
+            handleSubmit()
+          }}
+          style={({ pressed }) => [
+            {
+              backgroundColor: pressed ? 'rgb(210, 230, 255)' : 'white',
+            },
+            styles.wrapperCustom,
+          ]}>
+          {({ pressed }) => (
+            <Text style={styles.buttonText}>Reservar</Text>
+          )}
+        </Pressable>
+      </View>
+      <Text style={styles.text}>Pròxims entrenos</Text>
+      <Text style={styles.text}>Entrenos setmanals disponibles</Text>
+    </SafeAreaView>
+  );
+};
 
-}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,

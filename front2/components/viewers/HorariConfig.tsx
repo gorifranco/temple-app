@@ -1,41 +1,22 @@
-import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, Pressable } from 'react-native'
+import React, { useState } from 'react'
+import { View, Text, Pressable } from 'react-native'
 import { useThemeStyles } from '@/themes/theme'
 import DiaHorari from './DiaHorari'
-import { useSelector } from 'react-redux'
-import { RootState } from '@/store'
-import { useAxios } from '@/app/api'
 import Toast from 'react-native-toast-message'
 import { HorariType } from '@/types/apiTypes'
 import { validarHoraris } from '@/helpers/horarisValidator'
-import { stringDiaToDate } from '@/helpers/timeHelpers'
+import { guardarHoraris, selectConfig } from '@/store/configSlice'
+import { useAppDispatch, useAppSelector } from '@/store/reduxHooks'
 
 export default function HorariConfig() {
     const themeStyles = useThemeStyles()
-    const api = useAxios();
-    const horaris = useSelector((state: RootState) => state.config.Horaris);
+    const horaris:HorariType[] = useAppSelector(selectConfig).Horaris;
     const [horarisMap, setHorarisMap] = useState<Map<number, { Desde: string|null; Fins: string|null }[]>>(new Map());
     const [errorsHorarisMap, setErrorsHorarisMap] = useState<Map<number, { errDesde: string|null; errFins: string|null }[]>>(new Map());
     const dies = ["Dilluns", "Dimarts", "Dimecres", "Dijous", "Divendres", "Dissabte", "Diumenge"];
+    const dispatch = useAppDispatch();
 
-    useEffect(() => {
-        if (horaris && horaris.length > 0) {
-            const transformedHoraris = transformHoraris(horaris);
-            setHorarisMap(transformedHoraris);
-        }
-    }, [horaris]);
-
-    function transformHoraris(horaris: HorariType[]) {
-        return horaris.reduce((acc: Map<number, { Desde: string; Fins: string }[]>, horari: HorariType) => {
-            if (!acc.has(horari.DiaSetmana)) {
-                acc.set(horari.DiaSetmana, []);
-            }
-            acc.get(horari.DiaSetmana)!.push({ Desde: horari.Desde, Fins: horari.Fins });
-            return acc;
-        }, new Map());
-    }
-
-    async function guardarHoraris() {
+    async function handleGuardarHoraris() {
         if(validarHoraris(horarisMap).status){
             Toast.show({
                 type: 'error',
@@ -45,28 +26,15 @@ export default function HorariConfig() {
             setErrorsHorarisMap(validarHoraris(horarisMap).errors);
             return;
         }
-        const horarisArray = Array.from(horarisMap.entries()).flatMap(([diaSetmana, horaris]) => {
+        const horarisArray: HorariType[] = Array.from(horarisMap.entries()).flatMap(([diaSetmana, horaris]) => {
             return horaris.map(horari => ({
-                diaSetmana: diaSetmana,
-                desde: horari.Desde,
-                fins: horari.Fins
+                DiaSetmana: diaSetmana ?? 0,
+                Desde: horari.Desde ?? "",
+                Fins: horari.Fins ?? ""
             }));
         });
 
-        const response = await api.post("/entrenador/guardarHorariEntrenador", horarisArray);
-        if (response.status === 200) {
-            Toast.show({
-                type: 'success',
-                text1: 'Configuració guardada',
-                position: 'top',
-            });
-        } else {
-            Toast.show({
-                type: 'error',
-                text1: 'Error guardant la configuració',
-                position: 'top',
-            });
-        }
+        dispatch(guardarHoraris({ horari: horarisArray }));
     }
 
     function afegirHorari(i: number) {
@@ -121,7 +89,7 @@ export default function HorariConfig() {
 
             <Pressable
                 style={[themeStyles.button1, { marginBottom: 25 }]}
-                onPress={() => guardarHoraris()}>
+                onPress={() => handleGuardarHoraris()}>
                 <Text style={themeStyles.button1Text}>Guardar horaris</Text>
             </Pressable>
         </View>

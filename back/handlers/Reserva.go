@@ -17,7 +17,7 @@ import (
 // @Produce json
 // @Success 200 {object} models.SuccessResponse{data=[]models.ReservaResponse}
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
-// @Router /api/reservations [get]
+// @Router /api/reserves [get]
 func (h *Handler) IndexReserva(c *gin.Context) {
 	var reserves []models.ReservaResponse
 	h.DB.Table("reserves").Select("id, usuari_id, hora, confirmed").Scan(&reserves)
@@ -37,7 +37,7 @@ func (h *Handler) IndexReserva(c *gin.Context) {
 // @Failure 401 {object} models.ErrorResponse "Unauthorized"
 // @Failure 409 {object} models.ErrorResponse "Conflict"
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
-// @Router /api/reservations [post]
+// @Router /api/reserves [post]
 func (h *Handler) CreateReserva(c *gin.Context) {
 	var input models.ReservaInput
 	var usuari models.Usuari

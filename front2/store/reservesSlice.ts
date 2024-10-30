@@ -1,67 +1,86 @@
 import {
+  createAsyncThunk,
   createSlice,
   PayloadAction,
 } from "@reduxjs/toolkit";
 import {
 ReservaType,
-ReservesState,
 } from "../types/apiTypes";
+import { api } from "@/app/api";
+import { RootState } from ".";
+
+interface ReservesState {
+  reserves: ReservaType[];
+  status: "idle" | "pending" | "succeeded" | "failed";
+  error: string | null;
+}
+
+const initialState: ReservesState = {
+  reserves: [],
+  status: "idle",
+  error: null,
+};
+
+// Define the async thunk
+export const getReserves = createAsyncThunk<
+  ReservaType[], // Expected result type
+  void, // No parameters required here
+  { state: RootState }
+>("entrenador/getReserves", async (_, { rejectWithValue }) => {
+    const response = await api.get("/entrenador/reserves");
+    return response.status == 200 ? response.data.data : rejectWithValue(response.data.error ?? "Failed getting reservations");
+});
+
+export const createReserva = createAsyncThunk<
+  ReservaType, // Expected result type
+  { data: {usuariID: number, hora: string} }, // Parameters type
+  { state: RootState }
+>("entrenador/createReserva", async ({ data }, { rejectWithValue }) => {
+    const response = await api.post("/entrenador/reserves", data);
+    return response.status == 200 ? response.data.data : rejectWithValue(response.data.error ?? "Failed to create reservation");
+});
 
 const reservesSlice = createSlice({
     name: "reserves",
-    initialState: {} as ReservesState,
+    initialState,
     reducers: {
-      setReserves(state: ReservesState, action: PayloadAction<ReservesState>) {
-        return action.payload;
-      },
-      updateReserva(
-        state: ReservesState,
-        action: PayloadAction<{ id: number; data: ReservaType }>
-      ) {
-        const { id, data } = action.payload;
-        state[id] = data;
-      },
-      addReserva(
-        state: ReservesState,
-        action: PayloadAction<{ id: number; data: ReservaType }>
-      ) {
-        const { id, data } = action.payload;
-        state[id] = data;
-      },
-      updateReserves(
-        state: ReservesState,
-        action: PayloadAction<{ data: ReservaType[] }>
-      ) {
-        const { data } = action.payload;
-  
-        // Si no hay datos, vaciamos el estado
-        if (!data || data.length === 0) {
-          Object.keys(state).forEach((key) => {
-            delete state[Number(key)];
-          });
-        } else {
-          // Primero, creamos un nuevo estado basado en los datos recibidos
-          const newState: ReservesState = {};
-  
-          for (let i = 0; i < data.length; i++) {
-            const reserva = data[i];
-            newState[reserva.ID] = reserva;
+    },
+    extraReducers: (builder) => {
+      builder
+      // Get reserves
+        .addCase(getReserves.pending, (state) => {
+          state.status = "pending";
+        })
+        .addCase(
+          getReserves.fulfilled,
+          (state, action: PayloadAction<ReservaType[]>) => {
+            state.status = "succeeded";
+            state.reserves = action.payload;
           }
-  
-          // Reemplazamos el estado anterior con el nuevo
-          Object.keys(state).forEach((key) => {
-            const numericKey = Number(key);
-            if (!newState[numericKey]) {
-              delete state[numericKey];
-            }
-          });
-  
-          // Ahora asignamos el nuevo estado (actualizado) al estado actual
-          Object.assign(state, newState);
-        }
-      },
+        )
+        .addCase(getReserves.rejected, (state, action) => {
+          state.status = "failed";
+          state.error = action.payload as string;
+        })
+        // Create reserva
+        .addCase(createReserva.pending, (state) => {
+          state.status = "pending";
+        })
+        .addCase(createReserva.fulfilled, (state, action: PayloadAction<ReservaType>) => {
+          state.status = "succeeded";
+          state.reserves.push(action.payload);
+        })
+        .addCase(createReserva.rejected, (state, action) => {
+          state.status = "failed";
+          state.error = action.payload as string;
+        });
     },
   });
 
-export const { setReserves, updateReserva, updateReserves, addReserva } = reservesSlice.actions;
+export const selectAllReserves = (state: RootState) => state.reserves.reserves;
+export const selectReserveByID = (state: RootState, reservaID: number) =>
+  state.reserves.reserves.find((reserva) => reserva.ID === reservaID);
+
+export const selectReservesStatus = (state: RootState) => state.reserves.status;
+export const selectReservesError = (state: RootState) => state.reserves.error;
 export default reservesSlice.reducer;

@@ -1,77 +1,112 @@
-import {
-    createSlice,
-    PayloadAction,
-  } from "@reduxjs/toolkit";
-  import {
-RutinaState,
-RutinaType
-  } from "../types/apiTypes";
-  
-  const rutinesSlice = createSlice({
-      name: "rutines",
-      initialState: {} as RutinaState,
-      reducers: {
-        setRutines(state: RutinaState, action: PayloadAction<RutinaType[]>) {
-          const rutinesByID = action.payload.reduce((acc, rutina) => {
-            acc[rutina.ID] = rutina;
-            return acc;
-          }, {} as Record<number, RutinaType>);
-        
-          return rutinesByID;
-        },
-        afegirRutina(
-          state: RutinaState,
-          action: PayloadAction<{ id: number; data: RutinaType }>
-        ) {
-          const { id, data } = action.payload;
-          state[id] = data;
-        },
-        updateRutines(
-          state: RutinaState,
-          action: PayloadAction<{ data: RutinaType[] }>
-        ) {
-          const { data } = action.payload;
-    
-          // Si no hay datos, vaciamos el estado
-          if (!data || data.length === 0) {
-            Object.keys(state).forEach((key) => {
-              delete state[Number(key)];
-            });
-          } else {
-            // Primero, creamos un nuevo estado basado en los datos recibidos
-            const newState: RutinaState = {};
-    
-            for (let i = 0; i < data.length; i++) {
-              const rutina = data[i];
-              newState[rutina.ID] = rutina;
-            }
-    
-            // Reemplazamos el estado anterior con el nuevo
-            Object.keys(state).forEach((key) => {
-              const numericKey = Number(key);
-              if (!newState[numericKey]) {
-                delete state[numericKey];
-              }
-            });
-    
-            // Ahora asignamos el nuevo estado (actualizado) al estado actual
-            Object.assign(state, newState);
-          }
-        },
-        deleteRutina(
-            state: RutinaState,
-            action: PayloadAction<{ id: number }>
-          ){
-            const { id } = action.payload;
-            delete state[id];
-          },
-      },
-    });
+import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { RootState } from "../store";
+import { api } from "@/app/api";
+import { RutinaType } from "../types/apiTypes";
 
-    export function getRutinaByID (state: RutinaState, rutinaID: number) {
-        return state[rutinaID];
-    
+interface RutinesState {
+  rutines: RutinaType[];
+  status: "idle" | "pending" | "succeeded" | "failed";
+  error: string | null;
+}
+
+const initialState: RutinesState = {
+  rutines: [],
+  status: "idle",
+  error: null,
 };
-    
-    export const { setRutines, afegirRutina, updateRutines, deleteRutina } = rutinesSlice.actions;
-    export default rutinesSlice.reducer;
+
+// Fetch rutines api
+export const getRutinesEntrenador = createAsyncThunk<
+  RutinaType[], // Expected result type
+  void,         // No parameters required here
+  { state: RootState }
+>("rutines/getRutinesEntrenador", async (_, { rejectWithValue }) => {
+    const response = await api.get("/rutines");
+    return response.status == 200 ? response.data.data : rejectWithValue(response.data.error ?? "Failed to create alumne");
+});
+
+//Delete rutina
+export const deleteRutina = createAsyncThunk<
+  number, // Expected result type
+  { id: number }, // Parameters type
+  { state: RootState }
+>("rutines/deleteRutina", async ({ id }, { rejectWithValue }) => {
+  const response = await api.delete(`/rutines/${id}`);
+  return response.status == 200
+    ? id
+    : rejectWithValue(response.data.error ?? "Failed to delete rutina");
+});
+
+// Create rutina
+export const createRutina = createAsyncThunk<
+RutinaType,
+{ rutina: RutinaType }, // Parameters type
+{ state: RootState }
+>("rutines/createRutina", async ({ rutina }, { rejectWithValue }) => {
+  const response = await api.post("/rutines", rutina);
+  return response.status == 200
+    ? response.data.data
+    : rejectWithValue(response.data.error ?? "Failed to create rutina");
+});
+
+
+const rutinesSlice = createSlice({
+  name: "rutines",
+  initialState,
+  reducers: {
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(getRutinesEntrenador.pending, (state) => {
+        state.status = "pending";
+      })
+      .addCase(getRutinesEntrenador.fulfilled, (state, action: PayloadAction<RutinaType[]>) => {
+        state.status = "succeeded";
+        state.rutines = action.payload; // Update the rutines array
+      })
+      .addCase(getRutinesEntrenador.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload as string;
+      })
+      // Delete rutina
+      .addCase(deleteRutina.fulfilled, (state, action: PayloadAction<number>) => {
+        state.status = "succeeded";
+        state.rutines = state.rutines.filter(
+          (rutina) => rutina.ID !== action.payload
+        );
+        state.error = null;
+      })
+      .addCase(deleteRutina.pending, (state) => {
+        state.status = "pending";
+        state.error = null;
+      })
+      .addCase(deleteRutina.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload as string;
+      })
+      //Create rutina
+      .addCase(createRutina.fulfilled, (state, action: PayloadAction<RutinaType>) => {
+        state.status = "succeeded";
+        state.rutines.push(action.payload);
+        state.error = null;
+      })
+      .addCase(createRutina.pending, (state) => {
+        state.status = "pending";
+        state.error = null;
+      })
+      .addCase(createRutina.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload as string;
+      });
+  },
+});
+
+export const selectAllRutines = (state: RootState) => state.rutines.rutines
+
+export const selectRutinaById = (state: RootState, rutinaID: number) =>
+  state.rutines.rutines.find(rutina => rutina.ID === rutinaID)
+
+export const selectRutinesStatus = (state: RootState) => state.rutines.status
+export const selectRutinesError = (state: RootState) => state.rutines.error
+// Export the reducer
+export default rutinesSlice.reducer;

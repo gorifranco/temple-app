@@ -1,13 +1,8 @@
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useEffect, useState } from 'react';
-import { useLocalSearchParams, router } from 'expo-router'
-import { useAxios } from '../api';
-import { ReservaType } from '@/types/apiTypes';
-import { useSelector, useDispatch } from 'react-redux'
-import { RootState } from '@/store'
+import { useLocalSearchParams, router } from 'expo-router';
 import BackButton from '@/components/buttons/BackButton';
-import { updateAlumne, deleteAlumnne } from '@/store/alumnesSlice';
 import { Calendar, DateData } from 'react-native-calendars';
 import ModalConfirmacio from '@/components/modals/ModalConfirmacio';
 import Toast from 'react-native-toast-message';
@@ -16,30 +11,73 @@ import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-d
 import AutocompleteRutines from '@/components/inputs/selects/AutocompleteRutines';
 import { useThemeStyles } from '@/themes/theme';
 import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker'
-import { addReserva } from '@/store/reservesSlice';
-import { assignarRutinaAPI } from '@/app/api';
 import { stringDiaToDate } from '@/helpers/timeHelpers';
+import { acabarRutina, assignarRutina, expulsarAlumne, selectAlumneByID, selectAlumnesAction, selectAlumnesError, selectAlumnesStatus } from '@/store/alumnesSlice';
+import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
+import { createReserva } from '@/store/reservesSlice';
+import { api } from '../api';
 
 export default function AlumneScreen() {
     const themeStyles = useThemeStyles()
+    const alumneStatus = useAppSelector(selectAlumnesStatus);
+    const alumneError = useAppSelector(selectAlumnesError);
+    const alumneAction = useAppSelector(selectAlumnesAction);
     const [modalVisible, setModalVisible] = useState(false)
     const [assignarRutinaID, setAssignarRutinaID] = useState<number | null>(null)
     const [autocompleteRutinaError, setAutocompleteRutinaError] = useState("")
     const { alumneID } = useLocalSearchParams();
     const [selectedDay, setSelectedDay] = useState<DateData>();
     const [selectedTime, setSelectedTime] = useState<Date>(new Date())
-    const api = useAxios();
-    const dispatch = useDispatch();
+    const dispatch = useAppDispatch();
     const [modalReservarVisible, setModalReservarVisible] = useState(false)
     const [errors, setErrorts] = useState({
         Hora: "",
         Dia: "",
     })
 
-    const alumne = useSelector((state: RootState) => state.alumnes[Number(alumneID)]);
-
     useEffect(() => {
-    }, [dispatch, alumneID]);
+        if (alumneAction === "delete" && alumneStatus === "failed") {
+            Toast.show({
+                type: 'error',
+                text1: alumneError ?? 'Error mostrant l\'usuari',
+                position: 'top',
+            });
+            router.replace("../")
+        }
+        if (alumneAction === "delete" && alumneStatus === "succeeded") {
+            router.replace("../")
+            Toast.show({
+                type: 'success',
+                text1: 'Usuari eliminat',
+                position: 'top',
+            });
+        }
+        if (alumneAction === "assign" && alumneStatus === "failed") {
+            Toast.show({
+                type: 'error',
+                text1: alumneError ?? 'Error assignant la rutina',
+                position: 'top',
+            });
+        }
+        if (alumneAction === "assign" && alumneStatus === "succeeded") {
+            Toast.show({
+                type: 'success',
+                text1: 'Rutina assignada',
+                position: 'top',
+            });
+        }
+    }, [alumneStatus]);
+
+    const alumne = useAppSelector(state => selectAlumneByID(state, Number(alumneID)));
+    //If student doesn't exist redirect to home
+    if (!alumne) {
+        router.replace("../")
+        Toast.show({
+            type: 'error',
+            text1: 'Error mostrant l\'usuari',
+            position: 'top',
+        });
+    }
 
     function handleDayPress(day: DateData) {
         setSelectedDay(day);
@@ -55,81 +93,22 @@ export default function AlumneScreen() {
             return;
         }
         const horaUTC = new Date(hora.getTime() - hora.getTimezoneOffset() * 60000);
-        const response = await api.post(`/reserves`, { hora: horaUTC, usuariID: alumne.ID });
-        if (response.status === 200) {
-            const reserva: ReservaType = { ID: Number(response.data.data), UsuariID: alumne.ID, Hora: horaUTC.toISOString(), Confirmada: false };
-            dispatch(addReserva({ id: reserva.ID, data: reserva }));
-            Toast.show({
-                type: 'success',
-                text1: 'Reserva creada',
-                position: 'top',
-            });
-        } else {
-            Toast.show({
-                type: 'error',
-                text1: 'Error creant la reserva',
-                position: 'top',
-            });
-        }
+
+        dispatch(createReserva({ data: { usuariID: alumne!.ID, hora: horaUTC.toISOString()}}));
     }
 
-    async function expulsarUsuari() {
-        const response = await api.get(`/entrenador/expulsarUsuari/${alumne.ID}`);
+    function handleExpulsarUsuari() {
+        dispatch(expulsarAlumne({ id: alumne!.ID }));
 
-        if (response.status === 200) {
-            dispatch(deleteAlumnne({ id: alumne.ID }))
-            router.replace("../")
-            Toast.show({
-                type: 'success',
-                text1: 'Usuari eliminat',
-                position: 'top',
-            });
-        } else {
-            Toast.show({
-                type: 'error',
-                text1: 'Error eliminant l\'usuari',
-                position: 'top',
-            })
-        }
     }
 
-    async function assignarRutina() {
-        if (assignarRutinaID == null) {
-            setAutocompleteRutinaError("Selecciona una rutina")
-            return
-        } else {
-            setAutocompleteRutinaError("")
-            const response = await assignarRutinaAPI(assignarRutinaID, alumne.ID)
-            if (response == true) {
-                const updatedAlumne = {
-                    ...alumne,
-                    RutinaAssignada: assignarRutinaID
-                };
-                dispatch(updateAlumne({ id: alumne.ID, data: updatedAlumne }))
-            }
-        }
+    function handleAssignarRutina() {
+        if (assignarRutinaID == null) return;
+        dispatch(assignarRutina({ rutinaID: assignarRutinaID, alumneID: alumne!.ID }));
     }
 
-    async function acabarRutina() {
-        const response = await api.post(`/entrenador/acabarRutina`, { usuariID: alumne.ID })
-        if (response.status === 200) {
-            Toast.show({
-                type: 'success',
-                text1: 'Rutina acabada',
-                position: 'top',
-            });
-            let alumneUpdated = {
-                ...alumne,
-                RutinaAssignada: null
-            }
-            dispatch(updateAlumne({ id: alumne.ID, data: alumneUpdated }))
-        } else {
-            Toast.show({
-                type: 'error',
-                text1: 'Error acabant la rutina',
-                position: 'top',
-            });
-        }
+    async function handleAcabarRutina() {
+        dispatch(acabarRutina({ usuariID: alumne!.ID }));
     }
 
     if (!alumne) {
@@ -138,7 +117,7 @@ export default function AlumneScreen() {
 
     return (
         <AutocompleteDropdownContextProvider>
-            <SafeAreaView style={[themeStyles.background, {height: '100%'}]}>
+            <SafeAreaView style={[themeStyles.background, { height: '100%' }]}>
                 <ScrollView>
                     <BackButton href={"../"} />
                     <Text style={themeStyles.titol1}>{alumne.Nom}</Text>
@@ -197,7 +176,7 @@ export default function AlumneScreen() {
                                     error={autocompleteRutinaError} />
                             </View>
                             <Pressable style={themeStyles.button1} onPress={() => {
-                                assignarRutina()
+                                handleAssignarRutina()
                             }}>
                                 <Text style={themeStyles.button1Text}>Assignar rutina</Text>
                             </Pressable>
@@ -215,7 +194,7 @@ export default function AlumneScreen() {
                         missatge={'Segur que vols eliminar l\'usuari?'}
                         modalVisible={modalVisible}
                         closeModal={() => setModalVisible(false)}
-                        confirmar={expulsarUsuari} />
+                        confirmar={() => handleExpulsarUsuari()} />
 
                     {/*                 <ModalReservarHora
                     modalVisible={modalReservarVisible}

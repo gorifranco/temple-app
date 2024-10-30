@@ -32,31 +32,6 @@ export interface RutinaType {
   Cicles: number
 }
 
-export interface SalesState {
-  [id: number]: SalaType;
-}
-
-export interface AlumnesState {
-  [id: number]: AlumneType;
-}
-
-export interface ReservesState {
-  [id: number]: ReservaType;
-}
-
-export interface ExercicisState {
-  [id: number]: ExerciciType;
-}
-
-export interface RutinaState {
-  [id: number]: RutinaType;
-}
-
-export interface ConfigState {
-  DuracioSessions: number;
-  MaxAlumnesPerSessio: number;
-  Horaris: HorariType[];
-}
 
 export interface AlumneType {
   ID: number;
@@ -64,7 +39,6 @@ export interface AlumneType {
   ResultatsRutinaActual: ResultatsExercici[];
   Reserves: ReservaType[];
   RutinaActual: number|null;
-  RMs: RMsState;
 }
 
 export interface ReservaType {
@@ -111,10 +85,6 @@ export interface ResultatsExercici {
   Repeticions: number;
   Series: number;
   Pes: number;
-}
-
-export interface RMsState {
-  [ExerciciID: number]: RMDetail;
 }
 
 export interface RMDetail {

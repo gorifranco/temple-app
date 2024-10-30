@@ -1,5 +1,5 @@
-import React, { useState, useContext } from 'react'
-import { StyleSheet, View } from 'react-native'
+import React, { useState } from 'react'
+import { View } from 'react-native'
 import { Text } from 'react-native-paper'
 import { Link, router } from 'expo-router';
 import { Button } from 'react-native-paper';
@@ -9,25 +9,29 @@ import Background from '@/components/Background';
 import Logo from '@/components/Logo';
 import Header from '@/components/Header';
 import TextInput from '@/components/inputs/TextInput';
-import { useAxios } from '@/app/api';
 import { useThemeStyles } from '@/themes/theme';
-import { useDispatch } from 'react-redux';
-import { login } from '@/services/authService';
-import { AppDispatch } from '@/store';
 import Toast from 'react-native-toast-message';
 import { Pressable } from 'react-native';
+import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
+import { loginRedux, selectUser, selectUserError, selectUserStatus } from '@/store/authSlice';
 
 
 export default function Index() {
   const themeStyles = useThemeStyles();
-  const api = useAxios();
-  const dispatch = useDispatch<AppDispatch>();
+  const dispatch = useAppDispatch();
+  const user = useAppSelector(selectUser);
+  const userStatus = useAppSelector(selectUserStatus);
+  const userError = useAppSelector(selectUserError);
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [errors, setErrors] = useState({
     email: '',
     password: '',
   });
+
+  if (user != null) {
+    router.replace('/');
+  }
 
   const onLoginPressed = async () => {
     const emailError = emailValidator(email)
@@ -38,14 +42,19 @@ export default function Index() {
       setErrors({ ...errors, password: passwordError })
       return
     }
-    const result: boolean = await dispatch(login({ email, password })).unwrap();
-    result ? router.replace('/') : Toast.show({
+    dispatch(loginRedux({ email, password }));
+  };
+
+  if (userStatus == 'failed'){
+    Toast.show({
       type: 'error',
-      text1: 'Error login',
+      text1: userError as string,
       position: 'top',
     });
-
-  };
+  }
+  if (userStatus == 'succeeded'){
+    router.replace('/');
+  }
 
   return (
     <Background>

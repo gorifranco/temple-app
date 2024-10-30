@@ -65,10 +65,27 @@ definitions:
       updatedAt:
         type: string
     type: object
+  models.ConfiguracioEntrenadorInput:
+    properties:
+      duracioSessions:
+        type: integer
+      maxAlumnesPerSessio:
+        type: integer
+    type: object
+  models.ConfiguracioEntrenadorResponse:
+    properties:
+      DuracioSessions:
+        type: integer
+      Horaris:
+        items:
+          $ref: '#/definitions/models.HorariResponse'
+        type: array
+      MaxAlumnesPerSessio:
+        type: integer
+    type: object
   models.ErrorResponse:
     properties:
-      error:
-        type: string
+      error: {}
     type: object
   models.Exercici:
     properties:
@@ -175,6 +192,17 @@ definitions:
       percentatgeRM:
         type: integer
     type: object
+  models.HorariResponse:
+    properties:
+      Desde:
+        type: string
+      DiaSetmana:
+        type: integer
+      Fins:
+        type: string
+      ID:
+        type: integer
+    type: object
   models.HorarisEntrenador:
     properties:
       createdAt:
@@ -194,6 +222,15 @@ definitions:
       updatedAt:
         type: string
     type: object
+  models.HorarisEntrenadorInput:
+    properties:
+      desde:
+        type: string
+      diaSetmana:
+        type: integer
+      fins:
+        type: string
+    type: object
   models.Reserva:
     properties:
       confirmada:
@@ -209,6 +246,13 @@ definitions:
       id:
         type: integer
       updatedAt:
+        type: string
+      usuariID:
+        type: integer
+    type: object
+  models.ReservaInput:
+    properties:
+      hora:
         type: string
       usuariID:
         type: integer
@@ -489,6 +533,40 @@ paths:
       summary: Get all rutines
       tags:
       - Rutines
+  /api/configuracioEntrenador:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves the configuration of the trainer from the database.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ConfiguracioEntrenadorResponse'
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get the configuration of the trainer
+      tags:
+      - Entrenador
   /api/entrenador/alumnes:
     get:
       consumes:
@@ -523,6 +601,136 @@ paths:
       security:
       - Bearer: []
       summary: Get all alumnes from  trainer
+      tags:
+      - Entrenador
+  /api/entrenador/alumnes/{id}/expulsar:
+    put:
+      consumes:
+      - application/json
+      description: Kiks a user from the database.
+      parameters:
+      - description: ID of the user to delete
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Kiks a user from his trainer
+      tags:
+      - Entrenador
+  /api/entrenador/guardarConfiguracioEntrenador:
+    post:
+      consumes:
+      - application/json
+      description: Saves the configuration of the trainer in the database.
+      parameters:
+      - description: Configuracio to save
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.ConfiguracioEntrenadorInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Save the configuration of the trainer
+      tags:
+      - Entrenador
+  /api/entrenador/guardarHorariEntrenador:
+    post:
+      consumes:
+      - application/json
+      description: Saves the schedule of the trainer in the database.
+      parameters:
+      - description: Horari to save
+        in: body
+        name: input
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/models.HorarisEntrenadorInput'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  type: string
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Saves the schedule of the trainer
       tags:
       - Entrenador
   /api/entrenador/guardarResultats:
@@ -573,6 +781,99 @@ paths:
       summary: Save the results of a day of the current routine
       tags:
       - Exercises
+  /api/entrenador/usuarisFicticis:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new student in the database.
+      parameters:
+      - description: Student to create
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.UsuariFicticiInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.AlumneResponse'
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Create a student without account
+      tags:
+      - Alumnes
+  /api/entrenador/usuarisFicticis/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Updates a user in the database.
+      parameters:
+      - description: ID of the user to update
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: User to update
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.UsuariInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.Usuari'
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "404":
+          description: Not found
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Update a user without account
+      tags:
+      - Entrenador
   /api/exercicis:
     get:
       consumes:
@@ -790,6 +1091,78 @@ paths:
       summary: Register
       tags:
       - Auth
+  /api/reserves:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves all the reservations from the database.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/models.ReservaResponse'
+                  type: array
+              type: object
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Get all reservations
+      tags:
+      - Reservations
+    post:
+      consumes:
+      - application/json
+      description: Creates a new reservation in the database.
+      parameters:
+      - description: Reservation to create
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.ReservaInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/models.SuccessResponse'
+            - properties:
+                data:
+                  $ref: '#/definitions/models.ReservaResponse'
+              type: object
+        "400":
+          description: Bad request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - Bearer: []
+      summary: Creates a new reservation
+      tags:
+      - Reservations
   /api/rutines:
     post:
       consumes:
