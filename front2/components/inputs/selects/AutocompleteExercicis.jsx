@@ -1,14 +1,15 @@
 import React, { memo } from 'react'
 import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown'
-import { useSelector } from 'react-redux'
 import { Dimensions, Text } from 'react-native';
 import { useThemeStyles } from '@/themes/theme';
+import { useAppSelector } from '@/store/reduxHooks';
+import { selectExercicis } from '@/store/exercicisSlice';
 
 
 function AutocompleteExercicis(props) {
     const { onSubmit } = props;
     const themeStyles = useThemeStyles();
-    const exercicis = useSelector((state) => state.exercicis);
+    const exercicis = useAppSelector(selectExercicis);
     const dataSet = exercicis.map((exercici) => ({
         id: exercici.ID,
         title: exercici.Nom

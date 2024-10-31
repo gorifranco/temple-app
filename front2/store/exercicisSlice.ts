@@ -21,7 +21,7 @@ export const getExercicis = createAsyncThunk<
   void, // No parameters required here
   { state: RootState }
 >("entrenador/getExercicis", async (_, { rejectWithValue }) => {
-    const response = await api.get("/entrenador/exercicis");
+    const response = await api.get("/exercicis");
     return response.status == 200 ? response.data.data : rejectWithValue(response.data.error ?? "Failed to create alumne");
 });
 
@@ -48,7 +48,7 @@ const exercicisSlice = createSlice({
   },
 });
 
-export const selectAllExercicis = (state: RootState) =>
+export const selectExercicis = (state: RootState) =>
   state.exercicis.exercicis;
 export const selectExerciciByID = (state: RootState, exerciciID: number) =>
   state.exercicis.exercicis.find((exercici) => exercici.ID === exerciciID);

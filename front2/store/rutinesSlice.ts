@@ -21,7 +21,7 @@ export const getRutinesEntrenador = createAsyncThunk<
   void,         // No parameters required here
   { state: RootState }
 >("rutines/getRutinesEntrenador", async (_, { rejectWithValue }) => {
-    const response = await api.get("/rutines");
+    const response = await api.get("/rutines/rutinesEntrenador");
     return response.status == 200 ? response.data.data : rejectWithValue(response.data.error ?? "Failed to create alumne");
 });
 

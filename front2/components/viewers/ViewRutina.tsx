@@ -3,14 +3,11 @@ import React, { useState } from 'react'
 import FletxaDesplegar from '@/components/icons/FletxaDesplegar'
 import BarraDies from '../BarraDies'
 import ModalConfirmacio from '../modals/ModalConfirmacio'
-import Toast from 'react-native-toast-message'
 import { router } from 'expo-router'
 import { useThemeStyles } from '@/themes/theme'
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks'
 import { deleteRutina, selectRutinaById } from '@/store/rutinesSlice'
-import { api } from '@/app/api'
-import { selectAllExercicis } from '@/store/exercicisSlice'
-import { ExerciciType } from '@/types/apiTypes'
+import { selectExercicis } from '@/store/exercicisSlice'
 
 
 interface propsType {
@@ -27,7 +24,7 @@ export default function ViewRutina(props: propsType) {
     const [modalVisible, setModalVisible] = useState(false)
     const rutina = useAppSelector(state => selectRutinaById(state, rutinaID));
     const dispatch = useAppDispatch();
-    const exercicis:ExerciciType[] = useAppSelector(selectAllExercicis);
+    const exercicis = useAppSelector(selectExercicis);
 
     function editarRutina() {
         console.log("editar")
