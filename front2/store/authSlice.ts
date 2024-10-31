@@ -7,12 +7,12 @@ interface User {
   nom: string;
   email: string;
   tipusUsuari: string;
-  codiEntrenador: string|null;
+  codiEntrenador: string | null;
 }
 interface authState {
   user: User | null;
   status: "idle" | "pending" | "succeeded" | "failed";
-  error: string|null;
+  error: string | null;
 }
 
 const initialState: authState = {
@@ -21,16 +21,17 @@ const initialState: authState = {
   error: null,
 };
 
+// Login api
 export const loginRedux = createAsyncThunk<
-  User,
-  { email: string; password: string },
+  User, // Expected result type
+  {email: string; password: string}, // Parameters type
   { state: RootState }
->("auth/login", async ({ email, password }, { dispatch, getState }) => {
+>("login", async ({ email, password }, { rejectWithValue }) => {
   const response = await api.post("/login", { email, password });
-  dispatch(loginRedux(response.data.data));
-  return response.data.data;
+  return response.status == 200
+    ? response.data.data
+    : rejectWithValue(response.data.error ?? "Failed to create alumne");
 });
-
 
 const authSlice = createSlice({
   name: "auth",
@@ -50,12 +51,12 @@ const authSlice = createSlice({
       state.status = "failed";
       state.error = action.payload as string;
     });
-  }
+  },
 });
 
 export const selectUser = (state: RootState) => state.auth.user;
 
-export const selectUserStatus = (state: RootState) => state.auth.status
-export const selectUserError = (state: RootState) => state.auth.error
+export const selectUserStatus = (state: RootState) => state.auth.status;
+export const selectUserError = (state: RootState) => state.auth.error;
 // Export the reducer
 export default authSlice.reducer;

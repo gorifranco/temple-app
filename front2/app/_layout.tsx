@@ -1,7 +1,7 @@
 import { useFonts } from 'expo-font';
 import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useContext } from 'react';
+import { useEffect } from 'react';
 import 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
 import { Provider } from 'react-redux';
@@ -12,8 +12,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { PaperProvider } from 'react-native-paper';
 import { useAppTheme } from '@/themes/theme';
 import { Linking } from 'react-native';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store';
+import { useAppSelector } from '@/store/reduxHooks';
+import { selectUser } from '@/store/authSlice';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -21,20 +21,20 @@ export default function RootLayout() {
 
   function StackLayout() {
     const router = useRouter();
-    const auth = useSelector((state: RootState) => state.auth);
+    const user = useAppSelector(selectUser);
 
     useEffect(() => {
 
-      if (!auth.user || !auth.token) { 
+      if (!user) { 
         router.replace('/');
-      } else if (auth.user.tipusUsuari === 'Basic') {
+      } else if (user.tipusUsuari === 'Basic') {
         router.replace('/(basic)');
-      } else if (auth.user.tipusUsuari === 'Entrenador') {
+      } else if (user.tipusUsuari === 'Entrenador') {
         router.replace('/(entrenador)');
-      } else if (auth.user.tipusUsuari === 'Administrador') {
+      } else if (user.tipusUsuari === 'Administrador') {
         router.replace('/(admin)');
       }
-    }, [auth.user]);
+    }, [user]);
 
     return (
       <Stack screenOptions={{ navigationBarHidden: true }}>

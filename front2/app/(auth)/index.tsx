@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View } from 'react-native'
 import { Text } from 'react-native-paper'
 import { Link, router } from 'expo-router';
@@ -29,9 +29,12 @@ export default function Index() {
     password: '',
   });
 
-  if (user != null) {
-    router.replace('/');
-  }
+  useEffect(() => {
+    console.log(user)
+    if (user != null) {
+      router.replace('/');
+    }
+  }, [userStatus]);
 
   const onLoginPressed = async () => {
     const emailError = emailValidator(email)
@@ -45,15 +48,12 @@ export default function Index() {
     dispatch(loginRedux({ email, password }));
   };
 
-  if (userStatus == 'failed'){
+  if (userStatus == 'failed') {
     Toast.show({
       type: 'error',
       text1: userError as string,
       position: 'top',
     });
-  }
-  if (userStatus == 'succeeded'){
-    router.replace('/');
   }
 
   return (
