@@ -13,5 +13,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "components/inputs/selects/AutocompleteRutines.jsx"  ]
+, "components/inputs/selects/AutocompleteRutines.jsx", "store/actions/ThunkMiddleware.js", "store/actions/authService.js"  ]
 }

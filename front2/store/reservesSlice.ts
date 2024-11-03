@@ -1,12 +1,5 @@
-import {
-  createAsyncThunk,
-  createSlice,
-  PayloadAction,
-} from "@reduxjs/toolkit";
-import {
-ReservaType,
-} from "../types/apiTypes";
-import { api } from "@/app/api";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { ReservaType } from "../types/apiTypes";
 import { RootState } from ".";
 
 interface ReservesState {
@@ -21,65 +14,101 @@ const initialState: ReservesState = {
   error: null,
 };
 
-// Define the async thunk
+// Fetch reserves API
 export const getReserves = createAsyncThunk<
   ReservaType[], // Expected result type
   void, // No parameters required here
   { state: RootState }
->("entrenador/getReserves", async (_, { rejectWithValue }) => {
-    const response = await api.get("/entrenador/reserves");
-    return response.status == 200 ? response.data.data : rejectWithValue(response.data.error ?? "Failed getting reservations");
+>("entrenador/getReserves", async (_, { getState, rejectWithValue }) => {
+  const state = getState();
+  const token = state.auth.user?.token;
+
+  const response = await fetch(
+    process.env.EXPO_PUBLIC_API_URL + "/entrenador/reserves",
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  const data = await response.json();
+  if (!response.ok) {
+    return rejectWithValue(data.error ?? "Failed getting reservations");
+  }
+  return data.data;
 });
 
+// Create reservation
 export const createReserva = createAsyncThunk<
   ReservaType, // Expected result type
-  { data: {usuariID: number, hora: string} }, // Parameters type
+  { usuariID: number; hora: string }, // Parameters type
   { state: RootState }
->("entrenador/createReserva", async ({ data }, { rejectWithValue }) => {
-    const response = await api.post("/entrenador/reserves", data);
-    return response.status == 200 ? response.data.data : rejectWithValue(response.data.error ?? "Failed to create reservation");
-});
+>(
+  "entrenador/createReserva",
+  async ({ usuariID, hora }, { getState, rejectWithValue }) => {
+    const state = getState();
+    const token = state.auth.user?.token;
+
+    const response = await fetch("/entrenador/reserves", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ usuariID, hora }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(data.error ?? "Failed to create reservation");
+    }
+    return data.data;
+  }
+);
 
 const reservesSlice = createSlice({
-    name: "reserves",
-    initialState,
-    reducers: {
-    },
-    extraReducers: (builder) => {
-      builder
+  name: "reserves",
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder
       // Get reserves
-        .addCase(getReserves.pending, (state) => {
-          state.status = "pending";
-        })
-        .addCase(
-          getReserves.fulfilled,
-          (state, action: PayloadAction<ReservaType[]>) => {
-            state.status = "succeeded";
-            state.reserves = action.payload;
-          }
-        )
-        .addCase(getReserves.rejected, (state, action) => {
-          state.status = "failed";
-          state.error = action.payload as string;
-        })
-        // Create reserva
-        .addCase(createReserva.pending, (state) => {
-          state.status = "pending";
-        })
-        .addCase(createReserva.fulfilled, (state, action: PayloadAction<ReservaType>) => {
+      .addCase(getReserves.pending, (state) => {
+        state.status = "pending";
+      })
+      .addCase(
+        getReserves.fulfilled,
+        (state, action: PayloadAction<ReservaType[]>) => {
+          state.status = "succeeded";
+          state.reserves = action.payload;
+        }
+      )
+      .addCase(getReserves.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload as string;
+      })
+      // Create reserva
+      .addCase(createReserva.pending, (state) => {
+        state.status = "pending";
+      })
+      .addCase(
+        createReserva.fulfilled,
+        (state, action: PayloadAction<ReservaType>) => {
           state.status = "succeeded";
           state.reserves.push(action.payload);
-        })
-        .addCase(createReserva.rejected, (state, action) => {
-          state.status = "failed";
-          state.error = action.payload as string;
-        });
-    },
-  });
+        }
+      )
+      .addCase(createReserva.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload as string;
+      });
+  },
+});
 
 export const selectAllReserves = (state: RootState) => state.reserves.reserves;
 export const selectReserveByID = (state: RootState, reservaID: number) =>
-  state.reserves.reserves.find((reserva) => reserva.ID === reservaID);
+  state.reserves.reserves.find((reserva) => reserva.id === reservaID);
 
 export const selectReservesStatus = (state: RootState) => state.reserves.status;
 export const selectReservesError = (state: RootState) => state.reserves.error;

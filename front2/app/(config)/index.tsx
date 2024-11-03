@@ -1,5 +1,5 @@
 import { View, Text, Pressable, ScrollView } from 'react-native';
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useThemeStyles } from '@/themes/theme';
 import TextInput from '@/components/inputs/TextInput';
@@ -10,19 +10,25 @@ import { ConfigType } from '@/types/apiTypes';
 import HorariConfig from '@/components/viewers/HorariConfig';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch } from 'react-redux';
+import { useAppSelector } from '@/store/reduxHooks';
+import { selectConfig } from '@/store/configSlice';
 import { logoutRedux } from '@/store/authSlice';
 
 export default function Index() {
     const themeStyles = useThemeStyles();
     const dispatch = useDispatch();
     const auth = useSelector((state: RootState) => state.auth);
-    const config = useSelector((state: RootState) => state.config);
+    const config = useAppSelector(selectConfig);
     const [errors, setErrors] = useState({
         duracioSessions: "",
         maxAlumnesPerSessio: "",
         horariEntrenador: []
     });
-    const [configTmp, setConfigTmp] = useState<ConfigType>(config);
+    const [configTmp, setConfigTmp] = useState<ConfigType>({
+        duracioSessions: config.DuracioSessions ?? 0,
+        maxAlumnesPerSessio: config.MaxAlumnesPerSessio ?? 0,
+        horaris: config.Horaris,
+    });
 
     if (!auth.user) {
         throw new Error("AuthProvider is missing. Please wrap your component tree with AuthProvider.");
@@ -66,8 +72,8 @@ export default function Index() {
                         containerStyle={{ width: 68 }}
                         inputStyle={{ textAlign: "right" }}
                         enterKeyHint="done"
-                        value={configTmp.DuracioSessions}
-                        onChangeText={(text: string) => setConfigTmp({ ...configTmp, DuracioSessions: Number(text.replace(/[^0-9]/g, '')) })}
+                        value={configTmp.duracioSessions}
+                        onChangeText={(text: string) => setConfigTmp({ ...configTmp, duracioSessions: Number(text.replace(/[^0-9]/g, '')) })}
                         error={!!errors.duracioSessions}
                         errorText={errors.duracioSessions}
                         autoCapitalize="none"
@@ -83,8 +89,8 @@ export default function Index() {
                         containerStyle={{ width: 68 }}
                         inputStyle={{ textAlign: "right" }}
                         enterKeyHint="done"
-                        value={configTmp.MaxAlumnesPerSessio}
-                        onChangeText={(text: string) => setConfigTmp({ ...configTmp, MaxAlumnesPerSessio: Number(text.replace(/[^0-9]/g, '')) })}
+                        value={configTmp.maxAlumnesPerSessio}
+                        onChangeText={(text: string) => setConfigTmp({ ...configTmp, maxAlumnesPerSessio: Number(text.replace(/[^0-9]/g, '')) })}
                         error={!!errors.maxAlumnesPerSessio}
                         errorText={errors.maxAlumnesPerSessio}
                         autoCapitalize="none"

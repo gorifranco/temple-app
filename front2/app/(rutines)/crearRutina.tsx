@@ -33,7 +33,7 @@ export default function CrearRutina() {
     })
 
     async function guardarRutina() {
-        const tmp = exercicisElegits.filter((exercici) => exercici.DiaRutina <= dies)
+        const tmp = exercicisElegits.filter((exercici) => exercici.diaRutina <= dies)
 
         const exercicisEnviats = [];
         for (let ciclo = 0; ciclo < Number(cicles); ciclo++) {
@@ -46,12 +46,12 @@ export default function CrearRutina() {
 
         if (!checkErrors(exercicisEnviats)) {
             const dataRutina: RutinaType = {
-                ID: -1,
-                Nom: nom,
-                Descripcio: descripcio,
-                Cicles: Number(cicles) ?? -1,
-                DiesDuracio: dies,
-                Exercicis: exercicisEnviats,
+                id: -1,
+                nom: nom,
+                descripcio: descripcio,
+                cicles: Number(cicles) ?? -1,
+                diesDuracio: dies,
+                exercicis: exercicisEnviats,
             }
             dispatch(createRutina({ rutina: dataRutina }))
         }
@@ -135,7 +135,7 @@ export default function CrearRutina() {
                     />
 
                     {exercicisElegits.map((exercici, i) => {
-                        if (exercici.DiaRutina == currentDia)
+                        if (exercici.diaRutina == currentDia)
                             return (
                                 <View key={i} style={themeStyles.crearRutinaContainer}>
                                     {/*                                     <View style={styles.iconContainer}>
@@ -147,53 +147,53 @@ export default function CrearRutina() {
                                                 const updatedExercicisElegits = [...exercicisElegits];
                                                 updatedExercicisElegits[i] = {
                                                     ...updatedExercicisElegits[i],
-                                                    ExerciciID: id,
+                                                    exerciciID: id,
                                                 };
                                                 setExercicisElegits(updatedExercicisElegits);
                                             }}
-                                            selectedValue={exercici.Nom}
+                                            selectedValue={exercici.nom}
                                         />
-                                        {errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.ExerciciID !== "" ? (
-                                            <Text style={themeStyles.textInputError}>* {errorsExercicis.get(i)!.ExerciciID}</Text>
+                                        {errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.exerciciID !== "" ? (
+                                            <Text style={themeStyles.textInputError}>* {errorsExercicis.get(i)!.exerciciID}</Text>
                                         ) : null}
 
                                         <View style={{ display: "flex", flexDirection: "row", gap: 25, margin: "auto", marginTop: 6 }}>
                                             <View style={styles.container2}>
                                                 <TextInput
-                                                    errorText={errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.NumSeries}
+                                                    errorText={errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.numSeries}
                                                     label={<Text style={{ fontSize: 12 }}>Series</Text>}
                                                     style={{ width: 65 }}
                                                     inputMode="numeric"
-                                                    value={exercici.NumSeries === 0 ? "" : exercici.NumSeries.toString()}
+                                                    value={exercici.numSeries === 0 ? "" : exercici.numSeries.toString()}
                                                     onChangeText={(text: string) => {
                                                         const updatedExercicisElegits = [...exercicisElegits];
                                                         updatedExercicisElegits[i] = {
                                                             ...updatedExercicisElegits[i],
-                                                            NumSeries: Number(text.replace(/[^0-9]/g, '')),
+                                                            numSeries: Number(text.replace(/[^0-9]/g, '')),
                                                         };
                                                         setExercicisElegits(updatedExercicisElegits);
                                                     }} />
-                                                {errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.NumSeries !== "" ? (
+                                                {errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.numSeries !== "" ? (
                                                     <Text style={themeStyles.textInputError}>{"(*)"}</Text>
                                                 ) : null}
                                             </View>
 
                                             <View style={styles.container2}>
                                                 <TextInput
-                                                    errorText={errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.NumRepes}
+                                                    errorText={errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.numRepes}
                                                     label={<Text style={{ fontSize: 12 }}>Repes</Text>}
                                                     style={{ width: 65 }}
                                                     inputMode="numeric"
-                                                    value={exercici.NumRepes === 0 ? "" : exercici.NumRepes.toString()}
+                                                    value={exercici.numRepes === 0 ? "" : exercici.numRepes.toString()}
                                                     onChangeText={(text: string) => {
                                                         const updatedExercicisElegits = [...exercicisElegits];
                                                         updatedExercicisElegits[i] = {
                                                             ...updatedExercicisElegits[i],
-                                                            NumRepes: Number(text.replace(/[^0-9]/g, '')),
+                                                            numRepes: Number(text.replace(/[^0-9]/g, '')),
                                                         };
                                                         setExercicisElegits(updatedExercicisElegits);
                                                     }} />
-                                                {errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.NumRepes !== "" ? (
+                                                {errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.numRepes !== "" ? (
                                                     <Text style={themeStyles.textInputError}>{"(*)"}</Text>
                                                 ) : null}
                                             </View>
@@ -201,20 +201,20 @@ export default function CrearRutina() {
 
                                             <View style={styles.container2}>
                                                 <TextInput
-                                                    errorText={errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.PercentatgeRM !== ""}
+                                                    errorText={errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.percentatgeRM !== ""}
                                                     label={<Text style={{ fontSize: 12 }}>% RM</Text>}
                                                     inputMode="numeric"
                                                     style={{ width: 65 }}
-                                                    value={exercici.PercentatgeRM === 0 ? "" : exercici.PercentatgeRM.toString()}
+                                                    value={exercici.percentatgeRM === 0 ? "" : exercici.percentatgeRM.toString()}
                                                     onChangeText={(text: string) => {
                                                         const updatedExercicisElegits = [...exercicisElegits];
                                                         updatedExercicisElegits[i] = {
                                                             ...updatedExercicisElegits[i],
-                                                            PercentatgeRM: Number(text.replace(/[^0-9]/g, '')),
+                                                            percentatgeRM: Number(text.replace(/[^0-9]/g, '')),
                                                         };
                                                         setExercicisElegits(updatedExercicisElegits);
                                                     }} />
-                                                {errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.PercentatgeRM !== "" ? (
+                                                {errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.percentatgeRM !== "" ? (
                                                     <Text style={themeStyles.textInputError}>{"(*)"}</Text>
                                                 ) : null}
                                             </View>
@@ -233,16 +233,16 @@ export default function CrearRutina() {
                             setExercicisElegits([
                                 ...exercicisElegits,
                                 {
-                                    ID: null,
-                                    Nom: "",
-                                    RutinaID: null,
-                                    ExerciciID: -1,
-                                    Ordre: exercicisElegits.length,
-                                    NumSeries: 0,
-                                    NumRepes: 0,
-                                    Cicle: 0,
-                                    PercentatgeRM: 0,
-                                    DiaRutina: currentDia,
+                                    id: null,
+                                    nom: "",
+                                    rutinaID: null,
+                                    exerciciID: -1,
+                                    ordre: exercicisElegits.length,
+                                    numSeries: 0,
+                                    numRepes: 0,
+                                    cicle: 0,
+                                    percentatgeRM: 0,
+                                    diaRutina: currentDia,
                                 },
                             ]);
                         }}

@@ -12,16 +12,14 @@ import AutocompleteRutines from '@/components/inputs/selects/AutocompleteRutines
 import { useThemeStyles } from '@/themes/theme';
 import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker'
 import { stringDiaToDate } from '@/helpers/timeHelpers';
-import { acabarRutina, assignarRutina, expulsarAlumne, selectAlumneByID, selectAlumnesAction, selectAlumnesError, selectAlumnesStatus } from '@/store/alumnesSlice';
+import { acabarRutina, assignarRutina, expulsarAlumne, selectAlumneByID, selectAlumnesError, selectAlumnesStatus } from '@/store/alumnesSlice';
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
 import { createReserva } from '@/store/reservesSlice';
-import { api } from '../api';
 
 export default function AlumneScreen() {
     const themeStyles = useThemeStyles()
     const alumneStatus = useAppSelector(selectAlumnesStatus);
     const alumneError = useAppSelector(selectAlumnesError);
-    const alumneAction = useAppSelector(selectAlumnesAction);
     const [modalVisible, setModalVisible] = useState(false)
     const [assignarRutinaID, setAssignarRutinaID] = useState<number | null>(null)
     const [autocompleteRutinaError, setAutocompleteRutinaError] = useState("")
@@ -34,39 +32,6 @@ export default function AlumneScreen() {
         Hora: "",
         Dia: "",
     })
-
-    useEffect(() => {
-        if (alumneAction === "delete" && alumneStatus === "failed") {
-            Toast.show({
-                type: 'error',
-                text1: alumneError ?? 'Error mostrant l\'usuari',
-                position: 'top',
-            });
-            router.replace("../")
-        }
-        if (alumneAction === "delete" && alumneStatus === "succeeded") {
-            router.replace("../")
-            Toast.show({
-                type: 'success',
-                text1: 'Usuari eliminat',
-                position: 'top',
-            });
-        }
-        if (alumneAction === "assign" && alumneStatus === "failed") {
-            Toast.show({
-                type: 'error',
-                text1: alumneError ?? 'Error assignant la rutina',
-                position: 'top',
-            });
-        }
-        if (alumneAction === "assign" && alumneStatus === "succeeded") {
-            Toast.show({
-                type: 'success',
-                text1: 'Rutina assignada',
-                position: 'top',
-            });
-        }
-    }, [alumneStatus]);
 
     const alumne = useAppSelector(state => selectAlumneByID(state, Number(alumneID)));
     //If student doesn't exist redirect to home
@@ -94,21 +59,21 @@ export default function AlumneScreen() {
         }
         const horaUTC = new Date(hora.getTime() - hora.getTimezoneOffset() * 60000);
 
-        dispatch(createReserva({ data: { usuariID: alumne!.ID, hora: horaUTC.toISOString()}}));
+        dispatch(createReserva({ data: { usuariID: alumne!.id, hora: horaUTC.toISOString()}}));
     }
 
     function handleExpulsarUsuari() {
-        dispatch(expulsarAlumne({ id: alumne!.ID }));
+        dispatch(expulsarAlumne({ id: alumne!.id }));
 
     }
 
     function handleAssignarRutina() {
         if (assignarRutinaID == null) return;
-        dispatch(assignarRutina({ rutinaID: assignarRutinaID, alumneID: alumne!.ID }));
+        dispatch(assignarRutina({ rutinaID: assignarRutinaID, alumneID: alumne!.id }));
     }
 
     async function handleAcabarRutina() {
-        dispatch(acabarRutina({ usuariID: alumne!.ID }));
+        dispatch(acabarRutina({ usuariID: alumne!.id }));
     }
 
     if (!alumne) {
@@ -120,7 +85,7 @@ export default function AlumneScreen() {
             <SafeAreaView style={[themeStyles.background, { height: '100%' }]}>
                 <ScrollView>
                     <BackButton href={"../"} />
-                    <Text style={themeStyles.titol1}>{alumne.Nom}</Text>
+                    <Text style={themeStyles.titol1}>{alumne.nom}</Text>
                     <Calendar
                         firstDay={1}
                         onDayPress={(day: DateData) => handleDayPress(day)}
@@ -158,15 +123,15 @@ export default function AlumneScreen() {
 
                     {/* Entrenos */}
                     <Text style={themeStyles.titol1}>Pròxims entrenos</Text>
-                    {!alumne.Reserves ? (<Text style={themeStyles.text}>No hi ha entrenos pròximament</Text>
+                    {!alumne.reserves ? (<Text style={themeStyles.text}>No hi ha entrenos pròximament</Text>
                     ) : (
-                        alumne.Reserves.map((reserva) => (
-                            stringDiaToDate(reserva.Hora).getMilliseconds() >= Date.now() && <Text key={reserva.ID} style={themeStyles.text}>{reserva.Hora}</Text>
+                        alumne.reserves.map((reserva) => (
+                            stringDiaToDate(reserva.hora).getMilliseconds() >= Date.now() && <Text key={reserva.id} style={themeStyles.text}>{reserva.hora}</Text>
                         )))}
 
                     {/* Rutina */}
                     <Text style={themeStyles.titol1}>Rutina actual</Text>
-                    {alumne.RutinaActual ? (<ViewRutina rutinaID={alumne.RutinaActual} versio={1} acabarRutina={acabarRutina} />
+                    {alumne.rutinaActual ? (<ViewRutina rutinaID={alumne.rutinaActual} versio={1} acabarRutina={acabarRutina} />
                     ) : (
                         <View>
                             <Text style={themeStyles.text}>No té cap rutina assignada</Text>

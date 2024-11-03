@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ExerciciType } from "../types/apiTypes";
-import { api } from "@/app/api";
 import { RootState } from ".";
 
 interface ExercicisState {
@@ -20,9 +19,22 @@ export const getExercicis = createAsyncThunk<
   ExerciciType[], // Expected result type
   void, // No parameters required here
   { state: RootState }
->("entrenador/getExercicis", async (_, { rejectWithValue }) => {
-    const response = await api.get("/exercicis");
-    return response.status == 200 ? response.data.data : rejectWithValue(response.data.error ?? "Failed to create alumne");
+>("entrenador/getExercicis", async (_, { getState, rejectWithValue }) => {
+  const state = getState();
+  const token = state.auth.user?.token;
+
+    const response = await fetch(process.env.EXPO_PUBLIC_API_URL + "/exercicis", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(data.error ?? "Failed to fetch exercicis");
+    }
+    return data.data;
 });
 
 const exercicisSlice = createSlice({
@@ -51,7 +63,7 @@ const exercicisSlice = createSlice({
 export const selectExercicis = (state: RootState) =>
   state.exercicis.exercicis;
 export const selectExerciciByID = (state: RootState, exerciciID: number) =>
-  state.exercicis.exercicis.find((exercici) => exercici.ID === exerciciID);
+  state.exercicis.exercicis.find((exercici) => exercici.id === exerciciID);
 
 export const selectExercicisStatus = (state: RootState) =>
   state.exercicis.status;

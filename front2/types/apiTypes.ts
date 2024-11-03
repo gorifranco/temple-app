@@ -1,9 +1,9 @@
 export interface SalaType {
-  ID: number;
-  Nom: string;
-  Admin: UsuariType
-  CodiSala: string
-  Usuaris: UsuariType[]|null
+  id: number;
+  nom: string;
+  admin: UsuariType
+  codiSala: string
+  usuaris: UsuariType[]|null
 }
 
 export interface TokenType{
@@ -11,82 +11,96 @@ export interface TokenType{
 }
 
 export interface UsuariType {
-  ID: number;
-  Nom: string;
-  Email: string|null;
-  TipusUsuari: string;
-  CodiEntrenador: string|null;
+  id: number;
+  nom: string;
+  email: string|null;
+  tipusUsuari: string;
+  codiEntrenador: string|null;
 }
 
 export interface ExerciciType {
-  ID: number;
-  Nom: string;
+  id: number;
+  nom: string;
 }
 
 export interface RutinaType {
-  ID: number;
-  Nom: string;
-  Descripcio: string;
-  Exercicis: ExerciciRutinaType[]
-  DiesDuracio: number
-  Cicles: number
+  id: number;
+  nom: string;
+  descripcio: string;
+  exercicis: ExerciciRutinaType[]
+  diesDuracio: number
+  cicles: number
 }
 
 
 export interface AlumneType {
-  ID: number;
-  Nom: string;
-  ResultatsRutinaActual: ResultatsExercici[];
-  Reserves: ReservaType[];
-  RutinaActual: number|null;
+  id: number;
+  nom: string;
+  resultatsRutinaActual: ResultatsExercici[];
+  reserves: ReservaType[];
+  rutinaActual: number|null;
 }
 
 export interface ReservaType {
-  ID: number;
-  Hora: string;
-  UsuariID: number;
-  Confirmada: boolean;
+  id: number;
+  hora: string;
+  usuariID: number;
+  confirmada: boolean;
 }
 
 export interface ExerciciRutinaType {
-  ID: number|null;
-  Nom: string;
-  RutinaID: number|null;
-  ExerciciID: number;
-  Ordre: number;
-  NumSeries: number;
-  NumRepes: number;
-  Cicle: number;
-  PercentatgeRM: number;
-  DiaRutina: number;
+  id: number|null;
+  nom: string;
+  rutinaID: number|null;
+  exerciciID: number;
+  ordre: number;
+  numSeries: number;
+  numRepes: number;
+  cicle: number;
+  percentatgeRM: number;
+  diaRutina: number;
 }
 
 export interface ExerciciErrorType {
-  ExerciciID: string;
-  PercentatgeRM: string;
-  NumRepes: string;
-  NumSeries: string;
+  exerciciID: string;
+  percentatgeRM: string;
+  numRepes: string;
+  numSeries: string;
 }
 
 export interface ConfigType {
-  DuracioSessions: number;
-  MaxAlumnesPerSessio: number;
-  Horaris: HorariType[];
+  duracioSessions: number;
+  maxAlumnesPerSessio: number;
+  horaris: HorariType[];
 }
 
 export interface HorariType {
-  DiaSetmana: number;
-  Desde: string;
-  Fins: string;
+  diaSetmana: number;
+  desde: string;
+  fins: string;
 }
 
 export interface ResultatsExercici {
-  ExerciciRutinaID: number;
-  Repeticions: number;
-  Series: number;
-  Pes: number;
+  exerciciRutinaID: number;
+  repeticions: number;
+  series: number;
+  pes: number;
 }
 
 export interface RMDetail {
-  Pes: number;
+  pes: number;
+}
+
+export enum status {
+  idle = "idle",
+  pending = "pending",
+  succeeded = "succeeded",
+  failed = "failed",
+}
+export enum actions {
+  index = "index",
+  create = "create",
+  delete = "delete",
+  assign = "assign",
+  acabar = "acabar",
 }

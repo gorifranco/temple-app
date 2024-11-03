@@ -30,7 +30,6 @@ export default function Index() {
   });
 
   useEffect(() => {
-    console.log(user)
     if (user != null) {
       router.replace('/');
     }

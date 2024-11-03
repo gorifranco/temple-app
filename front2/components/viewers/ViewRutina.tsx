@@ -43,13 +43,13 @@ export default function ViewRutina(props: propsType) {
     }
 
     async function handleEliminarRutina() {
-        dispatch(deleteRutina({ id: rutina!.ID }))
+        dispatch(deleteRutina({ id: rutina!.id }))
     }
 
     return rutina &&  (
-        <View key={rutina.ID} style={themeStyles.mainContainer1}>
+        <View key={rutina.id} style={themeStyles.mainContainer1}>
             <View style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", position: "relative" }}>
-                <Text style={themeStyles.text}>{rutina.Nom}</Text>
+                <Text style={themeStyles.text}>{rutina.nom}</Text>
                 <FletxaDesplegar
                     amunt={desplegat}
                     containerStyle={{ position: "absolute", right: 0, top:   0 }}
@@ -60,7 +60,7 @@ export default function ViewRutina(props: propsType) {
                 <View style={{ marginTop: 10 }}>
                     <BarraDies
                         editable={false}
-                        dies={rutina.DiesDuracio}
+                        dies={rutina.diesDuracio}
                         canviaDia={(d: number) => setDia(d)}
                         currentDia={dia} />
 
@@ -70,15 +70,15 @@ export default function ViewRutina(props: propsType) {
                         <Text style={[themeStyles.text, { fontWeight: "bold" }]}>Series</Text>
                         <Text style={[themeStyles.text, { fontWeight: "bold" }]}>%RM</Text>
                     </View>
-                    {rutina.Exercicis && rutina.Exercicis.map((exercici, i) => {
-                        if (exercici.DiaRutina == dia && exercici.Cicle == 0) {
-                            const e = exercici.ExerciciID ? exercicis.find(exercici => exercici.ID === exercici.ID) : null;
+                    {rutina.exercicis && rutina.exercicis.map((exercici, i) => {
+                        if (exercici.diaRutina == dia && exercici.cicle == 0) {
+                            const e = exercici.exerciciID ? exercicis.find(exercici => exercici.id === exercici.id) : null;
                             return (
                                 <View key={i} style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginTop: 10, width: "95%" }}>
-                                    {e != null && <Text style={[themeStyles.text, { width: "50%" }]}>{e.Nom}</Text>}
-                                    <Text style={[themeStyles.text]}>{exercici.NumRepes}</Text>
-                                    <Text style={[themeStyles.text]}>{exercici.NumSeries}</Text>
-                                    <Text style={[themeStyles.text]}>{exercici.PercentatgeRM}</Text>
+                                    {e != null && <Text style={[themeStyles.text, { width: "50%" }]}>{e.nom}</Text>}
+                                    <Text style={[themeStyles.text]}>{exercici.numRepes}</Text>
+                                    <Text style={[themeStyles.text]}>{exercici.numSeries}</Text>
+                                    <Text style={[themeStyles.text]}>{exercici.percentatgeRM}</Text>
                                 </View>
                             )
                         }

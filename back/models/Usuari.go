@@ -40,10 +40,10 @@ type UsuariFicticiInput struct {
 }
 
 type AlumneResponse struct {
-	ID                    uint                             `json:"ID"`
-	Nom                   string                           `json:"Nom"`
-	TipusUsuari           string                           `json:"TipusUsuari"`
-	Reserves              []ReservaResponse                `json:"Reserves"`
-	RutinaActual          uint                             `json:"RutinaActual"`
-	ResultatsRutinaActual []UsuariResultatExerciciResponse `json:"ResultatsRutinaActual"`
+	ID                    uint                             `json:"id"`
+	Nom                   string                           `json:"nom"`
+	TipusUsuari           string                           `json:"tipusUsuari"`
+	Reserves              []ReservaResponse                `json:"reserves"`
+	RutinaActual          uint                             `json:"rutinaActual"`
+	ResultatsRutinaActual []UsuariResultatExerciciResponse `json:"resultatsRutinaActual"`
 }

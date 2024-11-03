@@ -1,4 +1,3 @@
-import { api } from "@/app/api";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { RootState } from ".";
 
@@ -10,8 +9,7 @@ interface User {
   codiEntrenador: string | null;
 }
 interface authState {
-  user: User | null;
-  status: "idle" | "pending" | "succeeded" | "failed";
+  user: User | null;  status: "idle" | "pending" | "succeeded" | "failed";
   error: string | null;
 }
 
@@ -24,19 +22,37 @@ const initialState: authState = {
 // Login api
 export const loginRedux = createAsyncThunk<
   User, // Expected result type
-  {email: string; password: string}, // Parameters type
+  { email: string; password: string }, // Parameters type
   { state: RootState }
 >("login", async ({ email, password }, { rejectWithValue }) => {
-  const response = await api.post("/login", { email, password });
-  return response.status == 200
-    ? response.data.data
-    : rejectWithValue(response.data.error ?? "Failed to create alumne");
+  try {
+    const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/login`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(data.error ?? "Failed to login");
+    }
+    return data.data;
+  } catch (error) {
+    return rejectWithValue("Network error or unexpected error occurred");
+  }
 });
 
 const authSlice = createSlice({
   name: "auth",
   initialState,
-  reducers: {},
+  reducers: {
+    logoutRedux: (state) => {
+      state.status = "idle";
+      state.error = null;
+      state.user = null;
+    },
+  },
   extraReducers: (builder) => {
     builder.addCase(loginRedux.fulfilled, (state, action) => {
       state.user = action.payload;
@@ -54,6 +70,7 @@ const authSlice = createSlice({
   },
 });
 
+export const { logoutRedux } = authSlice.actions;
 export const selectUser = (state: RootState) => state.auth.user;
 
 export const selectUserStatus = (state: RootState) => state.auth.status;
