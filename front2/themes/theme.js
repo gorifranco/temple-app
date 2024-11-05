@@ -19,6 +19,7 @@ const lightTheme = {
     secondary: '#414757',
     error: '#f13a59',
     background: '#ffffff',
+    background2: '#f9f9f9',
     surface: '#f5f5f5',
   },
 };
@@ -32,6 +33,7 @@ const darkTheme = {
     secondary: '#414757',
     error: '#cf6679',
     background: '#121212',
+    background2: '#262626',
     surface: '#f5f5f5',
   },
 };
@@ -49,7 +51,8 @@ export function useThemeStyles() {
 
   return StyleSheet.create({
     background: {
-      backgroundColor: theme.colors.background
+      backgroundColor: theme.colors.background,
+      height: "100%",
     },
     authBackground: {
       flex: 1,
@@ -193,6 +196,32 @@ export function useThemeStyles() {
       shadowOpacity: 0.25,
       shadowRadius: 6,
       elevation: 5,
-    }
+    },
+    box: {
+      width: "80%",
+      height: 200,
+      borderRadius: 20,  
+      backgroundColor: theme.colors.background2,
+      shadowColor: "#000",
+      shadowColor: "#000",
+      shadowOffset: {
+        width: 0,
+        height: 2,
+      },
+      shadowOpacity: 0.23,
+      shadowRadius: 2.62,
+      
+      elevation: 4,
+    },
+    alumneContainer: {
+      marginVertical: 10,
+      borderWidth: 1,
+      padding: 10,
+      borderRadius: 10,
+      paddingLeft: 10,
+      display: "flex",
+      flexDirection: "row",
+      backgroundColor: theme.colors.background2,
+  },
   })
 }

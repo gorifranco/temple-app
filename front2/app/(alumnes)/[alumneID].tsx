@@ -1,6 +1,6 @@
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
 import BackButton from '@/components/buttons/BackButton';
 import { Calendar, DateData } from 'react-native-calendars';
@@ -59,7 +59,7 @@ export default function AlumneScreen() {
         }
         const horaUTC = new Date(hora.getTime() - hora.getTimezoneOffset() * 60000);
 
-        dispatch(createReserva({ data: { usuariID: alumne!.id, hora: horaUTC.toISOString()}}));
+        dispatch(createReserva({ usuariID: alumne!.id, hora: horaUTC.toISOString()}));
     }
 
     function handleExpulsarUsuari() {
@@ -73,7 +73,7 @@ export default function AlumneScreen() {
     }
 
     async function handleAcabarRutina() {
-        dispatch(acabarRutina({ usuariID: alumne!.id }));
+        dispatch(acabarRutina({ UsuariID: alumne!.id }));
     }
 
     if (!alumne) {

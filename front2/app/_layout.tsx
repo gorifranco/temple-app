@@ -45,6 +45,7 @@ export default function RootLayout() {
         <Stack.Screen name="(config)" options={{ headerShown: false }} />
         <Stack.Screen name="(rutines)" options={{ headerShown: false }} />
         <Stack.Screen name="(alumnes)/[alumneID]" options={{ headerShown: false }} />
+        <Stack.Screen name="(alumnes)/alumnes" options={{ headerShown: false }} />
         <Stack.Screen name="+not-found" />
         <Stack.Screen name="(stats)" options={{ headerShown: false }} />
       </Stack>

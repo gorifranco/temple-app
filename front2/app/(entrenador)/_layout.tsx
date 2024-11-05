@@ -27,9 +27,10 @@ export default function EntrenadorLayout({ children }: { children: React.ReactNo
           tabBarIndicatorStyle: { backgroundColor: theme.colors.primary },
           tabBarIconStyle: {width: "100%"},
           tabBarStyle: { 
-            height: 61, // Ajusta la altura para hacerla más estrecha
+            height: 61,
             elevation: 0,
             borderBottomWidth: 0,
+            backgroundColor: "#f5f5f5",
           },
         }}
         tabBarPosition='bottom'
