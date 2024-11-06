@@ -33,7 +33,7 @@ const darkTheme = {
     secondary: '#414757',
     error: '#cf6679',
     background: '#121212',
-    background2: '#262626',
+    background2: '#383838',
     surface: '#f5f5f5',
   },
 };
@@ -42,6 +42,7 @@ const darkTheme = {
 export function useThemeStyles() {
   const theme = useAppTheme();
   const [statusBarHeight, setStatusBarHeight] = useState(0);
+  
 
   useEffect(() => {
     if (Platform.OS === 'android') {
@@ -149,13 +150,13 @@ export function useThemeStyles() {
       marginBottom: 10,
     },
     mainContainer1: {
-        marginVertical: 10,
-        marginHorizontal: "auto",
-        borderWidth: 1,
-        borderColor: theme.colors.primary,
-        padding: 10,
-        borderRadius: 10,
-        width: '80%',
+      marginVertical: 10,
+      marginHorizontal: "auto",
+      borderWidth: 1,
+      borderColor: theme.colors.primary,
+      padding: 10,
+      borderRadius: 10,
+      width: '90%',
     },
     textInputError: {
       fontSize: 13,
@@ -175,7 +176,7 @@ export function useThemeStyles() {
     hr: {
       borderBottomColor: theme.colors.primary,
       borderBottomWidth: StyleSheet.hairlineWidth,
-      width: '80%',
+      width: '90%',
       marginTop: 20,
       alignSelf: 'center',
     },
@@ -190,17 +191,16 @@ export function useThemeStyles() {
       backgroundColor: theme.colors.background,
       shadowColor: theme.colors.text,
       shadowOffset: {
-          width: 0,
-          height: 2,
+        width: 0,
+        height: 2,
       },
       shadowOpacity: 0.25,
       shadowRadius: 6,
       elevation: 5,
     },
     box: {
-      width: "80%",
-      height: 200,
-      borderRadius: 20,  
+      width: "90%",
+      borderRadius: 20,
       backgroundColor: theme.colors.background2,
       shadowColor: "#000",
       shadowColor: "#000",
@@ -210,18 +210,45 @@ export function useThemeStyles() {
       },
       shadowOpacity: 0.23,
       shadowRadius: 2.62,
-      
+
       elevation: 4,
     },
     alumneContainer: {
+      marginHorizontal: "auto",
+      width: "80%", 
       marginVertical: 10,
-      borderWidth: 1,
       padding: 10,
-      borderRadius: 10,
+      borderRadius: 20,
       paddingLeft: 10,
       display: "flex",
       flexDirection: "row",
       backgroundColor: theme.colors.background2,
-  },
+      shadowOffset: {
+        width: 0,
+        height: 1,
+      },
+      shadowOpacity: 0.23,
+      shadowRadius: 1.3,
+
+      elevation: 3,
+    },
+    calendarTheme: {
+      calendarBackground: theme.colors.background2,
+      dayTextColor: theme.colors.text,
+      textDisabledColor: "gray",
+      monthTextColor: theme.colors.text,
+      todayTextColor: theme.colors.primary,
+      textSectionTitleColor: theme.colors.primary,
+      arrowColor: theme.colors.primary,
+      selectedDayBackgroundColor: theme.colors.primary,
+      selectedDayTextColor: theme.colors.text,
+    },
+    basicContainer: {
+      marginTop: 20,
+      flexDirection: "row",
+      flexWrap: "wrap",
+      justifyContent: "space-around",
+      margin: "auto",
+    }
   })
 }
