@@ -249,6 +249,12 @@ export function useThemeStyles() {
       flexWrap: "wrap",
       justifyContent: "space-around",
       margin: "auto",
+    },
+    modalConfirmContent: {
+      width: '80%',
+      height: 190,
+      backgroundColor: theme.colors.background2,
+      margin: "auto"
     }
   })
 }

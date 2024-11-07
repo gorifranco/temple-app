@@ -15,7 +15,7 @@ import { stringDiaToDate } from '@/helpers/timeHelpers';
 import { acabarRutina, assignarRutina, expulsarAlumne, selectAlumneByID, selectAlumnesError, selectAlumnesStatus } from '@/store/alumnesSlice';
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
 import { createReserva } from '@/store/reservesSlice';
-import { CalendarContextProps } from 'react-native-calendars/src/expandableCalendar/Context';
+
 
 export default function AlumneScreen() {
     const colorScheme = useColorScheme();
@@ -147,8 +147,8 @@ export default function AlumneScreen() {
                         </View>
 
                         {/* Rutina */}
-                        <View style={themeStyles.box}>
-                            <Text style={themeStyles.titol1}>Rutina actual</Text>
+                        <View style={[themeStyles.box, { paddingBottom: 20 }]}>
+                            <Text style={[themeStyles.titol1, ]}>Rutina actual</Text>
                             {alumne.rutinaActual ? (<ViewRutina rutinaID={alumne.rutinaActual} versio={1} acabarRutina={acabarRutina} />
                             ) : (
                                 <View>
@@ -168,7 +168,7 @@ export default function AlumneScreen() {
                         </View>
 
 
-                        <Pressable style={[themeStyles.buttonDanger, { marginBottom: 70 }]} onPress={() => {
+                        <Pressable style={[themeStyles.buttonDanger, { marginBottom: 40 }]} onPress={() => {
                             setModalVisible(true)
                         }}>
                             <Text style={themeStyles.button1Text}>Expulsar</Text>
