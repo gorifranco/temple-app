@@ -14,10 +14,10 @@ export default function BarraDies(props: propsType) {
     const { dies, afegeixDia, canviaDia, currentDia, editable } = props;
     const themeStyles = useThemeStyles()
     const screenWidth = Dimensions.get('window').width;
-    const pressableWidth = editable ? screenWidth * 0.8 / 7 : screenWidth*0.75/dies; 
+    const pressableWidth = editable ? screenWidth * 0.8 / 7 : screenWidth * 0.75 / dies;
 
     return (
-        <View style={[styles.container, { width: screenWidth * 0.75+2 }]}>
+        <View style={[styles.container, { width: screenWidth * 0.75 + 2 }]}>
             {Array.from({ length: dies }, (_, i) => {
                 const letter = String.fromCharCode(65 + i);
                 return (
@@ -25,14 +25,19 @@ export default function BarraDies(props: propsType) {
                         key={i}
                         style={[
                             styles.pressable,
-                            {width: pressableWidth},
+                            { width: pressableWidth },
                             i === currentDia ? { backgroundColor: 'lightgray' } : null,
                             i === 0 ? { borderTopLeftRadius: 10, borderBottomLeftRadius: 10 } : null,
-                            i === 6 || (!editable && i === dies-1) ? { borderTopRightRadius: 10, borderBottomRightRadius: 10, borderRightWidth: 0 } : null, 
+                            i === 6 || (!editable && i === dies - 1) ? { borderTopRightRadius: 10, borderBottomRightRadius: 10, borderRightWidth: 0 } : null,
                         ]}
                         onPress={() => canviaDia(i)}
                     >
-                        <Text style={[themeStyles.text, { fontSize: 18 }]}>{letter}</Text>
+                        <Text style={[
+                            themeStyles.text,
+                            { color: i === currentDia ? "black" : "white", fontSize: 18 }
+                        ]}>
+                            {letter}
+                        </Text>
                     </Pressable>
                 );
             })}
@@ -41,7 +46,7 @@ export default function BarraDies(props: propsType) {
                     key={"afegir"}
                     style={[styles.pressable, { borderRightWidth: 0, width: 45 }]}
                     onPress={() => {
-                        if(afegeixDia) afegeixDia()
+                        if (afegeixDia) afegeixDia()
                     }}
                 >
                     <Text style={[themeStyles.text, { color: 'gray', fontSize: 25, fontWeight: 'bold' }]}>+</Text>

@@ -25,7 +25,7 @@ export default function ModalConfirmacio(props: propsType) {
                     <Text style={themeStyles.titol1}>{titol}</Text>
                     <Text style={themeStyles.text}>{missatge}</Text>
                     <View style={{ flexDirection: 'row', gap: 10, justifyContent: 'center' }}>
-                        <Pressable style={themeStyles.buttonWarning} onPress={() => {
+                        <Pressable style={themeStyles.buttonDanger} onPress={() => {
                             closeModal()
                         }}>
                             <Text style={themeStyles.button1Text}>Cancelar</Text>

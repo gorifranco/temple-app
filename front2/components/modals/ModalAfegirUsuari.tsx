@@ -6,7 +6,7 @@ import { nameValidator } from '@/helpers/nameValidator'
 import { useThemeStyles } from '@/themes/theme'
 import CloseButton from '../buttons/CloseButton'
 import { useAppSelector } from '@/store/reduxHooks'
-// import Share from 'react-native-share';
+/* import Share from 'react-native-share'; */
 
 interface propsType {
     modalVisible: boolean
@@ -24,6 +24,8 @@ export default function ModalAfegirUsuari(props: propsType) {
         nom: '',
     });
 
+
+
     function submit() {
         const nameError = nameValidator(nom)
         if (nameError) {
@@ -38,16 +40,16 @@ export default function ModalAfegirUsuari(props: propsType) {
     }
 
 
-    // async function share() {
-    //     try {
-    //         await Share.open({
-    //             message: 'Unit a l ameva sala amb el codi ${user.codiEntrenador}',
-    //             url: 'temple-app://unirse/${usuari.CodiEntrenador}',
-    //         });
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // }
+/*     async function share() {
+        try {
+            await Share.open({
+                message: 'Unit a l ameva sala amb el codi ${user.codiEntrenador}',
+                url: 'temple-app://unirse/${usuari.CodiEntrenador}',
+            });
+        } catch (error) {
+            console.log(error);
+        }
+    } */
 
 
     return (
@@ -64,6 +66,7 @@ export default function ModalAfegirUsuari(props: propsType) {
 
             {!crearFictici ? (
                 <View style={[themeStyles.background, { height: '100%' }]}>
+                    <View style={{marginTop: 12}}/>
                     <Text style={themeStyles.titol1}>Afegir alumne</Text>
                     <Text style={themeStyles.text}>Codi d'entrenador: #{auth?.user?.codiEntrenador ?? ''}</Text>
                     <Pressable
