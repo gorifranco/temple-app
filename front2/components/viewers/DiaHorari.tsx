@@ -6,7 +6,7 @@ import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/d
 
 interface propsType {
     dia: string
-    horaris: { Desde: string | null; Fins: string | null }[]
+    horaris: { desde: string | null; fins: string | null }[] 
     afegirHorari: Function
     llevarHorari: Function
     handleChange: Function
@@ -36,7 +36,7 @@ export default function DiaHorari(props: propsType) {
                         <TextInput
                             label="Desde"
                             enterKeyHint="next"
-                            value={horari.Desde ? horari.Desde : "_ _ : _ _"}
+                            value={horari.desde ? horari.desde : "_ _ : _ _"}
                             error={errors[i] ? !!errors[i].errDesde : false}
                             errorText={errors[i] ? errors[i].errDesde : ""}
                             inputStyle={{ textAlign: "center", width: "100%" }}
@@ -55,7 +55,7 @@ export default function DiaHorari(props: propsType) {
                             label="Fins"
                             editable={false}
                             enterKeyHint="next"
-                            value={horari.Fins ? horari.Fins : "_ _ : _ _"}
+                            value={horari.fins ? horari.fins : "_ _ : _ _"}
                             error={errors[i] ? !!errors[i].errFins : false}
                             errorText={errors[i] ? errors[i].errFins : ""}
                             inputStyle={{ textAlign: "center" }}

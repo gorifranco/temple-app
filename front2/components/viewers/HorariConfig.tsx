@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text, Pressable } from 'react-native'
 import { useThemeStyles } from '@/themes/theme'
 import DiaHorari from './DiaHorari'
@@ -10,11 +10,30 @@ import { useAppDispatch, useAppSelector } from '@/store/reduxHooks'
 
 export default function HorariConfig() {
     const themeStyles = useThemeStyles()
-    const horaris:HorariType[] = useAppSelector(selectConfig).Horaris;
-    const [horarisMap, setHorarisMap] = useState<Map<number, { Desde: string|null; Fins: string|null }[]>>(new Map());
+    const horaris:HorariType[] = useAppSelector(selectConfig).horaris;
+    const [horarisMap, setHorarisMap] = useState<Map<number, { desde: string|null; fins: string|null }[]>>(new Map());
     const [errorsHorarisMap, setErrorsHorarisMap] = useState<Map<number, { errDesde: string|null; errFins: string|null }[]>>(new Map());
     const dies = ["Dilluns", "Dimarts", "Dimecres", "Dijous", "Divendres", "Dissabte", "Diumenge"];
     const dispatch = useAppDispatch();
+
+    console.log(horaris)
+
+    useEffect(() => {
+        if (horaris && horaris.length > 0) {
+            const transformedHoraris = transformHoraris(horaris);
+            setHorarisMap(transformedHoraris);
+        }
+    }, [horaris]);
+
+    function transformHoraris(horaris: HorariType[]) {
+        return horaris.reduce((acc: Map<number, { desde: string; fins: string }[]>, horari: HorariType) => {
+            if (!acc.has(horari.diaSetmana)) {
+                acc.set(horari.diaSetmana, []);
+            }
+            acc.get(horari.diaSetmana)!.push({ desde: horari.desde, fins: horari.fins });
+            return acc;
+        }, new Map());
+    }
 
     async function handleGuardarHoraris() {
         if(validarHoraris(horarisMap).status){
@@ -28,9 +47,9 @@ export default function HorariConfig() {
         }
         const horarisArray: HorariType[] = Array.from(horarisMap.entries()).flatMap(([diaSetmana, horaris]) => {
             return horaris.map(horari => ({
-                DiaSetmana: diaSetmana ?? 0,
-                Desde: horari.Desde ?? "",
-                Fins: horari.Fins ?? ""
+                diaSetmana: diaSetmana ?? 0,
+                desde: horari.desde ?? "",
+                fins: horari.fins ?? ""
             }));
         });
 
@@ -41,7 +60,7 @@ export default function HorariConfig() {
         setHorarisMap(prevMap => {
             const updatedMap = new Map(prevMap);
             const horariArray = updatedMap.get(i) || [];
-            horariArray.push({ Desde: null, Fins: null });
+            horariArray.push({ desde: null, fins: null });
             updatedMap.set(i, horariArray);
 
             return updatedMap;
@@ -53,7 +72,7 @@ export default function HorariConfig() {
         setHorarisMap(prevMap => {
             const updatedMap = new Map(prevMap);
             const horariArray = updatedMap.get(d) || [];
-            dof == 0 ? horariArray[index].Desde = hora : horariArray[index].Fins = hora;
+            dof == 0 ? horariArray[index].desde = hora : horariArray[index].fins = hora;
             updatedMap.set(d, horariArray);
 
             return updatedMap;

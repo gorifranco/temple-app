@@ -3,18 +3,18 @@ import { RootState } from ".";
 import { ConfigType, HorariType } from "../types/apiTypes";
 
 interface ConfigState {
-  DuracioSessions: number | null;
-  MaxAlumnesPerSessio: number | null;
-  Horaris: HorariType[];
+  duracioSessions: number | null;
+  maxAlumnesPerSessio: number | null;
+  horaris: HorariType[];
   status: "idle" | "pending" | "succeeded" | "failed";
   error: string | null;
   action: "get" | "";
 }
 
 const initialState: ConfigState = {
-  DuracioSessions: null,
-  MaxAlumnesPerSessio: null,
-  Horaris: [],
+  duracioSessions: null,
+  maxAlumnesPerSessio: null,
+  horaris: [],
   status: "idle",
   error: null,
   action: "",
@@ -123,9 +123,9 @@ const configSlice = createSlice({
         getConfig.fulfilled,
         (state, action: PayloadAction<ConfigType>) => {
           state.status = "succeeded";
-          state.DuracioSessions = action.payload.duracioSessions;
-          state.MaxAlumnesPerSessio = action.payload.maxAlumnesPerSessio;
-          state.Horaris = action.payload.horaris;
+          state.duracioSessions = action.payload.duracioSessions;
+          state.maxAlumnesPerSessio = action.payload.maxAlumnesPerSessio;
+          state.horaris = action.payload.horaris;
         }
       )
       .addCase(getConfig.rejected, (state, action) => {
@@ -142,8 +142,8 @@ const configSlice = createSlice({
           }>
         ) => {
           state.status = "succeeded";
-          state.DuracioSessions = action.payload.duracioSessions;
-          state.MaxAlumnesPerSessio = action.payload.maxAlumnesPerSessio;
+          state.duracioSessions = action.payload.duracioSessions;
+          state.maxAlumnesPerSessio = action.payload.maxAlumnesPerSessio;
           state.error = null;
         }
       )
@@ -159,7 +159,7 @@ const configSlice = createSlice({
         guardarHoraris.fulfilled,
         (state, action: PayloadAction<HorariType[]>) => {
           state.status = "succeeded";
-          state.Horaris = action.payload;
+          state.horaris = action.payload;
           state.error = null;
         }
       )

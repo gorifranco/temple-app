@@ -30,6 +30,10 @@ export default function Index() {
     const today = new Date();
     const [selectedDay, setSelectedDay] = useState<DateData>();
 
+    useEffect(
+        () => { dispatch(getConfig()) }
+        , []);
+        
     useEffect(() => {
         if (rutinesStatus == "idle") dispatch(getRutinesEntrenador())
         if (exercicisStatus == "idle") dispatch(getExercicis())
@@ -60,7 +64,7 @@ export default function Index() {
 
                 <View style={[themeStyles.basicContainer, { marginBottom: 30 }]}>
 
-                    <View style={[themeStyles.box, {marginBottom: 20}]}>
+                    <View style={[themeStyles.box, { marginBottom: 20 }]}>
                         <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 20, marginBottom: 20 }]}>
                             Reserves (
                             {selectedDay ? selectedDay.day : today.getDate()}/
@@ -68,7 +72,7 @@ export default function Index() {
                             {selectedDay ? selectedDay.year : today.getFullYear()}
                             )
                         </Text>
-                        {reserves.length == 0 && <Text style={[themeStyles.text, {marginBottom: 20}]}>No hi ha reserves per aquest dia</Text>} 
+                        {reserves.length == 0 && <Text style={[themeStyles.text, { marginBottom: 20 }]}>No hi ha reserves per aquest dia</Text>}
                     </View>
 
                     <Pressable style={[themeStyles.box, { marginBottom: 20 }]} onPress={() => { router.push("/(alumnes)/alumnes") }}>

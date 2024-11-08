@@ -21,14 +21,14 @@ type ConfiguracioEntrenadorInput struct {
 }
 
 type ConfiguracioEntrenadorResponse struct {
-	DuracioSessions     uint   `json:"DuracioSessions"`
-	MaxAlumnesPerSessio uint   `json:"MaxAlumnesPerSessio"`
-	Horaris             []HorariResponse `json:"Horaris"`
+	DuracioSessions     uint   `json:"duracioSessions"`
+	MaxAlumnesPerSessio uint   `json:"maxAlumnesPerSessio"`
+	Horaris             []HorariResponse `json:"horaris"`
 }
 
 type HorariResponse struct {
-	ID          uint   `json:"ID"`
-	DiaSetmana  uint    `json:"DiaSetmana"`
-	Desde       string `json:"Desde"`
-	Fins        string `json:"Fins"`
+	ID          uint   `json:"id"`
+	DiaSetmana  uint    `json:"diaSetmana"`
+	Desde       string `json:"desde"`
+	Fins        string `json:"fins"`
 }

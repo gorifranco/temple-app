@@ -1,4 +1,4 @@
-import { Pressable, View, Text, Modal, StyleSheet } from 'react-native'
+import { Pressable, View, Text, Modal, Share } from 'react-native'
 import { EvilIcons } from '@expo/vector-icons'
 import { useState } from 'react'
 import TextInput from '@/components/inputs/TextInput'
@@ -6,7 +6,7 @@ import { nameValidator } from '@/helpers/nameValidator'
 import { useThemeStyles } from '@/themes/theme'
 import CloseButton from '../buttons/CloseButton'
 import { useAppSelector } from '@/store/reduxHooks'
-/* import Share from 'react-native-share'; */
+
 
 interface propsType {
     modalVisible: boolean
@@ -24,6 +24,27 @@ export default function ModalAfegirUsuari(props: propsType) {
         nom: '',
     });
 
+    async function share() {
+        try {
+            const result = await Share.share({
+              message: 'Convida a un usuari al grup',
+                title: 'Convidar al grup',
+                url: 'http://temple-app.com/join/4866331548'
+            });
+            if (result.action === Share.sharedAction) {
+              if (result.activityType) {
+                // shared with activity type of result.activityType
+              } else {
+                // shared
+              }
+            } else if (result.action === Share.dismissedAction) {
+              // dismissed
+            }
+          } catch (error: any) {
+            console.log("error sharing")
+          }
+    }
+
 
 
     function submit() {
@@ -38,18 +59,6 @@ export default function ModalAfegirUsuari(props: propsType) {
         crearUsuariFictici(nom)
         closeModal()
     }
-
-
-/*     async function share() {
-        try {
-            await Share.open({
-                message: 'Unit a l ameva sala amb el codi ${user.codiEntrenador}',
-                url: 'temple-app://unirse/${usuari.CodiEntrenador}',
-            });
-        } catch (error) {
-            console.log(error);
-        }
-    } */
 
 
     return (
@@ -71,7 +80,7 @@ export default function ModalAfegirUsuari(props: propsType) {
                     <Text style={themeStyles.text}>Codi d'entrenador: #{auth?.user?.codiEntrenador ?? ''}</Text>
                     <Pressable
                         onPress={() => {
-                            // share()
+                            share()
                         }}
                         style={themeStyles.button1}>
                         <View style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
