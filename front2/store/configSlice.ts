@@ -1,6 +1,6 @@
-import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from ".";
-import { ConfigType, HorariType } from "../types/apiTypes";
+import { ConfigType, HorariType, ReducedConfigType } from "../types/apiTypes";
 
 interface ConfigState {
   duracioSessions: number | null;
@@ -48,15 +48,12 @@ export const getConfig = createAsyncThunk<
 
 // Guardar configuració
 export const guardarConfiguracio = createAsyncThunk<
-  { duracioSessions: number; maxAlumnesPerSessio: number }, // Expected result type
-  { duracioSessions: number; maxAlumnesPerSessio: number }, // Parameters type
+  ReducedConfigType, // Expected result type
+  { config: ReducedConfigType }, // Parameters type
   { state: RootState }
 >(
   "entrenador/guardarConfiguracio",
-  async (
-    { duracioSessions, maxAlumnesPerSessio },
-    { getState, rejectWithValue }
-  ) => {
+  async (config, { getState, rejectWithValue }) => {
     const state = getState();
     const token = state.auth.user?.token;
 
@@ -66,17 +63,17 @@ export const guardarConfiguracio = createAsyncThunk<
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+          "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify({ duracioSessions, maxAlumnesPerSessio }),
+        body: JSON.stringify(config),
       }
     );
 
     if (!response.ok) {
       const errorData = await response.json();
-      return rejectWithValue(errorData?.error ?? "Failed to create alumne");
+      return rejectWithValue(errorData?.error ?? "Failed to update config");
     }
-    return { duracioSessions, maxAlumnesPerSessio };
+    return config.config;
   }
 );
 
@@ -136,14 +133,11 @@ const configSlice = createSlice({
         guardarConfiguracio.fulfilled,
         (
           state,
-          action: PayloadAction<{
-            duracioSessions: number;
-            maxAlumnesPerSessio: number;
-          }>
+          action
         ) => {
           state.status = "succeeded";
-          state.duracioSessions = action.payload.duracioSessions;
-          state.maxAlumnesPerSessio = action.payload.maxAlumnesPerSessio;
+          state.duracioSessions = action.payload.duracioSessions ?? null;
+          state.maxAlumnesPerSessio = action.payload.maxAlumnesPerSessio ?? null;
           state.error = null;
         }
       )

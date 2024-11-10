@@ -34,6 +34,7 @@ export default function Index() {
         () => { dispatch(getConfig()) }
         , []);
         
+        
     useEffect(() => {
         if (rutinesStatus == "idle") dispatch(getRutinesEntrenador())
         if (exercicisStatus == "idle") dispatch(getExercicis())

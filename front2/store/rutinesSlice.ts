@@ -22,7 +22,6 @@ export const getRutinesEntrenador = createAsyncThunk<
 >("rutines/getRutinesEntrenador", async (_, { getState, rejectWithValue }) => {
   const state = getState();
   const token = state.auth.user?.token;
-  console.log(`rutines: __ ${process.env.EXPO_PUBLIC_API_URL}`)
 
   const response = await fetch(
     process.env.EXPO_PUBLIC_API_URL + "/rutines/rutinesEntrenador",

@@ -1,37 +1,39 @@
-import { View, Text, Pressable, ScrollView } from 'react-native';
-import React, { useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useThemeStyles } from '@/themes/theme';
 import TextInput from '@/components/inputs/TextInput';
-import { useSelector } from 'react-redux';
-import { RootState } from '@/store';
-import { persistor } from '../../store';
-import { ConfigType } from '@/types/apiTypes';
 import HorariConfig from '@/components/viewers/HorariConfig';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useDispatch } from 'react-redux';
-import { useAppSelector } from '@/store/reduxHooks';
-import { selectConfig } from '@/store/configSlice';
+import { configValidator } from '@/helpers/validators';
 import { logoutRedux } from '@/store/authSlice';
+import { guardarConfiguracio, selectConfig } from '@/store/configSlice';
+import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
+import { useAppTheme, useThemeStyles } from '@/themes/theme';
+import { ReducedConfigType } from '@/types/apiTypes';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useState } from 'react';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { persistor } from '../../store';
+import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 
 export default function Index() {
+    const appTheme = useAppTheme();
     const themeStyles = useThemeStyles();
-    const dispatch = useDispatch();
-    const auth = useSelector((state: RootState) => state.auth);
+    const dispatch = useAppDispatch();
     const config = useAppSelector(selectConfig);
+    const [timepickerVisible, setTimepickerVisible] = useState(false);
+    const [configTmp, setConfigTmp] = useState<ReducedConfigType>({
+        duracioSessions: config.duracioSessions,
+        maxAlumnesPerSessio: config.maxAlumnesPerSessio ?? 0,
+    });
     const [errors, setErrors] = useState({
         duracioSessions: "",
         maxAlumnesPerSessio: "",
         horariEntrenador: []
     });
-    const [configTmp, setConfigTmp] = useState<ConfigType>({
-        duracioSessions: config.DuracioSessions ?? 0,
-        maxAlumnesPerSessio: config.MaxAlumnesPerSessio ?? 0,
-        horaris: config.Horaris,
-    });
+    const initialDate = new Date();
+    initialDate.setHours(0, 0, 0, 0);
 
-    if (!auth.user) {
-        throw new Error("AuthProvider is missing. Please wrap your component tree with AuthProvider.");
+    function handleCanviarDuracio(minutes:number) {
+        console.log(minutes)
+        setConfigTmp({ ...configTmp, duracioSessions: minutes });
     }
 
     async function borrarStorage() {
@@ -46,7 +48,7 @@ export default function Index() {
     }
 
     function handleCanviarConfiguracio() {
-
+        if (configValidator(config)) dispatch(guardarConfiguracio({ config: configTmp }));
     }
 
     return (
@@ -68,28 +70,32 @@ export default function Index() {
 
                 <View style={{ width: "80%", marginHorizontal: "auto", marginVertical: 10, marginBottom: 10, display: "flex", flexDirection: "row" }}>
                     <Text style={[themeStyles.text, { marginRight: 10 }]}>Duració de les sessions (min)</Text>
-                    <TextInput
-                        containerStyle={{ width: 68 }}
-                        inputStyle={{ textAlign: "right" }}
-                        enterKeyHint="done"
-                        value={configTmp.duracioSessions}
-                        onChangeText={(text: string) => setConfigTmp({ ...configTmp, duracioSessions: Number(text.replace(/[^0-9]/g, '')) })}
-                        error={!!errors.duracioSessions}
-                        errorText={errors.duracioSessions}
-                        autoCapitalize="none"
-                        inputMode="numeric"
-                        maxLength={3}
-                    />
+                    <Pressable onPress={() => setTimepickerVisible(true)}>
+                        <TextInput
+                            containerStyle={{ width: 68 }}
+                            inputStyle={{ textAlign: "right" }}
+                            enterKeyHint="done"
+                            value={configTmp.duracioSessions?.toString() ?? ""}
+                            onChangeText={(text: string) => setConfigTmp({ ...configTmp, duracioSessions: Number(text.replace(/[^0-9]/g, '')) })}
+                            error={!!errors.duracioSessions}
+                            errorText={errors.duracioSessions}
+                            autoCapitalize="none"
+                            inputMode="numeric"
+                            maxLength={3}
+                            editable={false}
+                        />
+                    </Pressable>
                 </View>
 
+                {/* Input max students per session */}
                 <View style={{ width: "80%", marginHorizontal: "auto", marginVertical: 10, marginBottom: 10, display: "flex", flexDirection: "row" }}>
                     <Text style={[themeStyles.text, { marginRight: 10 }]}>Alumnes per sessió</Text>
                     <TextInput
                         maxLength={3}
                         containerStyle={{ width: 68 }}
-                        inputStyle={{ textAlign: "right" }}
+                        inputStyle={[{ textAlign: "right" }]}
                         enterKeyHint="done"
-                        value={configTmp.maxAlumnesPerSessio}
+                        value={configTmp.maxAlumnesPerSessio?.toString() ?? ""}
                         onChangeText={(text: string) => setConfigTmp({ ...configTmp, maxAlumnesPerSessio: Number(text.replace(/[^0-9]/g, '')) })}
                         error={!!errors.maxAlumnesPerSessio}
                         errorText={errors.maxAlumnesPerSessio}
@@ -103,7 +109,25 @@ export default function Index() {
                     onPress={() => handleCanviarConfiguracio()}>
                     <Text style={themeStyles.button1Text}>Canviar configuració</Text>
                 </Pressable>
+
+                {/* Time picker */}
+                {timepickerVisible && < RNDateTimePicker
+                    mode='time'
+                    display="spinner"
+                    is24Hour={true}
+                    value={initialDate} 
+                    minuteInterval={15}
+                    positiveButton={{ label: 'acceptar', textColor: appTheme.colors.primary }}
+                    negativeButton={{ label: 'Cancelar', textColor: appTheme.colors.text }}
+                    onChange={(e: DateTimePickerEvent, time: Date | undefined) => {
+                        if (time && e.type === "set") {
+                            handleCanviarDuracio(time.getHours()*60 + time.getMinutes());
+                        }
+                        setTimepickerVisible(false);
+                    }}
+                />
+                }
             </ScrollView>
-        </SafeAreaView>
+        </SafeAreaView >
     );
 }

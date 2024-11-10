@@ -16,8 +16,6 @@ export default function HorariConfig() {
     const dies = ["Dilluns", "Dimarts", "Dimecres", "Dijous", "Divendres", "Dissabte", "Diumenge"];
     const dispatch = useAppDispatch();
 
-    console.log(horaris)
-
     useEffect(() => {
         if (horaris && horaris.length > 0) {
             const transformedHoraris = transformHoraris(horaris);

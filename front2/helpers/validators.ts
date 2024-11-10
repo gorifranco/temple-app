@@ -1,4 +1,4 @@
-import { ExerciciErrorType, ExerciciRutinaType } from "@/types/apiTypes"
+import { ExerciciErrorType, ExerciciRutinaType, ReducedConfigType } from "@/types/apiTypes"
 
 export function nomSalaValidator(nom: string) {
   if (!nom || nom.length === 0) return "Nom no pot ser buit."
@@ -32,26 +32,26 @@ export function exercicisValidator(exercicis: ExerciciRutinaType[]): { error: bo
 
   exercicis.forEach((exercici, index) => {
     const error: ExerciciErrorType = {
-      ExerciciID: "",
-      PercentatgeRM: "",
-      NumRepes: "",
-      NumSeries: "",
+      exerciciID: "",
+      percentatgeRM: "",
+      numRepes: "",
+      numSeries: "",
     };
 
     // Validaciones
-    validate(exercici.ExerciciID === -1, "Tria un exercici.", "ExerciciID", error);
-    validate(exercici.PercentatgeRM === 0, "Obligatori", 'PercentatgeRM', error);
-    validate(exercici.PercentatgeRM < 0, "Percentatge RM no pot ser negatiu.", 'PercentatgeRM', error);
-    validate(exercici.PercentatgeRM > 100, "Percentatge RM no pot ser major que 100.", 'PercentatgeRM', error);
-    validate(exercici.PercentatgeRM === null, "Percentatge RM no pot ser buit.", 'PercentatgeRM', error);
-    validate(exercici.NumRepes === 0, "Obligatori", 'NumRepes', error);
-    validate(exercici.NumRepes < 0, "NumRepes no pot ser negatiu.", 'NumRepes', error);
-    validate(exercici.NumRepes > 100, "NumRepes no pot ser major que 100.", 'NumRepes', error);
-    validate(exercici.NumRepes === null, "NumRepes no pot ser buit.", 'NumRepes', error);
-    validate(exercici.NumSeries === 0, "Obligatori", 'NumSeries', error);
-    validate(exercici.NumSeries < 0, "NumSeries no pot ser negatiu.", 'NumSeries', error);
-    validate(exercici.NumSeries > 100, "NumSeries no pot ser major que 100.", 'NumSeries', error);
-    validate(exercici.NumSeries === null, "NumSeries no pot ser buit.", 'NumSeries', error);
+    validate(exercici.exerciciID === -1, "Tria un exercici.", "exerciciID", error);
+    validate(exercici.percentatgeRM === 0, "Obligatori", 'percentatgeRM', error);
+    validate(exercici.percentatgeRM < 0, "Percentatge RM no pot ser negatiu.", 'percentatgeRM', error);
+    validate(exercici.percentatgeRM > 100, "Percentatge RM no pot ser major que 100.", 'percentatgeRM', error);
+    validate(exercici.percentatgeRM === null, "Percentatge RM no pot ser buit.", 'percentatgeRM', error);
+    validate(exercici.numRepes === 0, "Obligatori", 'numRepes', error);
+    validate(exercici.numRepes < 0, "NumRepes no pot ser negatiu.", 'numRepes', error);
+    validate(exercici.numRepes > 100, "NumRepes no pot ser major que 100.", 'numRepes', error);
+    validate(exercici.numRepes === null, "NumRepes no pot ser buit.", 'numRepes', error);
+    validate(exercici.numSeries === 0, "Obligatori", 'numSeries', error);
+    validate(exercici.numSeries < 0, "NumSeries no pot ser negatiu.", 'numSeries', error);
+    validate(exercici.numSeries > 100, "NumSeries no pot ser major que 100.", 'numSeries', error);
+    validate(exercici.numSeries === null, "NumSeries no pot ser buit.", 'numSeries', error);
 
     errors.set(index, error);
   });
@@ -72,6 +72,12 @@ export function diesValidator(dies: Number|null) {
   if (dies == 0) return "Dies no pot ser 0"
   if (dies.valueOf() > 100) return "Dies no pot ser superior a 100."
   return ''
+}
+export function configValidator(config:ReducedConfigType)
+{
+  if (config.duracioSessions == null) return false;
+  if (config.maxAlumnesPerSessio == null) return false;
+  return true;
 }
 
 

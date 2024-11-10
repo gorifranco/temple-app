@@ -74,6 +74,11 @@ export interface ConfigType {
   horaris: HorariType[];
 }
 
+export interface ReducedConfigType {
+  duracioSessions: number | null;
+  maxAlumnesPerSessio: number | null;
+}
+
 export interface HorariType {
   diaSetmana: number;
   desde: string;
