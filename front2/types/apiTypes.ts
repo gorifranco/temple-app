@@ -75,8 +75,8 @@ export interface ConfigType {
 }
 
 export interface ReducedConfigType {
-  duracioSessions: number | null;
-  maxAlumnesPerSessio: number | null;
+  duracioSessions: number
+  maxAlumnesPerSessio: number;
 }
 
 export interface HorariType {

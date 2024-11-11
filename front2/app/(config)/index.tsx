@@ -21,7 +21,7 @@ export default function Index() {
     const [timepickerVisible, setTimepickerVisible] = useState(false);
     const [configTmp, setConfigTmp] = useState<ReducedConfigType>({
         duracioSessions: config.duracioSessions,
-        maxAlumnesPerSessio: config.maxAlumnesPerSessio ?? 0,
+        maxAlumnesPerSessio: config.maxAlumnesPerSessio,
     });
     const [errors, setErrors] = useState({
         duracioSessions: "",
@@ -29,10 +29,11 @@ export default function Index() {
         horariEntrenador: []
     });
     const initialDate = new Date();
-    initialDate.setHours(0, 0, 0, 0);
+    const hours = Math.floor(config.duracioSessions/60);
+    const minutes = config.duracioSessions % 60;
+    initialDate.setHours(hours, minutes, 0, 0);
 
     function handleCanviarDuracio(minutes:number) {
-        console.log(minutes)
         setConfigTmp({ ...configTmp, duracioSessions: minutes });
     }
 
@@ -48,7 +49,7 @@ export default function Index() {
     }
 
     function handleCanviarConfiguracio() {
-        if (configValidator(config)) dispatch(guardarConfiguracio({ config: configTmp }));
+        if (configValidator(configTmp)) dispatch(guardarConfiguracio({ config: configTmp }));
     }
 
     return (

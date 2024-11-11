@@ -3,8 +3,8 @@ import { RootState } from ".";
 import { ConfigType, HorariType, ReducedConfigType } from "../types/apiTypes";
 
 interface ConfigState {
-  duracioSessions: number | null;
-  maxAlumnesPerSessio: number | null;
+  duracioSessions: number;
+  maxAlumnesPerSessio: number;
   horaris: HorariType[];
   status: "idle" | "pending" | "succeeded" | "failed";
   error: string | null;
@@ -12,8 +12,8 @@ interface ConfigState {
 }
 
 const initialState: ConfigState = {
-  duracioSessions: null,
-  maxAlumnesPerSessio: null,
+  duracioSessions: 0,
+  maxAlumnesPerSessio: 0,
   horaris: [],
   status: "idle",
   error: null,
@@ -65,7 +65,7 @@ export const guardarConfiguracio = createAsyncThunk<
           "Content-Type": "application/json",
           "Authorization": `Bearer ${token}`,
         },
-        body: JSON.stringify(config),
+        body: JSON.stringify(config.config),
       }
     );
 
