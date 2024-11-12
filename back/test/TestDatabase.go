@@ -10,7 +10,7 @@ import (
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"gorm.io/gorm/logger"
+/* 	"gorm.io/gorm/logger" */
 )
 
 //go run gotest.tools/gotestsum@latest --format testname ./test
@@ -34,7 +34,7 @@ func InitializeDBTest() {
 			os.Getenv("DB_NAME_TEST") + "?charset=utf8mb4&parseTime=True&loc=Local"
 
 		db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{
-			Logger: logger.Default.LogMode(logger.Silent),
+			/* Logger: logger.Default.LogMode(logger.Silent), */
 		})
 
 		if err != nil {

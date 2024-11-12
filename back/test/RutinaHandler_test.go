@@ -39,91 +39,82 @@ func CrearRutinaTest(entrenadorID uint) models.Rutina {
 	return rutina
 }
 
+func AssignarRutina(user *models.Usuari, rutina *models.Rutina) {
+	var r models.UsuariRutina
+	r.RutinaID = rutina.ID
+	r.UsuariID = user.ID
+
+	GetDBTest().Create(&r)
+}
+
 func DeleteRutines() {
 	GetDBTest().Exec("Delete from exercicis_rutina")
 	GetDBTest().Exec("Delete from rutines")
 }
 
 func TestCreateRutina(t *testing.T) {
+
+}
+
+func TestAcabarRutina(t *testing.T) {
+
 	defer func() {
 		DeleteRutines()
 		EliminarDadesAlumnes()
 	}()
+
 	gin.SetMode(gin.TestMode)
 	router := gin.Default()
 	db := GetDBTest()
 	handler := handlers.NewHandler(db)
 
-	codi := "1234"
-	entrenador := CrearUsuariTest("Entrenador Test", 3, &codi, nil)
+	c := "12355"
+	users := CrearEntrenador()
+	user2 := CrearUsuariTest("Usuari Test 2", 2, &c, nil)
+	r := CrearRutinaTest(users[0].ID)
+	AssignarRutina(&users[1], &r)
+	AssignarRutina(&user2, &r)
 
 	router.Use(func(c *gin.Context) {
-		c.Set("user", &entrenador)
+		c.Set("user", &users[0])
 		c.Next()
 	})
 
-	router.POST("/api/rutines", handler.CreateRutina)
+	router.POST("/entrenador/acabarRutina", handler.AcabarRutina)
 
-	w := httptest.NewRecorder()
-
-	exercici1 := models.ExerciciRutinaInput{
-			ExerciciID:    1,
-			NumRepes:      5,
-			NumSeries:     5,
-			PercentatgeRM: 50,
-			Ordre:         0,
-			Cicle:         0,
-			DiaRutina:     0,
-	}
-	exercici2 := models.ExerciciRutinaInput{
-			ExerciciID:    2,
-			NumRepes:      5,
-			NumSeries:     5,
-			PercentatgeRM: 50,
-			Ordre:         1,
-			Cicle:         0,
-			DiaRutina:     0,
-	}
-
-
-	rutina := models.RutinaInput{Nom: "Rutina Test", Cicles: 1, DiesDuracio: 1, Exercicis: []models.ExerciciRutinaInput{exercici1, exercici2},
-	 Descripcio: "Descripcio Test"}
-
-	rutinaJSON, err := json.Marshal(rutina)
-
+	u1, err := json.Marshal(map[string]uint{"usuariID": users[1].ID})
 	if err != nil {
 		t.Errorf("Error al convertir el mapa a JSON: %v", []string{err.Error()})
 	}
+	userPost1 := u1
 
-	req, _ := http.NewRequest("POST", "/api/rutines", bytes.NewReader(rutinaJSON))
-	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("POST", "/entrenador/acabarRutina", bytes.NewReader(userPost1))
 
 	router.ServeHTTP(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
+	var result int64
+	handler.DB.Table("usuari_rutina").Where("usuari_id = ? and data_finalitzacio is null", users[1].ID).Count(&result)
 
-	rutina.Cicles = 0
-	rutina.Descripcio = ""
-	rutina.Nom = ""
-	rutina.DiesDuracio = 0
-	rutina.Exercicis = []models.ExerciciRutinaInput{}
+	assert.Equal(t, result, int64(0))
 
-	rutinaJSON2, err := json.Marshal(rutina)
+	w2 := httptest.NewRecorder()
+
+	u2, err := json.Marshal(map[string]uint{"usuariID": user2.ID})
+
 	if err != nil {
 		t.Errorf("Error al convertir el mapa a JSON: %v", []string{err.Error()})
 	}
+	userPost2 := u2
 
-	w2 := httptest.NewRecorder()
-	req2, _ := http.NewRequest("POST", "/api/rutines", bytes.NewReader(rutinaJSON2))
-	req2.Header.Set("Content-Type", "application/json")
+	req2, _ := http.NewRequest("POST", "/entrenador/acabarRutina", bytes.NewReader(userPost2))
+
 	router.ServeHTTP(w2, req2)
+	assert.Equal(t, http.StatusUnauthorized, w2.Code)
 
-	assert.Equal(t, http.StatusConflict, w2.Code)
+	var result2 int64
+	handler.DB.Table("usuari_rutina").Where("usuari_id = ? and data_finalitzacio is null", user2.ID).Count(&result2)
 
-	w3 := httptest.NewRecorder()
-	req3, _ := http.NewRequest("POST", "/api/rutines", bytes.NewReader(rutinaJSON))
-	req3.Header.Set("Content-Type", "application/json")
-	router.ServeHTTP(w3, req3)
-
-	assert.Equal(t, http.StatusBadRequest, w3.Code)
+	assert.Equal(t, result2, int64(1))
 }

@@ -15,9 +15,9 @@ import (
 	"github.com/go-playground/assert/v2"
 )
 
-func crearExercici() models.Exercici {
+func crearExercici(nom string) models.Exercici {
 	var exercici models.Exercici
-	exercici.Nom = "Exercici Test"
+	exercici.Nom = nom
 
 	GetDBTest().Create(&exercici)
 
@@ -87,14 +87,12 @@ func TestCreateExercici(t *testing.T) {
 
 func TestDeleteExercici(t *testing.T) {
 
-	exercici := crearExercici()
+	exercici := crearExercici("Exercici Test")
 
 	var count = int64(1)
 
 	defer func() {
-		if count != 0 {
 			EliminarDadesExercici()
-		}
 	}()
 
 	w := httptest.NewRecorder()

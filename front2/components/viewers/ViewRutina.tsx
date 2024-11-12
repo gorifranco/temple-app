@@ -72,10 +72,9 @@ export default function ViewRutina(props: propsType) {
                     </View>
                     {rutina.exercicis && rutina.exercicis.map((exercici, i) => {
                         if (exercici.diaRutina == dia && exercici.cicle == 0) {
-                            const e = exercici.exerciciID ? exercicis.find(exercici => exercici.id === exercici.id) : null;
                             return (
                                 <View key={i} style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginTop: 10, width: "95%" }}>
-                                    {e != null && <Text style={[themeStyles.text, { width: "50%" }]}>{e.nom}</Text>}
+                                    <Text style={[themeStyles.text, { width: "50%" }]}>{exercici.nom}</Text>
                                     <Text style={[themeStyles.text]}>{exercici.numRepes}</Text>
                                     <Text style={[themeStyles.text]}>{exercici.numSeries}</Text>
                                     <Text style={[themeStyles.text]}>{exercici.percentatgeRM}</Text>

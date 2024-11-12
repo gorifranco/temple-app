@@ -2,11 +2,10 @@ package handlers
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"net/http"
-	"sort"
 	"temple-app/models"
+	"temple-app/validators"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -30,10 +29,10 @@ func (h *Handler) IndexRutina(c *gin.Context) {
 	var rutinesResponse []models.RutinaResponse
 	for _, rutina := range rutines {
 		tmp := models.RutinaResponse{
-			ID:           rutina.ID,
-			Nom:          rutina.Nom,
-			DiesDuracio:  rutina.DiesDuracio,
-			Cicles:       rutina.Cicles,
+			ID:          rutina.ID,
+			Nom:         rutina.Nom,
+			DiesDuracio: rutina.DiesDuracio,
+			Cicles:      rutina.Cicles,
 		}
 		if err := h.DB.Table("exercicis_rutina").Where("rutina_id = ? and deleted_at is null", rutina.ID).Scan(&tmp.Exercicis).Error; err != nil {
 			fmt.Println(err)
@@ -65,15 +64,17 @@ func (h *Handler) CreateRutina(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
-	if errs := h.RutinaValidator(&input); len(errs) > 0 {
+
+	fmt.Printf("Input: %v\n", input)
+	if errs := validators.RutinaValidator(&input, h.DB); len(errs) > 0 {
 		v, err := json.Marshal(errs)
-		if err != nil{
+		if err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "Datos incorrectos"})
 		}
 		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: v})
+		fmt.Printf("errs: %v: \n", errs)
 		return
 	}
-
 	var rutina models.Rutina
 
 	err = h.DB.Transaction(func(tx *gorm.DB) error {
@@ -106,16 +107,13 @@ func (h *Handler) CreateRutina(c *gin.Context) {
 				return err
 			}
 		}
-
 		// If everything went well, return nil to confirm the transaction
 		return nil
 	})
-
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
 		return
 	}
-
 	// If the transaction was successful, load the created routine with the exercises
 	var createdRutina models.RutinaResponse
 	if err = h.DB.Table("rutines").Select("id, nom, dies_duracio, cicles, entrenadorID").Where("id = ?", rutina.ID).Scan(&createdRutina).Error; err != nil {
@@ -266,11 +264,11 @@ func (h *Handler) RutinesEntrenador(c *gin.Context) {
 		}
 
 		rutinesResposta = append(rutinesResposta, models.RutinaResponse{
-			ID:           rutina.ID,
-			Nom:          rutina.Nom,
-			Cicles:       rutina.Cicles,
-			DiesDuracio:  rutina.DiesDuracio,
-			Exercicis:    ex,
+			ID:          rutina.ID,
+			Nom:         rutina.Nom,
+			Cicles:      rutina.Cicles,
+			DiesDuracio: rutina.DiesDuracio,
+			Exercicis:   ex,
 		})
 	}
 
@@ -362,23 +360,22 @@ func (h *Handler) AcabarRutina(c *gin.Context) {
 		return
 	}
 
-	if user.EntrenadorID != nil && *user.EntrenadorID != c.MustGet("user").(*models.Usuari).ID {
+	if user.EntrenadorID == nil || *user.EntrenadorID != c.MustGet("user").(*models.Usuari).ID {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Unauthorized"})
 		return
 	}
 
-	if err = h.DB.Where("usuari_id = ? and data_finalitzacio is null", user.ID).First(&rutina).Error; err != nil {
+	if err = h.DB.Where("usuari_id = ? and data_finalitzacio is null", input.UsuariID).First(&rutina).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: "record not found"})
 		return
 	}
 
 	var now = time.Now()
 
-	rutina.DataFinalitzacio = &now
-	if err = h.DB.Save(&rutina).Error; err != nil {
+	if err = h.DB.Model(&rutina).Select("DataFinalitzacio").Updates(models.UsuariRutina{DataFinalitzacio: &now}).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to update rutina"})
 		return
-	}
+	}	
 
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
 }
@@ -439,74 +436,4 @@ func (h *Handler) AssignarRutina(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
-}
-
-func (h *Handler) RutinaValidator(rutina *models.RutinaInput) []error {
-	var errs []error
-
-	if rutina.Nom == "" {
-		errs = append(errs, errors.New("nom no pot ser buit"))
-	}
-	if rutina.Cicles <= 0 {
-		errs = append(errs, errors.New("cicles no pot estar buit"))
-	}
-	if rutina.DiesDuracio <= 0 {
-		errs = append(errs, errors.New("DiesDuracio no pot estar buit"))
-	}
-	if rutina.DiesDuracio > 7 {
-		errs = append(errs, errors.New("DiesDuracio no pot ser superior a 7"))
-	}
-	if len(rutina.Exercicis) == 0 {
-		errs = append(errs, errors.New("exercicis no pot estar buit"))
-	}
-
-	//IDs of the exercises
-	var ids []uint
-	if err := h.DB.Table("exercicis").Where("deleted_at IS NULL").Pluck("id", &ids).Error; err != nil {
-		errs = append(errs, fmt.Errorf("error al recuperar IDs de exercicis: %v", err))
-	}
-
-	// Convert the slice to a map for faster lookups
-	exerciseIDMap := make(map[uint]bool)
-	for _, id := range ids {
-		exerciseIDMap[id] = true
-	}
-
-	// Initializa the map of ordres
-	ordres := make(map[uint][]uint)
-
-	// Validates every exercise
-	for _, exercici := range rutina.Exercicis {
-		if !exerciseIDMap[exercici.ExerciciID] {
-			errs = append(errs, errors.New("exercici no existeix"))
-		}
-		if exercici.NumRepes <= 0 {
-			errs = append(errs, errors.New("NumRepes no pot estar buit"))
-		}
-		if exercici.Cicle <= 0 {
-			errs = append(errs, errors.New("cicle no pot estar buit"))
-		}
-		if exercici.Cicle > rutina.Cicles {
-			errs = append(errs, errors.New("cicle de l'exercici no coincideix amb els cicles de la rutina"))
-		}
-
-		// Guardar el ordre en el mapa de ordres
-		ordres[exercici.Cicle] = append(ordres[exercici.Cicle], uint(exercici.Ordre))
-	}
-
-	// Validar que los ordres sean consecutivos en cada cicle
-	for _, ordresCicle := range ordres {
-		if len(ordresCicle) > 1 {
-			sort.Slice(ordresCicle, func(i, j int) bool {
-				return ordresCicle[i] < ordresCicle[j]
-			})
-			for i := 1; i < len(ordresCicle); i++ {
-				if ordresCicle[i] != ordresCicle[i-1]+1 {
-					errs = append(errs, errors.New("els ordres no estan consecutius"))
-				}
-			}
-		}
-	}
-
-	return errs
 }
