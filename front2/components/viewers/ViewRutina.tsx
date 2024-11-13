@@ -94,7 +94,10 @@ export default function ViewRutina(props: propsType) {
                             style={[themeStyles.button1, { width: "40%" }]}
                             onPress={() => {
                                 if (versio == 0) {
-                                    editarRutina()
+                                    router.push({
+                                        pathname: '/crearRutina/[RutinaID]',
+                                        params: { RutinaID: rutina.id },
+                                      })
                                 }
                                 else {
                                     canviarRutina()

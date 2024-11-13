@@ -8,7 +8,7 @@ import { useThemeStyles } from '@/themes/theme';
 import { status, actions } from '@/types/apiTypes';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, Pressable, Text } from 'react-native';
+import { View, Pressable, Text } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '@/themes/theme';
@@ -30,11 +30,15 @@ export default function Index() {
     const today = new Date();
     const [selectedDay, setSelectedDay] = useState<DateData>();
 
-    useEffect(
-        () => { dispatch(getConfig()) }
-        , []);
-        
-        
+/*     useEffect(
+        () => { dispatch(getConfig())
+            dispatch(getRutinesEntrenador())
+            dispatch(getExercicis())
+            dispatch(getReserves())
+            dispatch(getAlumnes())
+         }
+        , []); */
+          
     useEffect(() => {
         if (rutinesStatus == "idle") dispatch(getRutinesEntrenador())
         if (exercicisStatus == "idle") dispatch(getExercicis())
@@ -80,7 +84,7 @@ export default function Index() {
                         <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 20 }]}>Alumnes ({alumnes.length}/{process.env.EXPO_PUBLIC_MAX_ALUMNES})</Text>
                         <Text style={[themeStyles.text, { fontSize: 15, textAlign: "center", paddingTop: 13, color: appTheme.colors.primary, marginBottom: 20 }]}>Veure tots</Text>
                     </Pressable>
-                    <Pressable style={[themeStyles.box]}>
+                    <Pressable style={[themeStyles.box]} onPress={() => { router.push("/(rutines)/rutines") }}>
                         <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 20 }]}>Rutines ({rutines.length}/{process.env.EXPO_PUBLIC_MAX_RUTINES})</Text>
                         <Text style={[themeStyles.text, { fontSize: 15, textAlign: "center", paddingTop: 13, color: appTheme.colors.primary, marginBottom: 20 }]}>Veure totes</Text>
                     </Pressable>

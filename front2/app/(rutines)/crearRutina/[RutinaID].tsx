@@ -11,19 +11,25 @@ import { exercicisValidator, nomSalaValidator, descripcioValidator, ciclesValida
 import { ExerciciErrorType, RutinaType } from '@/types/apiTypes';
 import { useThemeStyles } from '@/themes/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAppDispatch } from '@/store/reduxHooks';
-import { createRutina } from '@/store/rutinesSlice';
+import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
+import { createRutina, selectRutinaById, updateRutina } from '@/store/rutinesSlice';
+import { useLocalSearchParams } from 'expo-router';
 
 
 export default function CrearRutina() {
+    const { RutinaID } = useLocalSearchParams();
     const themeStyles = useThemeStyles();
+    const [mode, setMode] = useState<"crear" | "editar">(RutinaID == '-1' ? "crear" : "editar");
+    if (mode == 'editar') {
+        var rutina = useAppSelector(state => selectRutinaById(state, Number(RutinaID)));
+    }
     const dispatch = useAppDispatch();
-    const [cicles, setCicles] = useState<(Number | null)>(null);
-    const [dies, setDies] = useState(1);
+    const [cicles, setCicles] = useState<(Number | null)>(mode == "editar" ? rutina!.cicles : null);
+    const [dies, setDies] = useState(mode == "editar" ? rutina!.diesDuracio : 1);
     const [currentDia, setCurrentDia] = useState(0);
-    const [exercicisElegits, setExercicisElegits] = useState<(ExerciciRutinaType)[]>([]);
-    const [nom, setNom] = useState("");
-    const [descripcio, setDescripcio] = useState("");
+    const [exercicisElegits, setExercicisElegits] = useState<(ExerciciRutinaType)[]>(mode == "editar" ? rutina!.exercicis : []);
+    const [nom, setNom] = useState(mode == "editar" ? rutina!.nom : "");
+    const [descripcio, setDescripcio] = useState(mode == "editar" ? rutina!.descripcio : "");
     const [errorsExercicis, setErrorsExercicis] = useState(new Map<number, ExerciciErrorType>());
     const [errors, setErrors] = useState({
         Nom: "",
@@ -31,6 +37,7 @@ export default function CrearRutina() {
         Dies: "",
         Cicles: "",
     })
+
 
     async function guardarRutina() {
         const tmp = exercicisElegits.filter((exercici) => exercici.diaRutina <= dies)
@@ -53,7 +60,11 @@ export default function CrearRutina() {
                 diesDuracio: dies,
                 exercicis: exercicisEnviats,
             }
-            dispatch(createRutina({ rutina: dataRutina }))
+            if (mode == "crear") {
+                dispatch(createRutina({ rutina: dataRutina }))
+            } else {
+                dispatch(updateRutina({ rutina: dataRutina }))
+            }
         }
     }
 
@@ -73,7 +84,7 @@ export default function CrearRutina() {
     return (
         <AutocompleteDropdownContextProvider>
             <SafeAreaView style={[themeStyles.background, { height: '100%' }]}>
-                <BackButton href={"(entrenador)"} styles={{ top: 60 }} />
+                <BackButton href={"../"} styles={{ top: 60 }} />
                 <Text style={themeStyles.titol1}>Creador de rutines</Text>
                 <ScrollView>
                     <View style={{ width: "80%", alignSelf: "center" }}>

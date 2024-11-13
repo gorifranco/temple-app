@@ -7,7 +7,6 @@ import { router } from 'expo-router';
 import { ScrollView, Text, View, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Modal } from 'react-native-paper';
 import ModalAfegirUsuari from '@/components/modals/ModalAfegirUsuari';
 import { useState } from 'react';
 import Toast from 'react-native-toast-message';

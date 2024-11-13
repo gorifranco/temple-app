@@ -29,7 +29,7 @@ export const getRutinesEntrenador = createAsyncThunk<
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     }
   );
@@ -53,7 +53,7 @@ export const deleteRutina = createAsyncThunk<
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
     },
   });
   const data = await response.json();
@@ -75,10 +75,36 @@ export const createRutina = createAsyncThunk<
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${token}`,
+      Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(rutina),
   });
+  const data = await response.json();
+  if (!response.ok) {
+    return rejectWithValue(data.error ?? "Failed to create rutina");
+  }
+  return data.data;
+});
+
+// Create rutina
+export const updateRutina = createAsyncThunk<
+  RutinaType,
+  { rutina: RutinaType }, // Parameters type
+  { state: RootState }
+>("rutines/updateRutina", async ({ rutina }, { getState, rejectWithValue }) => {
+  const state = getState();
+  const token = state.auth.user?.token;
+  const response = await fetch(
+    process.env.EXPO_PUBLIC_API_URL + "/rutines/" + rutina.id,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(rutina),
+    }
+  );
   const data = await response.json();
   if (!response.ok) {
     return rejectWithValue(data.error ?? "Failed to create rutina");
@@ -99,6 +125,7 @@ const rutinesSlice = createSlice({
         getRutinesEntrenador.fulfilled,
         (state, action: PayloadAction<RutinaType[]>) => {
           state.rutines = action.payload; // Update the rutines array
+          state.status = "succeeded";
         }
       )
       .addCase(getRutinesEntrenador.rejected, (state, action) => {
@@ -137,6 +164,28 @@ const rutinesSlice = createSlice({
         state.error = null;
       })
       .addCase(createRutina.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload as string;
+      })
+      //Update Rutina
+      .addCase(
+        updateRutina.fulfilled,
+        (state, action: PayloadAction<RutinaType>) => {
+          state.status = "succeeded";
+          const index = state.rutines.findIndex(
+            (rutina) => rutina.id === action.payload.id
+          );
+          if (index !== -1) {
+            state.rutines[index] = action.payload;
+          }
+          state.error = null;
+        }
+      )
+      .addCase(updateRutina.pending, (state) => {
+        state.status = "pending";
+        state.error = null;
+      })
+      .addCase(updateRutina.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload as string;
       });
