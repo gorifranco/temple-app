@@ -42,8 +42,16 @@ func TestRutinaValidator(t *testing.T) {
 		},
 	}
 
-	rutina := models.RutinaInput{Nom: "Rutina Test", Cicles: 1, DiesDuracio: 1, Exercicis: []models.ExerciciRutinaInput{exercici1, exercici2},
-		Descripcio: "Descripcio Test"}
+	rutina := models.RutinaInput{
+		RutinaBase: models.RutinaBase{
+			Nom:         "Rutina Test",
+			Cicles:      1,
+			DiesDuracio: 1,
+			Descripcio:  "Descripcio Test",
+			Publica:     false,
+		},
+		Exercicis: []models.ExerciciRutinaInput{exercici1, exercici2},
+	}
 
 	db := GetDBTest()
 
@@ -59,7 +67,7 @@ func TestRutinaValidator(t *testing.T) {
 
 	rutina.Exercicis[0].Cicle = 2
 	assert.Equal(t, len(validators.RutinaValidator(&rutina, db)), 2)
-	
+
 	rutina.Exercicis[0].DiaRutina = 2
 	assert.Equal(t, len(validators.RutinaValidator(&rutina, db)), 3)
 

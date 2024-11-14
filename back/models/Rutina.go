@@ -4,15 +4,19 @@ import (
 	"gorm.io/gorm"
 )
 
+type RutinaBase struct {
+	Nom         string `gorm:"not null json:nom"`
+	Descripcio  string `json:"descripcio"`
+	Cicles      uint   `gorm:"not null json:cicles"`
+	DiesDuracio uint   `gorm:"not null json:diesDuracio"`
+	Publica     bool   `gorm:"not null:default:false"`
+}
+
 type Rutina struct {
+	RutinaBase
 	gorm.Model
-	Nom             string `gorm:"not null;"`
-	EntrenadorID    uint   `gorm:"not null;"`
-	Descripcio      string
+	EntrenadorID    uint             `gorm:"not null;"`
 	ExercicisRutina []ExerciciRutina `gorm:"foreignKey:RutinaID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;table:exercicis_rutina"`
-	DiesDuracio     uint              `gorm:"not null"`
-	Cicles          uint              `gorm:"not null"`
-	Publica         bool             `gorm:"not null:default:false"`
 }
 
 func (Rutina) TableName() string {
@@ -20,17 +24,11 @@ func (Rutina) TableName() string {
 }
 
 type RutinaInput struct {
-	Nom         string                `json:"nom"`
-	Descripcio  string                `json:"descripcio"`
-	Exercicis   []ExerciciRutinaInput `json:"exercicis"`
-	Cicles      uint                   `json:"cicles"`
-	DiesDuracio uint                   `json:"diesDuracio"`
+	RutinaBase
+	Exercicis []ExerciciRutinaInput `json:"exercicis"`
 }
 
 type RutinaResponse struct {
-	ID           uint                     `json:"id"`
-	Nom          string                   `json:"nom"`
-	Cicles       uint                      `json:"cicles"`
-	DiesDuracio  uint                      `json:"diesDuracio"`
-	Exercicis    []ExerciciRutinaResponse `json:"exercicis"`
+	RutinaBase
+	Exercicis []ExerciciRutinaResponse `json:"exercicis"`
 }

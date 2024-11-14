@@ -29,10 +29,13 @@ func (h *Handler) IndexRutina(c *gin.Context) {
 	var rutinesResponse []models.RutinaResponse
 	for _, rutina := range rutines {
 		tmp := models.RutinaResponse{
-			ID:          rutina.ID,
-			Nom:         rutina.Nom,
-			DiesDuracio: rutina.DiesDuracio,
-			Cicles:      rutina.Cicles,
+			RutinaBase: models.RutinaBase{
+				Nom:         rutina.Nom,
+				Cicles:      rutina.Cicles,
+				DiesDuracio: rutina.DiesDuracio,
+				Descripcio:  rutina.Descripcio,
+				Publica:     rutina.Publica,
+			},
 		}
 		if err := h.DB.Table("exercicis_rutina").Where("rutina_id = ? and deleted_at is null", rutina.ID).Scan(&tmp.Exercicis).Error; err != nil {
 			fmt.Println(err)
@@ -79,11 +82,14 @@ func (h *Handler) CreateRutina(c *gin.Context) {
 	err = h.DB.Transaction(func(tx *gorm.DB) error {
 		// Create the routine
 		rutina = models.Rutina{
-			Nom:          input.Nom,
-			Descripcio:   input.Descripcio,
+			RutinaBase: models.RutinaBase{
+				Nom:         input.Nom,
+				Cicles:      input.Cicles,
+				DiesDuracio: input.DiesDuracio,
+				Descripcio:  input.Descripcio,
+				Publica:     false,
+			},
 			EntrenadorID: c.MustGet("user").(*models.Usuari).ID,
-			Cicles:       input.Cicles,
-			DiesDuracio:  input.DiesDuracio,
 		}
 
 		if err := tx.Create(&rutina).Error; err != nil {
@@ -169,11 +175,14 @@ func (h Handler) UpdateRutina(c *gin.Context) {
 	err = h.DB.Transaction(func(tx *gorm.DB) error {
 
 		if err = tx.Model(&rutina).Updates(models.Rutina{
-			Nom:          input.Nom,
-			Descripcio:   input.Descripcio,
+			RutinaBase: models.RutinaBase{
+				Nom:         input.Nom,
+				Cicles:      input.Cicles,
+				DiesDuracio: input.DiesDuracio,
+				Descripcio:  input.Descripcio,
+				Publica:     input.Publica,
+			},
 			EntrenadorID: c.MustGet("user").(*models.Usuari).ID,
-			Cicles:       input.Cicles,
-			DiesDuracio:  input.DiesDuracio,
 		}).Error; err != nil {
 			fmt.Printf("Error al actualizar la rutina: %v\n", err)
 			return err
@@ -200,38 +209,37 @@ func (h Handler) UpdateRutina(c *gin.Context) {
 			return err
 		}
 
+		/* 		// Obtener los IDs de los ejercicios en el input
+		   		inputExerciciIDs := make([]uint, len(input.Exercicis))
+		   		for i, exercici := range input.Exercicis {
+		   			inputExerciciIDs[i] = exercici.ExerciciID
+		   		}
 
-/* 		// Obtener los IDs de los ejercicios en el input
-		inputExerciciIDs := make([]uint, len(input.Exercicis))
-		for i, exercici := range input.Exercicis {
-			inputExerciciIDs[i] = exercici.ExerciciID
-		}
+		   		// Eliminar los ejercicios que no están en el nuevo input
+		   		if err := tx.Where("rutina_id = ? AND exercici_id NOT IN ?", rutina.ID, inputExerciciIDs).Delete(&models.ExerciciRutina{}).Error; err != nil {
+		   			fmt.Printf("Error al eliminar ejercicios: %v\n", err)
+		   			return err
+		   		}
+		   		fmt.Print("a3")
+		   		for _, exercici := range input.Exercicis {
+		   			ex := models.ExerciciRutina{
+		   				RutinaID:      rutina.ID,
+		   				NumRepes:      exercici.NumRepes,
+		   				NumSeries:     exercici.NumSeries,
+		   				Cicle:         exercici.Cicle,
+		   				PercentatgeRM: exercici.PercentatgeRM,
+		   				DiaRutina:     exercici.DiaRutina,
+		   				ExerciciID:    exercici.ExerciciID,
+		   			}
 
-		// Eliminar los ejercicios que no están en el nuevo input
-		if err := tx.Where("rutina_id = ? AND exercici_id NOT IN ?", rutina.ID, inputExerciciIDs).Delete(&models.ExerciciRutina{}).Error; err != nil {
-			fmt.Printf("Error al eliminar ejercicios: %v\n", err)
-			return err
-		}
-		fmt.Print("a3")
-		for _, exercici := range input.Exercicis {
-			ex := models.ExerciciRutina{
-				RutinaID:      rutina.ID,
-				NumRepes:      exercici.NumRepes,
-				NumSeries:     exercici.NumSeries,
-				Cicle:         exercici.Cicle,
-				PercentatgeRM: exercici.PercentatgeRM,
-				DiaRutina:     exercici.DiaRutina,
-				ExerciciID:    exercici.ExerciciID,
-			}
-
-			// Realizar un upsert para cada ejercicio
-			if err := tx.Where("rutina_id = ? AND exercici_id = ?", rutina.ID, exercici.ExerciciID).
-				Assign(ex).
-				FirstOrCreate(&ex).Error; err != nil {
-					fmt.Printf("Error al actualizar ejercicio: %v\n", err)
-				return err
-			}
-		} */
+		   			// Realizar un upsert para cada ejercicio
+		   			if err := tx.Where("rutina_id = ? AND exercici_id = ?", rutina.ID, exercici.ExerciciID).
+		   				Assign(ex).
+		   				FirstOrCreate(&ex).Error; err != nil {
+		   					fmt.Printf("Error al actualizar ejercicio: %v\n", err)
+		   				return err
+		   			}
+		   		} */
 
 		return nil
 	})
@@ -345,11 +353,14 @@ func (h *Handler) RutinesEntrenador(c *gin.Context) {
 		}
 
 		rutinesResposta = append(rutinesResposta, models.RutinaResponse{
-			ID:          rutina.ID,
-			Nom:         rutina.Nom,
-			Cicles:      rutina.Cicles,
-			DiesDuracio: rutina.DiesDuracio,
-			Exercicis:   ex,
+			RutinaBase: models.RutinaBase{
+				Nom:         rutina.Nom,
+				Cicles:      rutina.Cicles,
+				DiesDuracio: rutina.DiesDuracio,
+				Descripcio:  rutina.Descripcio,
+				Publica:     rutina.Publica,
+			},
+			Exercicis: ex,
 		})
 	}
 
