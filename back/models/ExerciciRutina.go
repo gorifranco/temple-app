@@ -4,17 +4,21 @@ import (
 	"gorm.io/gorm"
 )
 
+type ExerciciRutinaBase struct {
+	RutinaID      uint `gorm:"not null" json:"rutinaID"`
+	ExerciciID    uint `gorm:"not null" json:"exerciciID"`
+	Ordre         uint `gorm:"not null" json:"ordre"`
+	NumSeries     uint `gorm:"not null" json:"numSeries"`
+	NumRepes      uint `gorm:"not null" json:"numRepes"`
+	Cicle         uint `gorm:"not null" json:"cicle"`
+	PercentatgeRM uint `json:"percentatgeRM"`
+	DiaRutina     uint `gorm:"not null" json:"diaRutina"`
+}
+
 type ExerciciRutina struct {
 	gorm.Model
-	RutinaID      uint `gorm:"not null"`
-	ExerciciID    uint `gorm:"not null"`
 	Exercici      Exercici
-	Ordre         uint `gorm:"not null"`
-	NumSeries     uint `gorm:"not null"`
-	NumRepes      uint `gorm:"not null"`
-	Cicle         uint `gorm:"not null"`
-	PercentatgeRM uint
-	DiaRutina     uint `gorm:"not null"`
+	ExerciciRutinaBase
 }
 
 func (ExerciciRutina) TableName() string {
@@ -22,23 +26,16 @@ func (ExerciciRutina) TableName() string {
 }
 
 type ExerciciRutinaInput struct {
-	ExerciciID    uint `json:"exerciciID"`
-	Ordre         uint  `json:"ordre"`
-	NumSeries     uint  `json:"numSeries"`
-	NumRepes      uint  `json:"numRepes"`
-	Cicle         uint  `json:"cicle"`
-	PercentatgeRM uint  `json:"percentatgeRM"`
-	DiaRutina     uint  `json:"diaRutina"`
+	ExerciciRutinaBase
+}
+
+type ExerciciRutinaUpdateInput struct {
+	ID            uint `json:"id"`
+	ExerciciRutinaBase
 }
 
 type ExerciciRutinaResponse struct {
 	ID            uint   `json:"id"`
 	Nom           string `json:"nom"`
-	Ordre         uint    `json:"ordre"`
-	NumSeries     uint    `json:"numSeries"`
-	NumRepes      uint    `json:"numRepes"`
-	Cicle         uint    `json:"cicle"`
-	PercentatgeRM uint    `json:"percentatgeRM"`
-	DiaRutina     uint    `json:"diaRutina"`
-	ExerciciID    uint   `json:"exerciciID"`
+	ExerciciRutinaBase
 }

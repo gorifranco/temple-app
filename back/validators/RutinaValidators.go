@@ -45,9 +45,9 @@ func RutinaValidator(rutina *models.RutinaInput, db *gorm.DB) []error {
 
 	// Validates every exercise
 	for _, exercici := range rutina.Exercicis {
-		if !exerciseIDMap[exercici.ExerciciID] {
+/* 		if !exerciseIDMap[exercici.ExerciciID] {
 			errs = append(errs, errors.New("exercici no existeix: "))
-		}
+		} */
 		if exercici.NumRepes <= 0 {
 			errs = append(errs, errors.New("NumRepes no pot estar buit"))
 		}

@@ -20,22 +20,26 @@ func TestRutinaValidator(t *testing.T) {
 
 	//Creation of the correct routine
 	exercici1 := models.ExerciciRutinaInput{
-		ExerciciID:    e1.ID,
-		NumRepes:      5,
-		NumSeries:     5,
-		PercentatgeRM: 50,
-		Ordre:         0,
-		Cicle:         0,
-		DiaRutina:     0,
+		ExerciciRutinaBase: models.ExerciciRutinaBase{
+			ExerciciID:    e1.ID,
+			NumRepes:      5,
+			NumSeries:     5,
+			PercentatgeRM: 50,
+			Ordre:         0,
+			Cicle:         0,
+			DiaRutina:     0,
+		},
 	}
 	exercici2 := models.ExerciciRutinaInput{
-		ExerciciID:    e2.ID,
-		NumRepes:      5,
-		NumSeries:     5,
-		PercentatgeRM: 50,
-		Ordre:         1,
-		Cicle:         0,
-		DiaRutina:     0,
+		ExerciciRutinaBase: models.ExerciciRutinaBase{
+			ExerciciID:    e2.ID,
+			NumRepes:      5,
+			NumSeries:     5,
+			PercentatgeRM: 50,
+			Ordre:         1,
+			Cicle:         0,
+			DiaRutina:     0,
+		},
 	}
 
 	rutina := models.RutinaInput{Nom: "Rutina Test", Cicles: 1, DiesDuracio: 1, Exercicis: []models.ExerciciRutinaInput{exercici1, exercici2},

@@ -65,7 +65,6 @@ func (h *Handler) CreateRutina(c *gin.Context) {
 		return
 	}
 
-	fmt.Printf("Input: %v\n", input)
 	if errs := validators.RutinaValidator(&input, h.DB); len(errs) > 0 {
 		v, err := json.Marshal(errs)
 		if err != nil {
@@ -94,13 +93,15 @@ func (h *Handler) CreateRutina(c *gin.Context) {
 		// Create the exercises associated with the routine
 		for _, exercici := range input.Exercicis {
 			ex := models.ExerciciRutina{
-				RutinaID:      rutina.ID,
-				NumRepes:      exercici.NumRepes,
-				NumSeries:     exercici.NumSeries,
-				Cicle:         exercici.Cicle,
-				PercentatgeRM: exercici.PercentatgeRM,
-				DiaRutina:     exercici.DiaRutina,
-				ExerciciID:    exercici.ExerciciID,
+				ExerciciRutinaBase: models.ExerciciRutinaBase{
+					RutinaID:      rutina.ID,
+					NumRepes:      exercici.NumRepes,
+					NumSeries:     exercici.NumSeries,
+					Cicle:         exercici.Cicle,
+					PercentatgeRM: exercici.PercentatgeRM,
+					DiaRutina:     exercici.DiaRutina,
+					ExerciciID:    exercici.ExerciciID,
+				},
 			}
 
 			if err = tx.Create(&ex).Error; err != nil {
@@ -155,18 +156,98 @@ func (h Handler) UpdateRutina(c *gin.Context) {
 		return
 	}
 
-	// Update the rutine in the database
-	updatedRutina := models.Rutina{Nom: input.Nom, Descripcio: input.Descripcio}
+	if errs := validators.RutinaValidator(&input, h.DB); len(errs) > 0 {
+		v, err := json.Marshal(errs)
+		if err != nil {
+			c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "Datos incorrectos"})
+		}
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: v})
+		fmt.Printf("Error al validar la rutina: %v\n", errs)
+		return
+	}
 
-	if err = h.DB.Model(&rutina).Updates(&updatedRutina).Error; err != nil {
+	err = h.DB.Transaction(func(tx *gorm.DB) error {
+
+		if err = tx.Model(&rutina).Updates(models.Rutina{
+			Nom:          input.Nom,
+			Descripcio:   input.Descripcio,
+			EntrenadorID: c.MustGet("user").(*models.Usuari).ID,
+			Cicles:       input.Cicles,
+			DiesDuracio:  input.DiesDuracio,
+		}).Error; err != nil {
+			fmt.Printf("Error al actualizar la rutina: %v\n", err)
+			return err
+		}
+
+		exercicis := make([]models.ExerciciRutina, len(input.Exercicis))
+		for i, exercici := range input.Exercicis {
+			exercicis[i] = models.ExerciciRutina{
+				ExerciciRutinaBase: models.ExerciciRutinaBase{
+					RutinaID:      rutina.ID,
+					NumRepes:      exercici.NumRepes,
+					NumSeries:     exercici.NumSeries,
+					Cicle:         exercici.Cicle,
+					PercentatgeRM: exercici.PercentatgeRM,
+					DiaRutina:     exercici.DiaRutina,
+					ExerciciID:    exercici.ExerciciID,
+				},
+			}
+			fmt.Print("ExerciciID: ", exercici.ExerciciID)
+		}
+
+		if err := tx.Model(&rutina).Association("ExercicisRutina").Unscoped().Replace(&exercicis); err != nil {
+			fmt.Printf("Error al actualizar la rutina: %v\n", err)
+			return err
+		}
+
+
+/* 		// Obtener los IDs de los ejercicios en el input
+		inputExerciciIDs := make([]uint, len(input.Exercicis))
+		for i, exercici := range input.Exercicis {
+			inputExerciciIDs[i] = exercici.ExerciciID
+		}
+
+		// Eliminar los ejercicios que no están en el nuevo input
+		if err := tx.Where("rutina_id = ? AND exercici_id NOT IN ?", rutina.ID, inputExerciciIDs).Delete(&models.ExerciciRutina{}).Error; err != nil {
+			fmt.Printf("Error al eliminar ejercicios: %v\n", err)
+			return err
+		}
+		fmt.Print("a3")
+		for _, exercici := range input.Exercicis {
+			ex := models.ExerciciRutina{
+				RutinaID:      rutina.ID,
+				NumRepes:      exercici.NumRepes,
+				NumSeries:     exercici.NumSeries,
+				Cicle:         exercici.Cicle,
+				PercentatgeRM: exercici.PercentatgeRM,
+				DiaRutina:     exercici.DiaRutina,
+				ExerciciID:    exercici.ExerciciID,
+			}
+
+			// Realizar un upsert para cada ejercicio
+			if err := tx.Where("rutina_id = ? AND exercici_id = ?", rutina.ID, exercici.ExerciciID).
+				Assign(ex).
+				FirstOrCreate(&ex).Error; err != nil {
+					fmt.Printf("Error al actualizar ejercicio: %v\n", err)
+				return err
+			}
+		} */
+
+		return nil
+	})
+
+	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to update rutina"})
 		return
 	}
 
-	var uu models.Rutina
-	h.DB.Preload("Exercicis").First(&uu, c.Param("id"))
+	var updatedRutina models.Rutina
+	if err = h.DB.Preload("ExercicisRutina").First(&updatedRutina, rutina.ID).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to load updated rutina"})
+		return
+	}
 
-	c.JSON(http.StatusOK, models.SuccessResponse{Data: uu})
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: updatedRutina})
 }
 
 // @Summary Delete a rutine
@@ -375,7 +456,7 @@ func (h *Handler) AcabarRutina(c *gin.Context) {
 	if err = h.DB.Model(&rutina).Select("DataFinalitzacio").Updates(models.UsuariRutina{DataFinalitzacio: &now}).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to update rutina"})
 		return
-	}	
+	}
 
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
 }
