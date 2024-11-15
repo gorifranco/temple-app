@@ -8,12 +8,13 @@ import { useThemeStyles } from '@/themes/theme';
 import { status, actions } from '@/types/apiTypes';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { View, Pressable, Text } from 'react-native';
+import { View, Pressable, Text, ViewStyle } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '@/themes/theme';
 import { Calendar, DateData } from 'react-native-calendars';
 import * as Notifications from 'expo-notifications';
+import { schedulePushNotification } from '@/hooks/notifications';
 
 
 export default function Index() {
@@ -30,18 +31,6 @@ export default function Index() {
     const reserves = useAppSelector(selectAllReserves);
     const today = new Date();
     const [selectedDay, setSelectedDay] = useState<DateData>();
-
-    Notifications.scheduleNotificationAsync({
-        content: {
-          title: "Time's up!",
-          body: 'Change sides!',
-        },
-        trigger: {
-          seconds: 60,
-          repeats: true,
-        },
-      });
-      
 
     /*     useEffect(
             () => { dispatch(getConfig())
@@ -63,8 +52,19 @@ export default function Index() {
     return (
         <SafeAreaView style={themeStyles.background}>
             <ScrollView>
-                <View style={[themeStyles.basicContainer]}>
-                    <View style={[themeStyles.box]}>
+                <View style={themeStyles.basicContainer}>
+
+                    <View>
+                        <Pressable
+                        style={themeStyles.button1}
+                            onPress={async () => {
+                                await schedulePushNotification();
+                            }}
+                        >
+                            <Text style={themeStyles.button1Text}>Press to schedule a notification</Text>
+                        </Pressable>
+                    </View>
+                    <View style={themeStyles.box}>
                         <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 25 }]}>Calendari</Text>
                         <Calendar
                             firstDay={1}

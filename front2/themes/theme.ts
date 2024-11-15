@@ -1,5 +1,5 @@
 import { DefaultTheme, MD2DarkTheme } from 'react-native-paper';
-import { StyleSheet, useColorScheme } from 'react-native'
+import { StyleSheet, TextStyle, useColorScheme, ViewStyle } from 'react-native'
 import { Platform, StatusBar } from 'react-native';
 import { useEffect, useState } from 'react';
 
@@ -50,11 +50,39 @@ export function useThemeStyles() {
     }
   }, []);
 
-  return StyleSheet.create({
+  type Styles = {
+    authBackground: ViewStyle;
+    box: ViewStyle;
+    basicContainer: ViewStyle;
+    background: ViewStyle;
+    authContainer: ViewStyle;
+    header: TextStyle;
+    titol1: TextStyle;
+    text: TextStyle;
+    button1: ViewStyle;
+    buttonDanger: ViewStyle;
+    buttonWarning: ViewStyle;
+    buttonSuccess: ViewStyle;
+    button1Text: TextStyle;
+    inputContainer: ViewStyle;
+    crearRutinaContainer: ViewStyle;
+    mainContainer1: ViewStyle;
+    textInputError: TextStyle;
+    row: ViewStyle;
+    link: TextStyle;
+    hr: TextStyle;
+    diaHorariContainer: ViewStyle;
+    alumneContainer: ViewStyle;
+    calendarTheme: ViewStyle;
+    modalConfirmContent: ViewStyle;
+  };
+  
+
+  return StyleSheet.create<Styles>({
     background: {
       backgroundColor: theme.colors.background,
       height: "100%",
-    },
+    } as ViewStyle,
     authBackground: {
       flex: 1,
       width: '100%',
@@ -202,7 +230,6 @@ export function useThemeStyles() {
       width: "90%",
       borderRadius: 20,
       backgroundColor: theme.colors.background2,
-      shadowColor: "#000",
       shadowColor: "#000",
       shadowOffset: {
         width: 0,

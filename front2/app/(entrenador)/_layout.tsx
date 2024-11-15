@@ -1,6 +1,5 @@
 import React from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
-import { useContext } from 'react';
 import { Redirect } from 'expo-router';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import HomeScreen from './index';
