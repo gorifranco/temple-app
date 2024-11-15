@@ -13,6 +13,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '@/themes/theme';
 import { Calendar, DateData } from 'react-native-calendars';
+import * as Notifications from 'expo-notifications';
 
 
 export default function Index() {
@@ -30,15 +31,27 @@ export default function Index() {
     const today = new Date();
     const [selectedDay, setSelectedDay] = useState<DateData>();
 
-/*     useEffect(
-        () => { dispatch(getConfig())
-            dispatch(getRutinesEntrenador())
-            dispatch(getExercicis())
-            dispatch(getReserves())
-            dispatch(getAlumnes())
-         }
-        , []); */
-          
+    Notifications.scheduleNotificationAsync({
+        content: {
+          title: "Time's up!",
+          body: 'Change sides!',
+        },
+        trigger: {
+          seconds: 60,
+          repeats: true,
+        },
+      });
+      
+
+    /*     useEffect(
+            () => { dispatch(getConfig())
+                dispatch(getRutinesEntrenador())
+                dispatch(getExercicis())
+                dispatch(getReserves())
+                dispatch(getAlumnes())
+             }
+            , []); */
+
     useEffect(() => {
         if (rutinesStatus == "idle") dispatch(getRutinesEntrenador())
         if (exercicisStatus == "idle") dispatch(getExercicis())

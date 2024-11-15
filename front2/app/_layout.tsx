@@ -1,7 +1,7 @@
 import { useFonts } from 'expo-font';
 import { Stack, useRouter } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
 import { Provider } from 'react-redux';
@@ -11,13 +11,55 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { PaperProvider } from 'react-native-paper';
 import { useAppTheme } from '@/themes/theme';
-import { Linking } from 'react-native';
+import { Linking, Platform } from 'react-native';
 import { useAppSelector } from '@/store/reduxHooks';
 import { selectUser } from '@/store/authSlice';
+import * as Notifications from 'expo-notifications';
 
 SplashScreen.preventAutoHideAsync();
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+});
+
 export default function RootLayout() {
+
+  async function requestPermissions() {
+    const { status } = await Notifications.getPermissionsAsync();
+    if (status !== 'granted') {
+      await Notifications.requestPermissionsAsync();
+    }
+  }
+
+  if (Platform.OS === 'ios') {
+    requestPermissions();
+  }
+
+  function scheduleReservationNotification(reservationTime: Date) {
+    const now = new Date();
+    const timeDifference = reservationTime.getTime() - now.getTime();
+
+    // Solo programa la notificación si hay más de una hora para la reserva
+    if (timeDifference > 3600000) {
+      const trigger = new Date(now.getTime() + timeDifference - 3600000);
+
+      Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Recordatorio de reserva',
+          body: 'Queda una hora para tu reserva. ¡Prepárate!',
+        },
+        trigger,
+      });
+    }
+  }
+
+  Notifications.addNotificationResponseReceivedListener(response => {
+    console.log("Clic notificacio");
+  });
 
   function StackLayout() {
     const router = useRouter();
@@ -25,7 +67,7 @@ export default function RootLayout() {
 
     useEffect(() => {
 
-      if (!user) { 
+      if (!user) {
         router.replace('/');
       } else if (user.tipusUsuari === 'Basic') {
         router.replace('/(basic)');
@@ -89,12 +131,12 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <PaperProvider theme={theme}>
-          <Provider store={store}>
-            <PersistGate loading={null} persistor={persistor}>
-              <StackLayout />
-            </PersistGate>
-            <Toast />
-          </Provider>
+        <Provider store={store}>
+          <PersistGate loading={null} persistor={persistor}>
+            <StackLayout />
+          </PersistGate>
+          <Toast />
+        </Provider>
       </PaperProvider>
     </GestureHandlerRootView>
   );

@@ -13,7 +13,8 @@ import Toast from 'react-native-toast-message';
 
 export default function Alumnes() {
     const alumnes = useAppSelector(selectAllAlumnes);
-    const alumnesStatus = useAppSelector(selectAlumnesStatus);
+    const alumnesStatus
+    = useAppSelector(selectAlumnesStatus);
     const themeStyles = useThemeStyles();
     const dispatch = useAppDispatch();
     const [ModalAfegirUsuariVisible, setModalAfegirUsuariVisible] = useState(false);
