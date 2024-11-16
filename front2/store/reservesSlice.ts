@@ -51,7 +51,7 @@ export const createReserva = createAsyncThunk<
     const state = getState();
     const token = state.auth.user?.token;
 
-    const response = await fetch("/entrenador/reserves", {
+    const response = await fetch( process.env.EXPO_PUBLIC_API_URL + "/reserves", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

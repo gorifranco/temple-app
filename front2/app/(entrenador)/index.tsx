@@ -53,17 +53,20 @@ export default function Index() {
         <SafeAreaView style={themeStyles.background}>
             <ScrollView>
                 <View style={themeStyles.basicContainer}>
-
+                    {/* 
                     <View>
                         <Pressable
                         style={themeStyles.button1}
                             onPress={async () => {
-                                await schedulePushNotification();
+                                console.log("pressed")
+                                const date = new Date();
+                                date.setSeconds(date.getSeconds() + 10);
+                                await schedulePushNotification(date);
                             }}
                         >
                             <Text style={themeStyles.button1Text}>Press to schedule a notification</Text>
                         </Pressable>
-                    </View>
+                    </View> */}
                     <View style={themeStyles.box}>
                         <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 25 }]}>Calendari</Text>
                         <Calendar
@@ -90,7 +93,13 @@ export default function Index() {
                             {selectedDay ? selectedDay.year : today.getFullYear()}
                             )
                         </Text>
-                        {reserves.length == 0 && <Text style={[themeStyles.text, { marginBottom: 20 }]}>No hi ha reserves per aquest dia</Text>}
+                        {reserves.length == 0 ? (<Text style={[themeStyles.text, { marginBottom: 20 }]}>No hi ha reserves per aquest dia</Text>
+                        ) : (
+                                <View>
+                                    <Text>Hi ha algo</Text>
+                                </View>
+                            )}
+
                     </View>
 
                     <Pressable style={[themeStyles.box, { marginBottom: 20 }]} onPress={() => { router.push("/(alumnes)/alumnes") }}>

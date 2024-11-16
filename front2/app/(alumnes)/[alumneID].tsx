@@ -61,7 +61,7 @@ export default function AlumneScreen() {
             return;
         }
         const horaUTC = new Date(hora.getTime() - hora.getTimezoneOffset() * 60000);
-
+        console.log(horaUTC)
         dispatch(createReserva({ usuariID: alumne!.id, hora: horaUTC.toISOString() }));
     }
 
@@ -87,8 +87,8 @@ export default function AlumneScreen() {
         <AutocompleteDropdownContextProvider>
             <SafeAreaView style={[themeStyles.background, { height: '100%', alignItems: "center", width: "100%" }]}>
                 <ScrollView>
-                    <View style={{ paddingTop: 10 }}/>
-                    <BackButton href={"../"} styles={{ top: 37, left: 36}}/>
+                    <View style={{ paddingTop: 10 }} />
+                    <BackButton href={"../"} styles={{ top: 37, left: 36 }} />
                     <Text style={[themeStyles.titol1,]}>{alumne.nom}</Text>
                     <View style={themeStyles.basicContainer}>
                         <View style={[themeStyles.box, { marginBottom: 20 }]}>
@@ -109,6 +109,7 @@ export default function AlumneScreen() {
                             <View style={{ width: "100%" }}>
                                 {selectedDay && selectedDay.dateString >= formatDate(new Date()) && <View>
                                     <Pressable style={[themeStyles.button1, { marginBottom: 20, marginTop: 0 }]} onPress={() => {
+                                        console.log("aqu8i")
                                         setModalReservarVisible(true)
                                         setSelectedTime(new Date(selectedDay.timestamp))
                                     }}>
@@ -138,8 +139,8 @@ export default function AlumneScreen() {
 
                         {/* Entrenos */}
                         <View style={[themeStyles.box, { marginBottom: 20 }]}>
-                            <Text style={[themeStyles.titol1, ]}>Pròxims entrenos</Text>
-                            {alumne.reserves.length == 0 ? (<Text style={[themeStyles.text, { marginBottom: 20 }]}>Sense reserves</Text> 
+                            <Text style={[themeStyles.titol1,]}>Pròxims entrenos</Text>
+                            {alumne.reserves.length == 0 ? (<Text style={[themeStyles.text, { marginBottom: 20 }]}>Sense reserves</Text>
                             ) : (
                                 alumne.reserves.map((reserva) => (
                                     stringDiaToDate(reserva.hora).getMilliseconds() >= Date.now() && <Text key={reserva.id} style={themeStyles.text}>{reserva.hora}</Text>
@@ -148,7 +149,7 @@ export default function AlumneScreen() {
 
                         {/* Rutina */}
                         <View style={[themeStyles.box, { paddingBottom: 20 }]}>
-                            <Text style={[themeStyles.titol1, ]}>Rutina actual</Text>
+                            <Text style={[themeStyles.titol1,]}>Rutina actual</Text>
                             {alumne.rutinaActual ? (<ViewRutina rutinaID={alumne.rutinaActual} versio={1} acabarRutina={acabarRutina} />
                             ) : (
                                 <View>
