@@ -51,14 +51,17 @@ export const createReserva = createAsyncThunk<
     const state = getState();
     const token = state.auth.user?.token;
 
-    const response = await fetch( process.env.EXPO_PUBLIC_API_URL + "/reserves", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ usuariID, hora }),
-    });
+    const response = await fetch(
+      process.env.EXPO_PUBLIC_API_URL + "/reserves",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ usuariID, hora }),
+      }
+    );
     const data = await response.json();
     if (!response.ok) {
       return rejectWithValue(data.error ?? "Failed to create reservation");
@@ -70,7 +73,11 @@ export const createReserva = createAsyncThunk<
 const reservesSlice = createSlice({
   name: "reserves",
   initialState,
-  reducers: {},
+  reducers: {
+    deleteReservesSlice: (state) => {
+      state.reserves = [];
+    },
+  },
   extraReducers: (builder) => {
     builder
       // Get reserves
@@ -112,4 +119,5 @@ export const selectReserveByID = (state: RootState, reservaID: number) =>
 
 export const selectReservesStatus = (state: RootState) => state.reserves.status;
 export const selectReservesError = (state: RootState) => state.reserves.error;
+export const { deleteReservesSlice } = reservesSlice.actions;
 export default reservesSlice.reducer;

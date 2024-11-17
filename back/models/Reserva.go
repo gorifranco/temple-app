@@ -23,8 +23,8 @@ type ReservaInput struct {
 }
 
 type ReservaResponse struct {
-	ID         uint      `json:"ID"`
-	Hora       time.Time `json:"Hora"`
-	Confirmada bool      `json:"Confirmada"`
-	UsuariID   uint      `json:"UsuariID"`
+	ID         uint      `json:"id"`
+	Hora       time.Time `json:"hora"`
+	Confirmada bool      `json:"confirmada"`
+	UsuariID   uint      `json:"usuariID"`
 }

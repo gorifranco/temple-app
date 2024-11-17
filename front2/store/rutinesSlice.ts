@@ -37,6 +37,7 @@ export const getRutinesEntrenador = createAsyncThunk<
   if (!response.ok) {
     return rejectWithValue(data.error ?? "Failed to fetch rutines");
   }
+  console.log(data.data)
   return data.data;
 });
 
@@ -115,7 +116,11 @@ export const updateRutina = createAsyncThunk<
 const rutinesSlice = createSlice({
   name: "rutines",
   initialState,
-  reducers: {},
+  reducers: {
+    deleteRutinesSlice: (state) => {
+      state.rutines = [];
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(getRutinesEntrenador.pending, (state) => {
@@ -199,5 +204,6 @@ export const selectRutinaById = (state: RootState, rutinaID: number) =>
 
 export const selectRutinesStatus = (state: RootState) => state.rutines.status;
 export const selectRutinesError = (state: RootState) => state.rutines.error;
+export const { deleteRutinesSlice } = rutinesSlice.actions;
 // Export the reducer
 export default rutinesSlice.reducer;

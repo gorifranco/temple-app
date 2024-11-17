@@ -2,8 +2,8 @@ import { getAlumnes, selectAllAlumnes, selectAlumnesStatus } from '@/store/alumn
 import { getConfig, selectConfigStatus } from '@/store/configSlice';
 import { getExercicis, selectExercicisStatus } from '@/store/exercicisSlice';
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
-import { getReserves, selectAllReserves, selectReservesStatus } from '@/store/reservesSlice';
-import { getRutinesEntrenador, selectAllRutines, selectRutinesStatus } from '@/store/rutinesSlice';
+import { getReserves, selectAllReserves, selectReservesStatus, deleteReservesSlice } from '@/store/reservesSlice';
+import { deleteRutinesSlice, getRutinesEntrenador, selectAllRutines, selectRutinesStatus } from '@/store/rutinesSlice';
 import { useThemeStyles } from '@/themes/theme';
 import { status, actions } from '@/types/apiTypes';
 import { router } from 'expo-router';
@@ -13,8 +13,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '@/themes/theme';
 import { Calendar, DateData } from 'react-native-calendars';
-import * as Notifications from 'expo-notifications';
-import { schedulePushNotification } from '@/hooks/notifications';
+import Entreno from '@/components/viewers/Entreno';
 
 
 export default function Index() {
@@ -32,14 +31,15 @@ export default function Index() {
     const today = new Date();
     const [selectedDay, setSelectedDay] = useState<DateData>();
 
-    /*     useEffect(
-            () => { dispatch(getConfig())
-                dispatch(getRutinesEntrenador())
-                dispatch(getExercicis())
-                dispatch(getReserves())
-                dispatch(getAlumnes())
-             }
-            , []); */
+/*     useEffect(
+        () => {
+            dispatch(getConfig())
+            dispatch(getRutinesEntrenador())
+            dispatch(getExercicis())
+            dispatch(getReserves())
+            dispatch(getAlumnes())
+        }
+        , []); */
 
     useEffect(() => {
         if (rutinesStatus == "idle") dispatch(getRutinesEntrenador())
@@ -93,13 +93,15 @@ export default function Index() {
                             {selectedDay ? selectedDay.year : today.getFullYear()}
                             )
                         </Text>
-                        {reserves.length == 0 ? (<Text style={[themeStyles.text, { marginBottom: 20 }]}>No hi ha reserves per aquest dia</Text>
-                        ) : (
-                                <View>
-                                    <Text>Hi ha algo</Text>
-                                </View>
-                            )}
-
+                        {!reserves || reservesStatus == status.failed && (<Text style={[themeStyles.text, { marginBottom: 20 }]}>Error fetching reserves</Text>)}
+                        {reserves && reserves.length == 0 && (<Text style={[themeStyles.text, { marginBottom: 20 }]}>No hi ha reserves per aquest dia</Text>)}
+                        {reserves && reserves.length > 0 && (
+                            reserves.map((r, i) => {
+                                return (
+                                    <Entreno alumneID={r.usuariID} key={i} />
+                                )
+                            })
+                        )}
                     </View>
 
                     <Pressable style={[themeStyles.box, { marginBottom: 20 }]} onPress={() => { router.push("/(alumnes)/alumnes") }}>

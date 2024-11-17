@@ -36,6 +36,7 @@ func (h *Handler) IndexRutina(c *gin.Context) {
 				Descripcio:  rutina.Descripcio,
 				Publica:     rutina.Publica,
 			},
+			ID:        rutina.ID,
 		}
 		if err := h.DB.Table("exercicis_rutina").Where("rutina_id = ? and deleted_at is null", rutina.ID).Scan(&tmp.Exercicis).Error; err != nil {
 			fmt.Println(err)
@@ -361,6 +362,7 @@ func (h *Handler) RutinesEntrenador(c *gin.Context) {
 				Publica:     rutina.Publica,
 			},
 			Exercicis: ex,
+			ID:        rutina.ID,
 		})
 	}
 

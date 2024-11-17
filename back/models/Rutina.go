@@ -30,5 +30,6 @@ type RutinaInput struct {
 
 type RutinaResponse struct {
 	RutinaBase
+	ID        uint                     `json:"id"`
 	Exercicis []ExerciciRutinaResponse `json:"exercicis"`
 }

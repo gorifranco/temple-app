@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"temple-app/models"
 	"time"
+	"encoding/json"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -20,7 +22,10 @@ import (
 // @Router /api/reserves [get]
 func (h *Handler) IndexReserva(c *gin.Context) {
 	var reserves []models.ReservaResponse
-	h.DB.Table("reserves").Select("id, usuari_id, hora, confirmed").Scan(&reserves)
+	h.DB.Table("reserves").Select("id, usuari_id as usuariID, hora as hora, confirmed as confirmed").Scan(&reserves)
+
+	jsonData, _ := json.Marshal(reserves)
+	fmt.Println(string(jsonData))
 
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: reserves})
 }
@@ -65,7 +70,7 @@ func (h *Handler) CreateReserva(c *gin.Context) {
 				c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "Error al crear reserva"})
 				return
 			}
-			c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
+			c.JSON(http.StatusOK, models.SuccessResponse{Data: reserva})
 			return
 		}
 	}
@@ -149,14 +154,31 @@ func (h *Handler) DeleteReserva(c *gin.Context) {
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
 }
 
+
+// @Summary Get all reservations of an entrenador
+// @Description Retrieves all the reservations of an entrenador from the database.
+// @Tags Reservations
+// @Security Bearer
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.SuccessResponse{data=[]models.ReservaResponse}
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
+// @Failure 404 {object} models.ErrorResponse "Not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/reservations/reservationsEntrenador [get]
 func (h *Handler) ReservesEntrenador(c *gin.Context) {
-	var reserves []models.Reserva
+	var reserves []models.ReservaResponse
 	var err error
 
-	if err = h.DB.Where("entrenador_id = ?", c.MustGet("user").(*models.Usuari).ID).Where("hora >= ?", time.Now().Truncate(24*time.Hour)).Find(&reserves).Error; err != nil {
+	if err = h.DB.Table("reserves").Where("entrenador_id = ?", c.MustGet("user").(*models.Usuari).ID).Where("hora >= ?", time.Now().
+	Truncate(24*time.Hour)).Select("id, usuari_id, hora, confirmada").Scan(&reserves).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, gin.H{"error": err.Error()})
 		return
 	}
+	
+	if reserves == nil{
+		reserves = []models.ReservaResponse{}
+	}
 
-	c.JSON(http.StatusOK, gin.H{"data": reserves})
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: reserves})
 }
