@@ -11,8 +11,8 @@ function AutocompleteExercicis(props) {
     const themeStyles = useThemeStyles();
     const exercicis = useAppSelector(selectExercicis);
     const dataSet = exercicis.map((exercici) => ({
-        id: exercici.ID,
-        title: exercici.Nom
+        id: exercici.id,
+        title: exercici.nom
     }));
 
     function handleSubmit(id) {
@@ -33,7 +33,7 @@ function AutocompleteExercicis(props) {
                 }}
                 containerStyle={{color: "black"}}
                 renderItem={(item, text) => (
-                    <Text style={[themeStyles.text, { padding: 15 }]}>
+                    <Text key={item.id} style={[themeStyles.text, { padding: 15 }]}>
                         {item.title}
                     </Text>
                 )}

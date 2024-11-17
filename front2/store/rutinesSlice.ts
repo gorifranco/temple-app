@@ -37,7 +37,6 @@ export const getRutinesEntrenador = createAsyncThunk<
   if (!response.ok) {
     return rejectWithValue(data.error ?? "Failed to fetch rutines");
   }
-  console.log(data.data)
   return data.data;
 });
 

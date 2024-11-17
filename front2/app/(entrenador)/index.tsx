@@ -31,15 +31,18 @@ export default function Index() {
     const today = new Date();
     const [selectedDay, setSelectedDay] = useState<DateData>();
 
-/*     useEffect(
-        () => {
-            dispatch(getConfig())
-            dispatch(getRutinesEntrenador())
-            dispatch(getExercicis())
-            dispatch(getReserves())
-            dispatch(getAlumnes())
-        }
-        , []); */
+    /*     useEffect(
+            () => {
+                dispatch(getConfig())
+                dispatch(getRutinesEntrenador())
+                dispatch(getExercicis())
+                dispatch(getReserves())
+                dispatch(getAlumnes())
+            }
+            , []); */
+    useEffect(() => {
+        dispatch(getRutinesEntrenador())
+    }, []);
 
     useEffect(() => {
         if (rutinesStatus == "idle") dispatch(getRutinesEntrenador())

@@ -5,11 +5,11 @@ import (
 )
 
 type RutinaBase struct {
-	Nom         string `gorm:"not null json:nom"`
+	Nom         string `gorm:"not null" json:"nom"`
 	Descripcio  string `json:"descripcio"`
-	Cicles      uint   `gorm:"not null json:cicles"`
-	DiesDuracio uint   `gorm:"not null json:diesDuracio"`
-	Publica     bool   `gorm:"not null:default:false"`
+	Cicles      uint   `gorm:"not null" json:"cicles"`
+	DiesDuracio uint   `gorm:"not null" json:"diesDuracio"`
+	Publica     bool   `gorm:"not null;default:false" json:"publica"`
 }
 
 type Rutina struct {

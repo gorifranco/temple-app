@@ -14,13 +14,12 @@ function AutocompleteRutines(props) {
         id: rutina.id,
         title: rutina.nom
     }));
-
     function handleSubmit(id) {
         onSubmit(id)
     }
 
     const errorStyle = {
-        ...(error ? { borderColor: 'red' } : {borderColor: 'transparent'}),
+        ...(error ? { borderColor: 'red' } : { borderColor: 'transparent' }),
         boxSizing: 'border-box',
         borderWidth: 1,
         borderRadius: 5
@@ -39,7 +38,7 @@ function AutocompleteRutines(props) {
                 style: { color: "black" },
             }}
             suggestionsListMaxHeight={Dimensions.get('window').height * 0.3}
-            inputContainerStyle={{ backgroundColor: "#e7e0ec", paddingVertical: 5 }}
+            inputContainerStyle={{ backgroundColor: "#e7e0ec", paddingVertical: 5, marginVertical: 0 }}
             renderItem={(item, text) => (
                 <Text key={item.id} style={[themeStyles.text, { padding: 15 }]}>
                     {item.title}
