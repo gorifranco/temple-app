@@ -24,12 +24,12 @@ export default function rutines() {
 
     return (
         <SafeAreaView style={[themeStyles.background, { height: '100%', alignItems: "center" }]}>
-            <View style={{ height: 10 }} />
+            <View style={{ height: 15 }} />
             <View style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", position: "relative" }}>
                 <Text style={themeStyles.titol1}>Rutines</Text>
                 <BackButton href={"../"} styles={{ left: -100 }} />
             </View>
-            <ScrollView style={{ width: "100%" }}>
+            <ScrollView style={{ width: "100%", marginBottom: 10}}>
                 {rutinesStatus == st.pending && <Text style={themeStyles.text}>Carregant rutines...</Text>}
                 {rutinesStatus == st.succeeded && (
                     <Pressable style={themeStyles.button1} onPress={() => handlePressCrearRutina()}>

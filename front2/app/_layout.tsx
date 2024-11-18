@@ -11,12 +11,11 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { PaperProvider } from 'react-native-paper';
 import { useAppTheme } from '@/themes/theme';
-import { Linking, Platform } from 'react-native';
+import { Linking, Platform, useColorScheme } from 'react-native';
 import { useAppSelector } from '@/store/reduxHooks';
 import { selectUser } from '@/store/authSlice';
 import * as Notifications from 'expo-notifications';
 import { NavigationContainer } from '@react-navigation/native';
-import { schedulePushNotification } from '@/hooks/notifications';
 import { registerForPushNotificationsAsync } from '@/hooks/notifications';
 
 
@@ -31,6 +30,8 @@ Notifications.setNotificationHandler({
 });
 
 export default function RootLayout() {
+  const colorScheme = useColorScheme();
+  const themeStyles = useAppTheme();
   const [expoPushToken, setExpoPushToken] = useState('');
   const [channels, setChannels] = useState<Notifications.NotificationChannel[]>([]);
   const [notification, setNotification] = useState<Notifications.Notification | undefined>(
@@ -79,11 +80,17 @@ function StackLayout() {
   }, [user]);
 
   return (
-    <Stack screenOptions={{ navigationBarHidden: true }}>
+    <Stack
+      screenOptions={{
+        navigationBarHidden: true,
+        statusBarBackgroundColor: themeStyles.colors.background,
+        statusBarStyle: colorScheme == 'light' ? 'dark' : 'light', // Texto acorde al tema
+      }}
+    >
       <Stack.Screen name="(admin)" options={{ headerShown: false }} />
       <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       <Stack.Screen name="(basic)" options={{ headerShown: false }} />
-      <Stack.Screen name="(entrenador)" options={{ headerShown: false }} />
+      <Stack.Screen name="(entrenador)" options={{ headerShown: false }} />z
       <Stack.Screen name="(config)" options={{ headerShown: false }} />
       <Stack.Screen name="(rutines)" options={{ headerShown: false }} />
       <Stack.Screen name="(alumnes)/[alumneID]" options={{ headerShown: false }} />
