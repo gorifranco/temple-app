@@ -37,7 +37,6 @@ export interface AlumneType {
   id: number;
   nom: string;
   resultatsRutinaActual: ResultatsExercici[];
-  reserves: ReservaType[];
   rutinaActual: number|null;
 }
 
@@ -49,9 +48,9 @@ export interface ReservaType {
 }
 
 export interface ExerciciRutinaType {
-  id: number|null;
+  id: number;
   nom: string;
-  rutinaID: number|null;
+  rutinaID: number;
   exerciciID: number;
   ordre: number;
   numSeries: number;

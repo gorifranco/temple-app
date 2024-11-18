@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSelector, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ReservaType } from "../types/apiTypes";
 import { RootState } from ".";
 
@@ -66,6 +66,7 @@ export const createReserva = createAsyncThunk<
     if (!response.ok) {
       return rejectWithValue(data.error ?? "Failed to create reservation");
     }
+    console.log(data.data)
     return data.data;
   }
 );
@@ -119,5 +120,13 @@ export const selectReserveByID = (state: RootState, reservaID: number) =>
 
 export const selectReservesStatus = (state: RootState) => state.reserves.status;
 export const selectReservesError = (state: RootState) => state.reserves.error;
+export const selectUpcomingReservesByAlumneID = createSelector(
+  [selectAllReserves, (_, alumneID: number) => alumneID],
+  (reserves, alumneID) => reserves.filter(
+    (reserva) =>
+      reserva.usuariID === alumneID &&
+      new Date(reserva.hora).getTime() >= Date.now()
+  )
+);
 export const { deleteReservesSlice } = reservesSlice.actions;
 export default reservesSlice.reducer;

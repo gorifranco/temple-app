@@ -27,11 +27,9 @@ export default function ViewRutina(props: propsType) {
     const exercicis = useAppSelector(selectExercicis);
 
     function editarRutina() {
-        console.log("editar")
     }
 
     function canviarRutina() {
-        console.log("canviar")
     }
 
     function handleAcabar() {

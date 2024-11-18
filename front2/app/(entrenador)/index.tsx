@@ -40,9 +40,6 @@ export default function Index() {
                 dispatch(getAlumnes())
             }
             , []); */
-    useEffect(() => {
-        dispatch(getRutinesEntrenador())
-    }, []);
 
     useEffect(() => {
         if (rutinesStatus == "idle") dispatch(getRutinesEntrenador())
@@ -61,7 +58,6 @@ export default function Index() {
                         <Pressable
                         style={themeStyles.button1}
                             onPress={async () => {
-                                console.log("pressed")
                                 const date = new Date();
                                 date.setSeconds(date.getSeconds() + 10);
                                 await schedulePushNotification(date);
@@ -101,7 +97,7 @@ export default function Index() {
                         {reserves && reserves.length > 0 && (
                             reserves.map((r, i) => {
                                 return (
-                                    <Entreno alumneID={r.usuariID} key={i} />
+                                    <Entreno alumneID={r.usuariID} hora={r.hora.split("T")[0].split("+")[0]} key={i} />
                                 )
                             })
                         )}

@@ -41,7 +41,6 @@ export default function ModalAfegirUsuari(props: propsType) {
               // dismissed
             }
           } catch (error: any) {
-            console.log("error sharing")
           }
     }
 

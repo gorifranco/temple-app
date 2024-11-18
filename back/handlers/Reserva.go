@@ -70,7 +70,9 @@ func (h *Handler) CreateReserva(c *gin.Context) {
 				c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "Error al crear reserva"})
 				return
 			}
-			c.JSON(http.StatusOK, models.SuccessResponse{Data: reserva})
+			response := models.ReservaResponse{}
+			h.DB.Table("reserves").Where("id = ?", reserva.ID).Scan(&response)
+			c.JSON(http.StatusOK, models.SuccessResponse{Data: response})
 			return
 		}
 	}

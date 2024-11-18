@@ -14,7 +14,7 @@ import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/d
 import { stringDiaToDate } from '@/helpers/timeHelpers';
 import { acabarRutina, assignarRutina, expulsarAlumne, selectAlumneByID, selectAlumnesError, selectAlumnesStatus } from '@/store/alumnesSlice';
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
-import { createReserva } from '@/store/reservesSlice';
+import { createReserva, selectUpcomingReservesByAlumneID } from '@/store/reservesSlice';
 
 
 export default function AlumneScreen() {
@@ -37,6 +37,8 @@ export default function AlumneScreen() {
 
 
     const alumne = useAppSelector(state => selectAlumneByID(state, Number(alumneID)));
+    const reservesAlumne = useAppSelector(state => selectUpcomingReservesByAlumneID(state, Number(alumneID)));
+
     //If student doesn't exist redirect to home
     if (!alumne) {
         router.replace("../")
@@ -61,7 +63,6 @@ export default function AlumneScreen() {
             return;
         }
         const horaUTC = new Date(hora.getTime() - hora.getTimezoneOffset() * 60000);
-        console.log(horaUTC)
         dispatch(createReserva({ usuariID: alumne!.id, hora: horaUTC.toISOString() }));
     }
 
@@ -109,7 +110,6 @@ export default function AlumneScreen() {
                             <View style={{ width: "100%" }}>
                                 {selectedDay && selectedDay.dateString >= formatDate(new Date()) && <View>
                                     <Pressable style={[themeStyles.button1, { marginBottom: 20, marginTop: 0 }]} onPress={() => {
-                                        console.log("aqu8i")
                                         setModalReservarVisible(true)
                                         setSelectedTime(new Date(selectedDay.timestamp))
                                     }}>
@@ -118,8 +118,6 @@ export default function AlumneScreen() {
                                 </View>}
                             </View>
                         </View>
-
-
 
                         {modalReservarVisible && selectedDay && < RNDateTimePicker
                             mode='time'
@@ -139,12 +137,16 @@ export default function AlumneScreen() {
 
                         {/* Entrenos */}
                         <View style={[themeStyles.box, { marginBottom: 20 }]}>
-                            <Text style={[themeStyles.titol1,]}>Pròxims entrenos</Text>
-                            {alumne.reserves.length == 0 ? (<Text style={[themeStyles.text, { marginBottom: 20 }]}>Sense reserves</Text>
+                            <Text style={[themeStyles.titol1]}>Pròxims entrenos</Text>
+                            {reservesAlumne.length === 0 ? (
+                                <Text style={[themeStyles.text, { marginBottom: 20 }]}>Sense reserves</Text>
                             ) : (
-                                alumne.reserves.map((reserva) => (
-                                    stringDiaToDate(reserva.hora).getMilliseconds() >= Date.now() && <Text key={reserva.id} style={themeStyles.text}>{reserva.hora}</Text>
-                                )))}
+                                reservesAlumne.map((reserva) => (
+                                    <View key={reserva.id} style={{marginBottom: 20}}>
+                                        <Text style={themeStyles.text}>{reserva.hora.split("T")[0] + " - " + reserva.hora.split("T")[1].split("+")[0].substring(0,5)}</Text>
+                                    </View>
+                                ))
+                            )}
                         </View>
 
                         {/* Rutina */}
