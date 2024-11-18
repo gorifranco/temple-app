@@ -12,6 +12,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { persistor } from '../../store';
 import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import { router } from 'expo-router';
 
 export default function Index() {
     const appTheme = useAppTheme();
@@ -37,17 +38,6 @@ export default function Index() {
         setConfigTmp({ ...configTmp, duracioSessions: minutes });
     }
 
-    async function borrarStorage() {
-        try {
-            await AsyncStorage.clear();
-            console.log("AsyncStorage borrado");
-            await persistor.purge();
-            console.log("persistor borrat");
-        } catch (e) {
-            console.error("Error borrando AsyncStorage:", e);
-        }
-    }
-
     function handleCanviarConfiguracio() {
         if (configValidator(configTmp)) dispatch(guardarConfiguracio({ config: configTmp }));
     }
@@ -57,13 +47,11 @@ export default function Index() {
             <ScrollView>
                 <Pressable
                     style={themeStyles.button1}
-                    onPress={() => dispatch(logoutRedux())}>
+                    onPress={() => {
+                        dispatch(logoutRedux())
+                        router.replace("/")
+                    }}>
                     <Text style={themeStyles.button1Text}>Logout</Text>
-                </Pressable>
-                <Pressable
-                    style={themeStyles.button1}
-                    onPress={() => borrarStorage()}>
-                    <Text style={themeStyles.button1Text}>Borrar async storage</Text>
                 </Pressable>
 
                 {/* Horari */}

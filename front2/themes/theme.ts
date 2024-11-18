@@ -2,6 +2,7 @@ import { DefaultTheme, MD2DarkTheme } from 'react-native-paper';
 import { StyleSheet, TextStyle, useColorScheme, ViewStyle } from 'react-native'
 import { Platform, StatusBar } from 'react-native';
 import { useEffect, useState } from 'react';
+import { Theme } from 'react-native-calendars/src/types';
 
 
 export const useAppTheme = () => {
@@ -73,7 +74,7 @@ export function useThemeStyles() {
     hr: TextStyle;
     diaHorariContainer: ViewStyle;
     alumneContainer: ViewStyle;
-    calendarTheme: ViewStyle;
+    //calendarTheme: ViewStyle;
     modalConfirmContent: ViewStyle;
   };
   
@@ -82,7 +83,7 @@ export function useThemeStyles() {
     background: {
       backgroundColor: theme.colors.background,
       height: "100%",
-    } as ViewStyle,
+    },
     authBackground: {
       flex: 1,
       width: '100%',
@@ -259,17 +260,6 @@ export function useThemeStyles() {
 
       elevation: 3,
     },
-    calendarTheme: {
-      calendarBackground: theme.colors.background2,
-      dayTextColor: theme.colors.text,
-      textDisabledColor: "gray",
-      monthTextColor: theme.colors.text,
-      todayTextColor: theme.colors.primary,
-      textSectionTitleColor: theme.colors.primary,
-      arrowColor: theme.colors.primary,
-      selectedDayBackgroundColor: theme.colors.primary,
-      selectedDayTextColor: theme.colors.text,
-    },
     basicContainer: {
       marginTop: 20,
       flexDirection: "row",
@@ -284,4 +274,18 @@ export function useThemeStyles() {
       margin: "auto"
     }
   })
+}
+
+
+const theme = useAppTheme();
+export const calendarTheme:Theme = {
+  calendarBackground: theme.colors.background2,
+  dayTextColor: theme.colors.text,
+  textDisabledColor: "gray",
+  monthTextColor: theme.colors.text,
+  todayTextColor: theme.colors.primary,
+  textSectionTitleColor: theme.colors.primary,
+  arrowColor: theme.colors.primary,
+  selectedDayBackgroundColor: theme.colors.primary,
+  selectedDayTextColor: "white",
 }

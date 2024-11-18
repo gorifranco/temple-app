@@ -9,9 +9,8 @@ import Toast from 'react-native-toast-message';
 import ViewRutina from '@/components/viewers/ViewRutina';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown'
 import AutocompleteRutines from '@/components/inputs/selects/AutocompleteRutines';
-import { useThemeStyles } from '@/themes/theme';
+import { calendarTheme, useThemeStyles } from '@/themes/theme';
 import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker'
-import { stringDiaToDate } from '@/helpers/timeHelpers';
 import { acabarRutina, assignarRutina, expulsarAlumne, selectAlumneByID, selectAlumnesError, selectAlumnesStatus } from '@/store/alumnesSlice';
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
 import { createReserva, selectUpcomingReservesByAlumneID } from '@/store/reservesSlice';
@@ -100,10 +99,7 @@ export default function AlumneScreen() {
                                     selectedDay && {
                                         [selectedDay.dateString]: { selected: true }
                                     }}
-                                theme={{
-                                    ...themeStyles.calendarTheme,
-                                    calendarBackground: colorScheme === "light" ? "white" : ""
-                                }}
+                                theme={calendarTheme}
                                 style={{ margin: 5 }}
                             />
 

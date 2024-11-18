@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, Pressable, Dimensions } from 'react-native';
 import { useThemeStyles } from '@/themes/theme';
+import { View, Text, StyleSheet, Pressable, Dimensions, useColorScheme } from 'react-native';
 
 interface propsType {
     dies: number,
@@ -12,7 +12,8 @@ interface propsType {
 
 export default function BarraDies(props: propsType) {
     const { dies, afegeixDia, canviaDia, currentDia, editable } = props;
-    const themeStyles = useThemeStyles()
+    const themeStyles = useThemeStyles();
+    const colorScheme = useColorScheme();
     const screenWidth = Dimensions.get('window').width;
     const pressableWidth = editable ? screenWidth * 0.8 / 7 : screenWidth * 0.75 / dies;
 
@@ -32,27 +33,37 @@ export default function BarraDies(props: propsType) {
                         ]}
                         onPress={() => canviaDia(i)}
                     >
-                        <Text style={[
-                            themeStyles.text,
-                            { color: i === currentDia ? "black" : "white", fontSize: 18 }
-                        ]}>
+                        <Text
+                            style={[
+                                { fontSize: 18, alignSelf: 'center' },
+                                {
+                                    color: colorScheme === 'light'
+                                        ? 'black'
+                                        : currentDia == i
+                                            ? 'black'
+                                            : 'white'
+                                }
+                            ]}
+                        >
                             {letter}
                         </Text>
                     </Pressable>
                 );
             })}
-            {editable && dies < 7 && (
-                <Pressable
-                    key={"afegir"}
-                    style={[styles.pressable, { borderRightWidth: 0, width: 45 }]}
-                    onPress={() => {
-                        if (afegeixDia) afegeixDia()
-                    }}
-                >
-                    <Text style={[themeStyles.text, { color: 'gray', fontSize: 25, fontWeight: 'bold' }]}>+</Text>
-                </Pressable>
-            )}
-        </View>
+            {
+                editable && dies < 7 && (
+                    <Pressable
+                        key={"afegir"}
+                        style={[styles.pressable, { borderRightWidth: 0, width: 45 }]}
+                        onPress={() => {
+                            if (afegeixDia) afegeixDia()
+                        }}
+                    >
+                        <Text style={[themeStyles.text, { color: 'gray', fontSize: 25, fontWeight: 'bold' }]}>+</Text>
+                    </Pressable>
+                )
+            }
+        </View >
     );
 }
 

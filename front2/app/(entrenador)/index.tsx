@@ -2,9 +2,9 @@ import { getAlumnes, selectAllAlumnes, selectAlumnesStatus } from '@/store/alumn
 import { getConfig, selectConfigStatus } from '@/store/configSlice';
 import { getExercicis, selectExercicisStatus } from '@/store/exercicisSlice';
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
-import { getReserves, selectAllReserves, selectReservesStatus, deleteReservesSlice } from '@/store/reservesSlice';
+import { getReserves, selectAllReserves, selectReservesStatus, deleteReservesSlice, selectUpcomingReserves } from '@/store/reservesSlice';
 import { deleteRutinesSlice, getRutinesEntrenador, selectAllRutines, selectRutinesStatus } from '@/store/rutinesSlice';
-import { useThemeStyles } from '@/themes/theme';
+import { calendarTheme, useThemeStyles } from '@/themes/theme';
 import { status, actions } from '@/types/apiTypes';
 import { router } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -27,7 +27,7 @@ export default function Index() {
     const configStatus = useAppSelector(selectConfigStatus);
     const alumnes = useAppSelector(selectAllAlumnes);
     const rutines = useAppSelector(selectAllRutines);
-    const reserves = useAppSelector(selectAllReserves);
+    const reserves = useAppSelector(selectUpcomingReserves);
     const today = new Date();
     const [selectedDay, setSelectedDay] = useState<DateData>();
 
@@ -71,7 +71,7 @@ export default function Index() {
                         <Calendar
                             firstDay={1}
                             onDayPress={(day: DateData) => { setSelectedDay(day) }}
-                            theme={themeStyles.calendarTheme}
+                            theme={calendarTheme}
                             style={{ margin: 5 }}
                             markedDates={
                                 selectedDay && {
