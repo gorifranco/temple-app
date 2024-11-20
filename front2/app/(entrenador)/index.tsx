@@ -28,8 +28,9 @@ export default function Index() {
     const alumnes = useAppSelector(selectAllAlumnes);
     const rutines = useAppSelector(selectAllRutines);
     const reserves = useAppSelector(selectUpcomingReserves);
-    const today = new Date();
-    const [selectedDay, setSelectedDay] = useState<DateData>();
+    const today = new Date()
+    const [selectedDay, setSelectedDay] = useState<DateData>({year: today.getFullYear(), month: today.getMonth()+1, day: today.getDate(),
+       timestamp: today.getMilliseconds(), dateString: `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`});
 
     /*     useEffect(
             () => {

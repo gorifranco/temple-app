@@ -17,7 +17,7 @@ import { createReserva, selectUpcomingReservesByAlumneID } from '@/store/reserve
 
 
 export default function AlumneScreen() {
-    const colorScheme = useColorScheme();
+    const today = new Date()
     const themeStyles = useThemeStyles()
     const alumneStatus = useAppSelector(selectAlumnesStatus);
     const alumneError = useAppSelector(selectAlumnesError);
@@ -25,11 +25,12 @@ export default function AlumneScreen() {
     const [assignarRutinaID, setAssignarRutinaID] = useState<number | null>(null)
     const [autocompleteRutinaError, setAutocompleteRutinaError] = useState("")
     const { alumneID } = useLocalSearchParams();
-    const [selectedDay, setSelectedDay] = useState<DateData>();
+    const [selectedDay, setSelectedDay] = useState<DateData>({year: today.getFullYear(), month: today.getMonth()+1, day: today.getDate(),
+       timestamp: today.getMilliseconds(), dateString: `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`});
     const [selectedTime, setSelectedTime] = useState<Date>(new Date())
     const dispatch = useAppDispatch();
     const [modalReservarVisible, setModalReservarVisible] = useState(false)
-    const [errors, setErrorts] = useState({
+    const [errors, setErrors] = useState({
         Hora: "",
         Dia: "",
     })
@@ -58,7 +59,7 @@ export default function AlumneScreen() {
 
     async function reservar(hora: Date) {
         if (!selectedDay) {
-            setErrorts({ ...errors, Dia: "Selecciona un dia" });
+            setErrors({ ...errors, Dia: "Selecciona un dia" });
             return;
         }
         const horaUTC = new Date(hora.getTime() - hora.getTimezoneOffset() * 60000);

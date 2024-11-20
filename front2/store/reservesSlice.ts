@@ -45,6 +45,37 @@ export const getReserves = createAsyncThunk<
   return data.data;
 });
 
+//Create reservation as a student
+export const createReservaAlumne = createAsyncThunk<
+  ReservaType, // Expected result type
+  { hora: string }, // Parameters type
+  { state: RootState }
+>(
+  "alumne/createReserva",
+  async ({ hora }, { getState, rejectWithValue }) => {
+    const state = getState();
+    const token = state.auth.user?.token;
+
+    const response = await fetch(
+      process.env.EXPO_PUBLIC_API_URL + "/reserves",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ hora }),
+      }
+    );
+    const data = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(data.error ?? "Failed to create reservation");
+    }
+    console.log(data.data);
+    return data.data;
+  }
+);
+
 // Create reservation
 export const createReserva = createAsyncThunk<
   ReservaType, // Expected result type
@@ -71,7 +102,6 @@ export const createReserva = createAsyncThunk<
     if (!response.ok) {
       return rejectWithValue(data.error ?? "Failed to create reservation");
     }
-    console.log(data.data);
     return data.data;
   }
 );

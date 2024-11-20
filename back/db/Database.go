@@ -7,7 +7,6 @@ import (
 	"temple-app/models"
 	"temple-app/services"
 
-	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -20,11 +19,6 @@ var (
 func InitializeDB() {
 	once.Do(func() {
 		var err error
-
-		err = godotenv.Load()
-		if err != nil {
-			log.Fatalf("Error loading .env file")
-		}
 
 		dsn := os.Getenv("DB_USER") + ":" + os.Getenv("DB_PASS") +
 			"@tcp(" + os.Getenv("DB_HOST") + ":" + os.Getenv("DB_PORT") + ")/" +

@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, StyleSheet, View, Pressable } from 'react-native';
-import { Calendar, LocaleConfig } from 'react-native-calendars';
+import { StyleSheet, View, Pressable } from 'react-native';
+import { Calendar, DateData, LocaleConfig } from 'react-native-calendars';
 import { Picker } from '@react-native-picker/picker';
 import { Text } from 'react-native';
-import { ActivityIndicator } from 'react-native';
+import { calendarTheme, useThemeStyles } from '@/themes/theme';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { ScrollView } from 'react-native-gesture-handler';
+import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import { useAppDispatch } from '@/store/reduxHooks';
+import { createReservaAlumne } from '@/store/reservesSlice';
 
 
 // Configurar el idioma
@@ -17,79 +22,107 @@ LocaleConfig.locales['es'] = {
 LocaleConfig.defaultLocale = 'es';
 
 export default function Index() {
-  const [loading, setLoading] = useState(true);
-  const [selectedDay, setSelectedDay] = useState('');
+  const today = new Date()
+  const [selectedDay, setSelectedDay] = useState<DateData>({year: today.getFullYear(), month: today.getMonth()+1, day: today.getDate(),
+     timestamp: today.getMilliseconds(), dateString: `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`});
   const [selectedHour, setSelectedHour] = useState('');
+  const [selectedTime, setSelectedTime] = useState<Date>(new Date())
+  const [errors, setErrors] = useState({
+    Dia: ''
+  });
+  const [modalReservarVisible, setModalReservarVisible] = useState(false)
+  const themeStyles = useThemeStyles();
+  const dispatch = useAppDispatch()
 
-  useEffect(() => {
-  }, []);
 
-  const handleDayPress = (day: { dateString: React.SetStateAction<string>; }) => {
-    setSelectedDay(day.dateString);
-  };
-
-  const handleSubmit = () => {
-    if (selectedDay !== '' && selectedHour !== '') {
-      alert(`Día: ${selectedDay}, Hora: ${selectedHour}`);
-    } else {
-      alert('Por favor selecciona una fecha y una hora');
+  async function reservar(hora: Date) {
+    if (!selectedDay) {
+      setErrors({ ...errors, Dia: "Selecciona un dia" });
+      return;
     }
+    const horaUTC = new Date(hora.getTime() - hora.getTimezoneOffset() * 60000);
+    dispatch(createReservaAlumne({ hora: horaUTC.toISOString() }));
+  }
+
+  function formatDate(date: Date) {
+    return date.toISOString().split('T')[0];
   };
 
-  if (loading) {
-    return <ActivityIndicator size="large" color="#00ff00" />
-  }
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.calendarContainer}>1
-        <Calendar
-          firstDay={1}
-          onDayPress={handleDayPress}
-          markedDates={{
-            [selectedDay]: { selected: true, marked: true, selectedColor: 'blue' }
-          }}
-        />
-      </View>
-      <View style={styles.pickerContainer}>
-        <Picker
-          selectedValue={selectedHour}
-          onValueChange={(itemValue) => setSelectedHour(itemValue)}
-          style={styles.picker}
-        >
-          <Picker.Item label="Selecciona una hora" value="" />
-          <Picker.Item label="08:00" value="08:00" />
-          <Picker.Item label="09:00" value="09:00" />
-          <Picker.Item label="10:00" value="10:00" />
-          <Picker.Item label="11:00" value="11:00" />
-          <Picker.Item label="12:00" value="12:00" />
-          <Picker.Item label="13:00" value="13:00" />
-          <Picker.Item label="14:00" value="14:00" />
-          <Picker.Item label="15:00" value="15:00" />
-          <Picker.Item label="16:00" value="16:00" />
-          <Picker.Item label="17:00" value="17:00" />
-          <Picker.Item label="18:00" value="18:00" />
-          <Picker.Item label="19:00" value="19:00" />
-          <Picker.Item label="20:00" value="20:00" />
-        </Picker>
-      </View>
-      <View style={styles.buttonContainer}>
-        <Pressable
-          onPress={() => {
-            handleSubmit()
-          }}
-          style={({ pressed }) => [
-            {
-              backgroundColor: pressed ? 'rgb(210, 230, 255)' : 'white',
-            },
-            styles.wrapperCustom,
-          ]}>
-          {({ pressed }) => (
-            <Text style={styles.buttonText}>Reservar</Text>
-          )}
-        </Pressable>
-      </View>
-      <Text style={styles.text}>Pròxims entrenos</Text>
-      <Text style={styles.text}>Entrenos setmanals disponibles</Text>
+    <SafeAreaView style={themeStyles.background}>
+      <ScrollView>
+        <View style={themeStyles.basicContainer}>
+          <View style={themeStyles.box}>
+            <Calendar
+              firstDay={1}
+              onDayPress={(day: DateData) => { setSelectedDay(day) }}
+              theme={calendarTheme}
+              style={{ margin: 5 }}
+              markedDates={
+                selectedDay && {
+                  [selectedDay.dateString]: { selected: true }
+                }}
+            />
+
+            <View style={{ width: "100%" }}>
+              {selectedDay && selectedDay.dateString >= formatDate(new Date()) && <View>
+                <Pressable style={[themeStyles.button1, { marginBottom: 20, marginTop: 0 }]} onPress={() => {
+                  setModalReservarVisible(true)
+                  setSelectedTime(new Date(selectedDay.timestamp))
+                }}>
+                  <Text style={themeStyles.button1Text}>Reservar</Text>
+                </Pressable>
+              </View>}
+            </View>
+          </View>
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={selectedHour}
+              onValueChange={(itemValue) => setSelectedHour(itemValue)}
+              style={styles.picker}
+            >
+              <Picker.Item label="Selecciona una hora" value="" />
+              <Picker.Item label="08:00" value="08:00" />
+              <Picker.Item label="09:00" value="09:00" />
+              <Picker.Item label="10:00" value="10:00" />
+              <Picker.Item label="11:00" value="11:00" />
+              <Picker.Item label="12:00" value="12:00" />
+              <Picker.Item label="13:00" value="13:00" />
+              <Picker.Item label="14:00" value="14:00" />
+              <Picker.Item label="15:00" value="15:00" />
+              <Picker.Item label="16:00" value="16:00" />
+              <Picker.Item label="17:00" value="17:00" />
+              <Picker.Item label="18:00" value="18:00" />
+              <Picker.Item label="19:00" value="19:00" />
+              <Picker.Item label="20:00" value="20:00" />
+            </Picker>
+          </View>
+
+          {/* Next reservations */}
+          <View style={themeStyles.box}>
+            <Text style={[themeStyles.text, { paddingVertical: 20 }]}>Pròxims entrenos</Text>
+          </View>
+
+          <Text style={themeStyles.text}>Entrenos setmanals disponibles</Text>
+
+        </View>
+
+        {modalReservarVisible && selectedDay && < RNDateTimePicker
+          mode='time'
+          display="spinner"
+          is24Hour={true}
+          value={new Date(selectedDay.timestamp)}
+          minuteInterval={30}
+          positiveButton={{ label: 'Reservar', textColor: 'white' }}
+          negativeButton={{ label: 'Cancelar', textColor: 'white' }}
+          onChange={(e: DateTimePickerEvent, time: Date | undefined) => {
+            if (time && e.type == "set") {
+              reservar(new Date(e.nativeEvent.timestamp))
+            }
+            e.nativeEvent && setModalReservarVisible(false)
+          }} />
+        }
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -100,23 +133,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
   },
-  calendarContainer: {
-    margin: 20,
-  },
   pickerContainer: {
-    margin: 20,
+    margin: 'auto',
+    marginTop: 20,
+    width: '90%'
   },
   picker: {
     paddingLeft: 10,
     height: 50,
     width: '100%',
-  },
-  buttonContainer: {
-    margin: 20,
-  },
-  text: {
-    textAlign: 'center',
-    marginBottom: 10,
   },
   wrapperCustom: {
     padding: 7,
@@ -125,9 +150,5 @@ const styles = StyleSheet.create({
     borderColor: '#09f',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  buttonText: {
-    color: '#09f',
-    fontSize: 20,
   },
 });

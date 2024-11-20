@@ -62,89 +62,88 @@ export default function RootLayout() {
   }, []);
 
 
-function StackLayout() {
-  const router = useRouter();
-  const user = useAppSelector(selectUser);
+  function StackLayout() {
+    const router = useRouter();
+    const user = useAppSelector(selectUser);
 
-  useEffect(() => {
+    useEffect(() => {
+      if (!user) {
+        router.replace('/');
+      } else if (user.tipusUsuari === 'Basic') {
+        router.replace('/(basic)');
+      } else if (user.tipusUsuari === 'Entrenador') {
+        router.replace('/(entrenador)');
+      } else if (user.tipusUsuari === 'Administrador') {
+        router.replace('/(admin)');
+      }
+    }, [user]);
 
-    if (!user) {
-      router.replace('/');
-    } else if (user.tipusUsuari === 'Basic') {
-      router.replace('/(basic)');
-    } else if (user.tipusUsuari === 'Entrenador') {
-      router.replace('/(entrenador)');
-    } else if (user.tipusUsuari === 'Administrador') {
-      router.replace('/(admin)');
-    }
-  }, [user]);
-
-  return (
-    <Stack
-      screenOptions={{
-        navigationBarHidden: true,
-        statusBarBackgroundColor: themeStyles.colors.background,
-        statusBarStyle: colorScheme == 'light' ? 'dark' : 'light', // Texto acorde al tema
-      }}
-    >
-      <Stack.Screen name="(admin)" options={{ headerShown: false }} />
-      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-      <Stack.Screen name="(basic)" options={{ headerShown: false }} />
-      <Stack.Screen name="(entrenador)" options={{ headerShown: false }} />z
-      <Stack.Screen name="(config)" options={{ headerShown: false }} />
-      <Stack.Screen name="(rutines)" options={{ headerShown: false }} />
-      <Stack.Screen name="(alumnes)/[alumneID]" options={{ headerShown: false }} />
-      <Stack.Screen name="(alumnes)/alumnes" options={{ headerShown: false }} />
-      <Stack.Screen name="+not-found" />
-      <Stack.Screen name="(stats)" options={{ headerShown: false }} />
-    </Stack>
-  );
-};
-
-const theme = useAppTheme();
-const [loaded] = useFonts({
-  SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-});
-
-useEffect(() => {
-  if (loaded) {
-    SplashScreen.hideAsync();
-
-  }
-}, [loaded]);
-
-useEffect(() => {
-  // Listen for deep links
-  const handleDeepLink = (event: { url: string }) => {
-    const url = event.url;
-    const codigoEntrenador = url.split('/').pop();
+    return (
+      <Stack
+        screenOptions={{
+          navigationBarHidden: true,
+          statusBarBackgroundColor: themeStyles.colors.background,
+          statusBarStyle: colorScheme == 'light' ? 'dark' : 'light', // Texto acorde al tema
+        }}
+      >
+        {user && user.tipusUsuari == "Administrador" && <Stack.Screen name="(admin)" options={{ headerShown: false }} />}
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        {user && user.tipusUsuari == "Basic" && <Stack.Screen name="(basic)" options={{ headerShown: false }} />}
+        {user && user.tipusUsuari == "Entrenador" && <Stack.Screen name="(entrenador)" options={{ headerShown: false }} />}
+        <Stack.Screen name="(config)" options={{ headerShown: false }} />
+        {user && user.tipusUsuari == "E" && <Stack.Screen name="(rutines)" options={{ headerShown: false }} />}
+        {user && user.tipusUsuari == "Entrenador" && <Stack.Screen name="(alumnes)/[alumneID]" options={{ headerShown: false }} />}
+        {user && user.tipusUsuari == "Entrenador" && <Stack.Screen name="(alumnes)/alumnes" options={{ headerShown: false }} />}
+        <Stack.Screen name="+not-found" />
+        <Stack.Screen name="(stats)" options={{ headerShown: false }} />
+      </Stack>
+    );
   };
 
-  const listener = Linking.addEventListener('url', handleDeepLink);
-
-  Linking.getInitialURL().then((url) => {
-    if (url) handleDeepLink({ url });
+  const theme = useAppTheme();
+  const [loaded] = useFonts({
+    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
-  return () => {
-    listener.remove();
-  };
-}, []);
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hideAsync();
+
+    }
+  }, [loaded]);
+
+  useEffect(() => {
+    // Listen for deep links
+    const handleDeepLink = (event: { url: string }) => {
+      const url = event.url;
+      const codigoEntrenador = url.split('/').pop();
+    };
+
+    const listener = Linking.addEventListener('url', handleDeepLink);
+
+    Linking.getInitialURL().then((url) => {
+      if (url) handleDeepLink({ url });
+    });
+
+    return () => {
+      listener.remove();
+    };
+  }, []);
 
 
-return (
-  <NavigationContainer>
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <PaperProvider theme={theme}>
-        <Provider store={store}>
-          <PersistGate loading={null} persistor={persistor}>
-            <StackLayout />
-          </PersistGate>
-          <Toast />
-        </Provider>
-      </PaperProvider>
-    </GestureHandlerRootView>
-  </NavigationContainer>
-);
+  return (
+    <NavigationContainer>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <PaperProvider theme={theme}>
+          <Provider store={store}>
+            <PersistGate loading={null} persistor={persistor}>
+              <StackLayout />
+            </PersistGate>
+            <Toast />
+          </Provider>
+        </PaperProvider>
+      </GestureHandlerRootView>
+    </NavigationContainer>
+  );
 }
 
