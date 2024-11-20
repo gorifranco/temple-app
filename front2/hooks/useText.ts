@@ -7,28 +7,28 @@ export type texts = {
     Reservar: string,
     Cancelar: string,
     Entrenar: string,
-
 }
 
 const supportedLangs = ['es-ES', 'en-US', 'ca-ES'];
 
 
-export function useText(){
-    const deviceLanguage =
-    Platform.OS === 'ios'
-      ? NativeModules.SettingsManager.settings.AppleLocale ||
-        NativeModules.SettingsManager.settings.AppleLanguages[0] // iOS 13
-      : NativeModules.I18nManager.localeIdentifier;
+export function useText() {
+    let deviceLanguage;
+    if (Platform.OS === 'ios') {
+        deviceLanguage = NativeModules.SettingsManager.settings.AppleLocale ||
+            NativeModules.SettingsManager.settings.AppleLanguages[0]; // iOS 13
+    } else if (Platform.OS === 'android') {
+        deviceLanguage = NativeModules.I18nManager.localeIdentifier;
+    } else {
+        deviceLanguage = 'es-ES'
+    }
 
-console.log(deviceLanguage);
-
-
-switch (deviceLanguage) {
-  case "es-ES":
-    return textsES;
-  case "ca-ES":
-    return textsCA;
-  default:
-    return textsEN;
-}
+    switch (deviceLanguage) {
+        case "es-ES":
+            return textsES;
+        case "ca-ES":
+            return textsCA;
+        default:
+            return textsEN;
+    }
 }

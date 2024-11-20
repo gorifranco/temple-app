@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Pressable } from 'react-native';
-import { Calendar, DateData, LocaleConfig } from 'react-native-calendars';
+import { Calendar, DateData } from 'react-native-calendars';
 import { Picker } from '@react-native-picker/picker';
 import { Text } from 'react-native';
 import { calendarTheme, useThemeStyles } from '@/themes/theme';
@@ -13,17 +13,6 @@ import { selectUser } from '@/store/authSlice';
 import Entreno from '@/components/viewers/Entreno';
 import { status } from '@/types/apiTypes';
 import { useText } from '@/hooks/useText';
-
-
-// Configurar el idioma
-LocaleConfig.locales['es'] = {
-  monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
-  monthNamesShort: ['Ene.', 'Feb.', 'Mar.', 'Abr.', 'May.', 'Jun.', 'Jul.', 'Ago.', 'Sep.', 'Oct.', 'Nov.', 'Dic.'],
-  dayNames: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
-  dayNamesShort: ['Dom.', 'Lun.', 'Mar.', 'Mié.', 'Jue.', 'Vie.', 'Sáb.'],
-  today: 'Hoy',
-};
-LocaleConfig.defaultLocale = 'es';
 
 export default function Index() {
   const texts = useText();
@@ -72,6 +61,7 @@ export default function Index() {
                 selectedDay && {
                   [selectedDay.dateString]: { selected: true }
                 }}
+
             />
 
             <View style={{ width: "100%" }}>

@@ -17,6 +17,10 @@ import { selectUser } from '@/store/authSlice';
 import * as Notifications from 'expo-notifications';
 import { NavigationContainer } from '@react-navigation/native';
 import { registerForPushNotificationsAsync } from '@/hooks/notifications';
+import { LocaleConfig } from 'react-native-calendars';
+import { calendarLocalecaES } from '@/translations/ca-ES';
+import { calendarLocaleenUS } from '@/translations/en-US';
+import { calendarLocaleesES } from '@/translations/es-ES';
 
 
 SplashScreen.preventAutoHideAsync();
@@ -28,6 +32,13 @@ Notifications.setNotificationHandler({
     shouldSetBadge: false,
   }),
 });
+
+// Configurar el idioma
+LocaleConfig.locales['es'] = calendarLocaleesES;
+LocaleConfig.locales['ca'] = calendarLocalecaES;
+LocaleConfig.locales['en'] = calendarLocaleenUS;
+
+LocaleConfig.defaultLocale = 'ca';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
