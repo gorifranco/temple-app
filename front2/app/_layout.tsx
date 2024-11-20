@@ -11,7 +11,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { PaperProvider } from 'react-native-paper';
 import { useAppTheme } from '@/themes/theme';
-import { Linking, Platform, useColorScheme } from 'react-native';
+import { Linking, NativeModules, Platform, useColorScheme } from 'react-native';
 import { useAppSelector } from '@/store/reduxHooks';
 import { selectUser } from '@/store/authSlice';
 import * as Notifications from 'expo-notifications';

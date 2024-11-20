@@ -15,7 +15,7 @@ export default function Index() {
         <AutocompleteDropdownContextProvider>
             <SafeAreaView style={[themeStyles.background, { height: '100%' }]}>
                 <ScrollView>
-                    <Text style={themeStyles.titol1}>Estadístiques</Text>
+                    <Text style={themeStyles.titol1}>RMs</Text>
 
                     <View style={{ width: "80%", marginBottom: 10, marginHorizontal: "auto" }}>
                         <AutocompleteExercicis
@@ -23,6 +23,7 @@ export default function Index() {
                             selectedValue={exerciciSeleccionat} />
                     </View>
 
+                    <Text style={themeStyles.titol1}>Progrés</Text>
                     <View style={{ margin: "auto" }}>
                         <ExerciciLinearGrafic />
                     </View>

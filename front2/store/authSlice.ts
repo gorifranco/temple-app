@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { RootState } from ".";
 
 interface User {
+  id: number;
   token: string;
   nom: string;
   email: string;
