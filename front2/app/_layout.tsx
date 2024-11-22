@@ -102,9 +102,8 @@ export default function RootLayout() {
         {user && user.tipusUsuari == "Basic" && <Stack.Screen name="(basic)" options={{ headerShown: false }} />}
         {user && user.tipusUsuari == "Entrenador" && <Stack.Screen name="(entrenador)" options={{ headerShown: false }} />}
         <Stack.Screen name="(config)" options={{ headerShown: false }} />
-        {user && user.tipusUsuari == "E" && <Stack.Screen name="(rutines)" options={{ headerShown: false }} />}
-        {user && user.tipusUsuari == "Entrenador" && <Stack.Screen name="(alumnes)/[alumneID]" options={{ headerShown: false }} />}
-        {user && user.tipusUsuari == "Entrenador" && <Stack.Screen name="(alumnes)/alumnes" options={{ headerShown: false }} />}
+        {user && user.tipusUsuari == "Entrenador" && <Stack.Screen name="(rutines)" options={{ headerShown: false }} />}
+        {user && user.tipusUsuari == "Entrenador" && <Stack.Screen name="(alumnes)" options={{ headerShown: false }} />}
         <Stack.Screen name="+not-found" />
         <Stack.Screen name="(stats)" options={{ headerShown: false }} />
       </Stack>

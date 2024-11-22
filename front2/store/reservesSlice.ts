@@ -6,6 +6,7 @@ import {
 } from "@reduxjs/toolkit";
 import { ReservaType } from "../types/apiTypes";
 import { RootState } from ".";
+import { DateData } from "react-native-calendars";
 
 interface ReservesState {
   reserves: ReservaType[];
@@ -173,6 +174,15 @@ export const selectUpcomingReservesByAlumneID = createSelector(
       (reserva) =>
         reserva.usuariID === alumneID &&
         new Date(reserva.hora).getTime() >= Date.now()
+    )
+);
+export const selectReservesByDay = createSelector(
+  [selectAllReserves, (_, day: DateData) => day],
+  (reserves, day) =>
+    reserves.filter(
+      (reserva) =>
+        new Date(reserva.hora).getTime() >= new Date(day.timestamp).getTime() &&
+        new Date(reserva.hora).getTime() < new Date(day.timestamp).getTime() + 24 * 60 * 60 * 1000
     )
 );
 export const { deleteReservesSlice } = reservesSlice.actions;

@@ -68,6 +68,7 @@ func Routing() *gin.Engine {
 		entrenador.PUT("/usuarisFicticis/:id", handler.UpdateUsuariFictici)
 		entrenador.PUT("/alumnes/:id/expulsar", handler.ExpulsarUsuari)
 		entrenador.GET("/reserves", handler.ReservesEntrenador)
+		entrenador.GET("/reserves/:mes/:year", handler.GetReservesEntrenadorPerMes)
 		entrenador.POST("/assignarRutina", handler.AssignarRutina)
 		entrenador.POST("/acabarRutina", handler.AcabarRutina)
 		entrenador.POST("/guardarHorariEntrenador", handler.GuardarHorariEntrenador)

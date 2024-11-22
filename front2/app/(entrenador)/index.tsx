@@ -2,7 +2,7 @@ import { getAlumnes, selectAllAlumnes, selectAlumnesStatus } from '@/store/alumn
 import { getConfig, selectConfigStatus } from '@/store/configSlice';
 import { getExercicis, selectExercicisStatus } from '@/store/exercicisSlice';
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
-import { getReserves, selectAllReserves, selectReservesStatus, deleteReservesSlice, selectUpcomingReserves } from '@/store/reservesSlice';
+import { getReserves, selectAllReserves, selectReservesStatus, deleteReservesSlice, selectUpcomingReserves, selectReservesByDay } from '@/store/reservesSlice';
 import { deleteRutinesSlice, getRutinesEntrenador, selectAllRutines, selectRutinesStatus } from '@/store/rutinesSlice';
 import { calendarTheme, useThemeStyles } from '@/themes/theme';
 import { status, actions } from '@/types/apiTypes';
@@ -27,11 +27,13 @@ export default function Index() {
     const configStatus = useAppSelector(selectConfigStatus);
     const alumnes = useAppSelector(selectAllAlumnes);
     const rutines = useAppSelector(selectAllRutines);
-    const reserves = useAppSelector(selectUpcomingReserves);
     const today = new Date()
-    const [selectedDay, setSelectedDay] = useState<DateData>({year: today.getFullYear(), month: today.getMonth()+1, day: today.getDate(),
-       timestamp: today.getMilliseconds(), dateString: `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`});
-
+    const [selectedDay, setSelectedDay] = useState<DateData>({
+        year: today.getFullYear(), month: today.getMonth() + 1, day: today.getDate(),
+        timestamp: today.getMilliseconds(), dateString: `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+    });
+    const reserves = useAppSelector(state => selectReservesByDay(state, selectedDay));
+1
     /*     useEffect(
             () => {
                 dispatch(getConfig())

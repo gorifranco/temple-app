@@ -40,59 +40,57 @@ export default function Entreno(props: propsType) {
     const [resultats, setResultats] = useState<ResultatsExercici[]>([]);
 
     useEffect(() => {
-        buildResultats()
-    }, [])
+        buildResultats();
+    }, [diaActual, rutina]); // Recalcula los resultados cuando cambia el día o la rutina.
 
     function buildResultats() {
-        const resultatsTmp: ResultatsExercici[] = []
-        rutina?.exercicis.forEach(e => {
-            if (e.diaRutina == diaActual) {
-                const tmp: ResultatsExercici = {
-                    exerciciRutinaID: e.id,
-                    repeticions: e.numRepes,
-                    series: e.numSeries,
-                    pes: e.percentatgeRM,
-                }
-                resultatsTmp.push(tmp)
-            }
-        })
-        setResultats(resultatsTmp)
+        if (!rutina) return;
+
+        const resultatsTmp: ResultatsExercici[] = rutina.exercicis
+            .filter(e => e.diaRutina === diaActual) // Filtra los ejercicios del día actual
+            .map(e => ({
+                exerciciRutinaID: e.id,
+                repeticions: e.numRepes,
+                series: e.numSeries,
+                pes: e.percentatgeRM,
+            })); // Genera el array de resultados.
+
+        setResultats(resultatsTmp);
     }
 
-    const exercicisArray = rutina!.exercicis;
-
+    const exercicisArray = rutina?.exercicis || [];
     return (
         <View>
             <Text>{alumne.nom + " - " + hora}</Text>
             <Text style={[themeStyles.text, { marginTop: 5, marginBottom: 10 }]}>Setmana {setmanaSeleccionada}</Text>
             <BarraDies editable={false} dies={rutina!.diesDuracio} canviaDia={(d: number) => setDiaSeleccionat(d)} currentDia={diaSeleccionat} />
             {exercicisArray.map(e => {
-                return e.diaRutina == diaSeleccionat && setmanaSeleccionada == e.cicle && (
+                const resultat = resultats.find(f => f.exerciciRutinaID === e.id);
+
+                return e.diaRutina === diaSeleccionat && setmanaSeleccionada === e.cicle && (
                     <View style={{ marginTop: 15 }} key={e.exerciciID}>
-                        <Text style={themeStyles.text}>{exercicis.find(exercici => exercici.id == e.exerciciID)?.nom}</Text>
+                        <Text style={themeStyles.text}>{exercicis.find(exercici => exercici.id === e.exerciciID)?.nom}</Text>
                         <View style={{ display: "flex", flexDirection: "row", gap: 25, margin: "auto", marginTop: 6 }}>
                             <TextInput
                                 label={<Text style={{ fontSize: 12 }}>Series</Text>}
                                 style={{ width: 65 }}
                                 inputMode="numeric"
-                                value={diaSeleccionat == diaActual && setmanaSeleccionada == setmanaActual ? resultats.find(f => f.exerciciRutinaID == e.id)?.series.toString() : e.numSeries.toString()}
+                                value={resultat?.series?.toString() || e.numSeries.toString()}
                                 onChangeText={(text: string) => {
                                     const updatedResultats = resultats.map(f => {
                                         if (f.exerciciRutinaID === e.id) {
-                                            return {
-                                                ...f,
-                                                series: Number(text.replace(/[^0-9]/g, ''))
-                                            };
+                                            return { ...f, series: Number(text.replace(/[^0-9]/g, '')) };
                                         }
                                         return f;
                                     });
                                     setResultats(updatedResultats);
-                                }} />
+                                }}
+                            />
                             <TextInput
                                 label={<Text style={{ fontSize: 12 }}>Repes</Text>}
                                 style={{ width: 65 }}
                                 inputMode="numeric"
-                                value={diaSeleccionat == diaActual && setmanaSeleccionada == setmanaActual ? resultats.find(f => f.exerciciRutinaID == e.id)?.repeticions.toString() : e.numRepes.toString()}
+                                value={resultat?.repeticions?.toString() || e.numRepes.toString()}
                                 onChangeText={(text: string) => {
                                     const updatedResultats = resultats.map(f => {
                                         if (f.exerciciRutinaID === e.id) {
@@ -109,19 +107,19 @@ export default function Entreno(props: propsType) {
                                 label={<Text style={{ fontSize: 12 }}>Pes</Text>}
                                 style={{ width: 65 }}
                                 inputMode="numeric"
-                                value={diaSeleccionat == diaActual && setmanaSeleccionada == setmanaActual ? resultats.find(f => f.exerciciRutinaID == e.id)?.pes.toString() : e.percentatgeRM.toString() + "%"}
-                                onChangeText={(text: string) => {
-                                    const updatedResultats = resultats.map(f => {
-                                        if (f.exerciciRutinaID === e.id) {
-                                            return {
-                                                ...f,
-                                                pes: Number(text.replace(/[^0-9]/g, ''))
-                                            };
-                                        }
-                                        return f;
-                                    });
-                                    setResultats(updatedResultats);
-                                }} />
+                                value={resultat?.pes?.toString() || e.percentatgeRM.toString() + "%"}
+                            onChangeText={(text: string) => {
+                                const updatedResultats = resultats.map(f => {
+                                    if (f.exerciciRutinaID === e.id) {
+                                        return {
+                                            ...f,
+                                            pes: Number(text.replace(/[^0-9]/g, ''))
+                                        };
+                                    }
+                                    return f;
+                                });
+                                setResultats(updatedResultats);
+                            }} />
                         </View>
                     </View>
                 )

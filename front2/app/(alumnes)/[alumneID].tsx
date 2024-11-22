@@ -9,7 +9,7 @@ import Toast from 'react-native-toast-message';
 import ViewRutina from '@/components/viewers/ViewRutina';
 import { AutocompleteDropdownContextProvider } from 'react-native-autocomplete-dropdown'
 import AutocompleteRutines from '@/components/inputs/selects/AutocompleteRutines';
-import { calendarTheme, useThemeStyles } from '@/themes/theme';
+import { calendarTheme, useAppTheme, useThemeStyles } from '@/themes/theme';
 import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker'
 import { acabarRutina, assignarRutina, expulsarAlumne, selectAlumneByID, selectAlumnesError, selectAlumnesStatus } from '@/store/alumnesSlice';
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
@@ -19,6 +19,7 @@ import { createReserva, selectUpcomingReservesByAlumneID } from '@/store/reserve
 export default function AlumneScreen() {
     const today = new Date()
     const themeStyles = useThemeStyles()
+    const appTheme = useAppTheme()
     const alumneStatus = useAppSelector(selectAlumnesStatus);
     const alumneError = useAppSelector(selectAlumnesError);
     const [modalVisible, setModalVisible] = useState(false)
@@ -122,8 +123,8 @@ export default function AlumneScreen() {
                             is24Hour={true}
                             value={new Date(selectedDay.timestamp)}
                             minuteInterval={30}
-                            positiveButton={{ label: 'Reservar', textColor: 'white' }}
-                            negativeButton={{ label: 'Cancelar', textColor: 'white' }}
+                            positiveButton={{ label: 'Reservar', textColor: appTheme.colors.primary }}
+                            negativeButton={{ label: 'Cancelar', textColor: appTheme.colors.text }}
                             onChange={(e: DateTimePickerEvent, time: Date | undefined) => {
                                 if (time && e.type == "set") {
                                     reservar(new Date(e.nativeEvent.timestamp))
