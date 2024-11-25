@@ -8,6 +8,7 @@ import { useAppSelector } from '@/store/reduxHooks'
 import { selectExercicis } from '@/store/exercicisSlice'
 import { selectRutinaById } from '@/store/rutinesSlice'
 import { selectAlumneByID } from '@/store/alumnesSlice'
+import { useText } from '@/hooks/useText'
 
 interface propsType {
     alumneID: number,
@@ -15,22 +16,23 @@ interface propsType {
 }
 
 export default function Entreno(props: propsType) {
+    const texts = useText();
     const { alumneID, hora } = props
     const exercicis = useAppSelector(selectExercicis);
     const themeStyles = useThemeStyles()
     const alumne = useAppSelector(state => selectAlumneByID(state, alumneID));
 
     if (!alumne) {
-        return <Text>Error al recuperar los datos</Text>
+        return <Text>{texts.ErrorLoadingStudent}</Text>
     }
     if (!alumne.rutinaActual) {
-        return <Text>No té cap rutina assignada</Text>;
+        return <Text>{texts.WithoutAssignedRoutine}</Text>;
     }
 
     const rutina = useAppSelector(state => selectRutinaById(state, alumne.rutinaActual!));
 
     if (!rutina) {
-        return <Text>Error al recuperar la rutina</Text>
+        return <Text>{texts.ErrorLoadingRoutine}</Text>
     }
 
     const diaActual = alumne.resultatsRutinaActual.length % rutina.diesDuracio
@@ -62,7 +64,7 @@ export default function Entreno(props: propsType) {
     return (
         <View>
             <Text>{alumne.nom + " - " + hora}</Text>
-            <Text style={[themeStyles.text, { marginTop: 5, marginBottom: 10 }]}>Setmana {setmanaSeleccionada}</Text>
+            <Text style={[themeStyles.text, { marginTop: 5, marginBottom: 10 }]}>{texts.Week} {setmanaSeleccionada}</Text>
             <BarraDies editable={false} dies={rutina!.diesDuracio} canviaDia={(d: number) => setDiaSeleccionat(d)} currentDia={diaSeleccionat} />
             {exercicisArray.map(e => {
                 const resultat = resultats.find(f => f.exerciciRutinaID === e.id);
@@ -72,7 +74,7 @@ export default function Entreno(props: propsType) {
                         <Text style={themeStyles.text}>{exercicis.find(exercici => exercici.id === e.exerciciID)?.nom}</Text>
                         <View style={{ display: "flex", flexDirection: "row", gap: 25, margin: "auto", marginTop: 6 }}>
                             <TextInput
-                                label={<Text style={{ fontSize: 12 }}>Series</Text>}
+                                label={<Text style={{ fontSize: 12 }}>{texts.Series}</Text>}
                                 style={{ width: 65 }}
                                 inputMode="numeric"
                                 value={resultat?.series?.toString() || e.numSeries.toString()}
@@ -87,7 +89,7 @@ export default function Entreno(props: propsType) {
                                 }}
                             />
                             <TextInput
-                                label={<Text style={{ fontSize: 12 }}>Repes</Text>}
+                                label={<Text style={{ fontSize: 12 }}>{texts.Repetitions}</Text>}
                                 style={{ width: 65 }}
                                 inputMode="numeric"
                                 value={resultat?.repeticions?.toString() || e.numRepes.toString()}
@@ -104,7 +106,7 @@ export default function Entreno(props: propsType) {
                                     setResultats(updatedResultats);
                                 }} />
                             <TextInput
-                                label={<Text style={{ fontSize: 12 }}>Pes</Text>}
+                                label={<Text style={{ fontSize: 12 }}>{texts.Weight}</Text>}
                                 style={{ width: 65 }}
                                 inputMode="numeric"
                                 value={resultat?.pes?.toString() || e.percentatgeRM.toString() + "%"}
@@ -128,7 +130,7 @@ export default function Entreno(props: propsType) {
             <Pressable
                 style={[themeStyles.button1, { marginBottom: 15, marginTop: 30 }]}
             >
-                <Text>Guardar</Text>
+                <Text>{texts.Save}</Text>
             </Pressable>
         </View>
     )

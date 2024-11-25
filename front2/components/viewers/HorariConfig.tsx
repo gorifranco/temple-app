@@ -7,13 +7,16 @@ import { HorariType } from '@/types/apiTypes'
 import { validarHoraris } from '@/helpers/horarisValidator'
 import { guardarHoraris, selectConfig } from '@/store/configSlice'
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks'
+import { calendarLocales, useText } from '@/hooks/useText'
 
 export default function HorariConfig() {
+    const texts = useText();
+    const cl = calendarLocales();
     const themeStyles = useThemeStyles()
-    const horaris:HorariType[] = useAppSelector(selectConfig).horaris;
-    const [horarisMap, setHorarisMap] = useState<Map<number, { desde: string|null; fins: string|null }[]>>(new Map());
-    const [errorsHorarisMap, setErrorsHorarisMap] = useState<Map<number, { errDesde: string|null; errFins: string|null }[]>>(new Map());
-    const dies = ["Dilluns", "Dimarts", "Dimecres", "Dijous", "Divendres", "Dissabte", "Diumenge"];
+    const horaris: HorariType[] = useAppSelector(selectConfig).horaris;
+    const [horarisMap, setHorarisMap] = useState<Map<number, { desde: string | null; fins: string | null }[]>>(new Map());
+    const [errorsHorarisMap, setErrorsHorarisMap] = useState<Map<number, { errDesde: string | null; errFins: string | null }[]>>(new Map());
+
     const dispatch = useAppDispatch();
 
     useEffect(() => {
@@ -34,12 +37,7 @@ export default function HorariConfig() {
     }
 
     async function handleGuardarHoraris() {
-        if(validarHoraris(horarisMap).status){
-            Toast.show({
-                type: 'error',
-                text1: 'Error guardant la configuració',
-                position: 'top',
-            });
+        if (validarHoraris(horarisMap).status) {
             setErrorsHorarisMap(validarHoraris(horarisMap).errors);
             return;
         }
@@ -65,8 +63,8 @@ export default function HorariConfig() {
         });
     }
 
-    function handleCanviarHorari(dia:string, index:number, hora:string, dof:number){ //dof = desde o fins
-        const d = dies.indexOf(dia);
+    function handleCanviarHorari(dia: string, index: number, hora: string, dof: number) { //dof = desde o fins
+        const d = cl.dayNames.indexOf(dia);
         setHorarisMap(prevMap => {
             const updatedMap = new Map(prevMap);
             const horariArray = updatedMap.get(d) || [];
@@ -90,24 +88,25 @@ export default function HorariConfig() {
 
     return (
         <View style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative", marginTop: 10 }}>
-            <Text style={themeStyles.text}>Horari per defecte</Text>
+            <Text style={themeStyles.text}>{texts.Shedule}</Text>
             <View style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", marginTop: 10, width: "95%" }}>
-                {dies.map((d, i) => {
+                {cl.dayNames.map((d, i) => {
                     return (
                         <DiaHorari
                             dia={d}
                             errors={errorsHorarisMap.get(i) ?? []}
                             horaris={horarisMap.get(i) ?? []}
                             afegirHorari={() => afegirHorari(i)}
-                            llevarHorari={() => llevarHorari(i)} key={i} 
+                            llevarHorari={() => llevarHorari(i)} key={i}
                             handleChange={(hora: string, index: number, dof: number) => handleCanviarHorari(d, index, hora, dof)} />
-                )})}
+                    )
+                })}
             </View>
 
             <Pressable
                 style={[themeStyles.button1, { marginBottom: 25 }]}
                 onPress={() => handleGuardarHoraris()}>
-                <Text style={themeStyles.button1Text}>Guardar horaris</Text>
+                <Text style={themeStyles.button1Text}>{texts.SaveShedule}</Text>
             </Pressable>
         </View>
     )

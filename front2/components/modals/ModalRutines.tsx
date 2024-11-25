@@ -3,6 +3,7 @@ import { useState } from 'react'
 import AutocompleteRutines from '@/components/inputs/selects/AutocompleteRutines'
 import { AntDesign } from '@expo/vector-icons'
 import { useThemeStyles } from '@/themes/theme'
+import { useText } from '@/hooks/useText'
 
 interface propsType {
     modalVisible: boolean
@@ -10,6 +11,7 @@ interface propsType {
 }
 
 export default function ModalRutines(props: propsType) {
+    const texts = useText();
     const themeStyles = useThemeStyles()
     const { modalVisible, closeModal } = props
     const [rutinaSeleccionada, setRutinaSeleccionada] = useState<number | null>(null)
@@ -27,7 +29,7 @@ export default function ModalRutines(props: propsType) {
                 onRequestClose={() => {
                     closeModal()
                 }}>
-                <Text style={[themeStyles.titol1, { marginTop: 75 }]}>Assignar rutina</Text>
+                <Text style={[themeStyles.titol1, { marginTop: 75 }]}></Text>
                 <View style={styles.closeButton}>
                     <Pressable
                         onPress={() => {
@@ -47,7 +49,7 @@ export default function ModalRutines(props: propsType) {
                     onPress={() => {
                         closeModal()
                     }}>
-                    <Text style={themeStyles.button1Text}>Assignar rutina</Text>
+                    <Text style={themeStyles.button1Text}>{texts.AssignRoutine}</Text>
                 </Pressable>
             </Modal>
     )

@@ -8,6 +8,7 @@ import { useThemeStyles } from '@/themes/theme'
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks'
 import { deleteRutina, selectRutinaById } from '@/store/rutinesSlice'
 import { selectExercicis } from '@/store/exercicisSlice'
+import { useText } from '@/hooks/useText'
 
 
 interface propsType {
@@ -17,6 +18,7 @@ interface propsType {
 }
 
 export default function ViewRutina(props: propsType) {
+    const texts = useText();
     const themeStyles = useThemeStyles()
     const { rutinaID, versio = 0, acabarRutina } = props
     const [desplegat, setDesplegat] = useState(false)
@@ -64,9 +66,9 @@ export default function ViewRutina(props: propsType) {
 
                     <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginTop: 10, width: "95%" }}>
                         <Text style={[themeStyles.text, { width: "50%", fontWeight: "bold" }]}>Exercici</Text>
-                        <Text style={[themeStyles.text, { fontWeight: "bold" }]}>Repes</Text>
-                        <Text style={[themeStyles.text, { fontWeight: "bold" }]}>Series</Text>
-                        <Text style={[themeStyles.text, { fontWeight: "bold" }]}>%RM</Text>
+                        <Text style={[themeStyles.text, { fontWeight: "bold" }]}>{texts.Repetitions}</Text>
+                        <Text style={[themeStyles.text, { fontWeight: "bold" }]}>{texts.Series}</Text>
+                        <Text style={[themeStyles.text, { fontWeight: "bold" }]}>% RM</Text>
                     </View>
                     {rutina.exercicis && rutina.exercicis.map((exercici, i) => {
                         if (exercici.diaRutina == dia && exercici.cicle == 0) {
@@ -86,7 +88,7 @@ export default function ViewRutina(props: propsType) {
                             onPress={() => {
                                 setModalVisible(true)
                             }}>
-                            <Text style={themeStyles.button1Text}>{versio == 0 ? "Eliminar" : "Acabar"}</Text>
+                            <Text style={themeStyles.button1Text}>{versio == 0 ? texts.Delete : texts.Finish}</Text>
                         </Pressable>
                         <Pressable
                             style={[themeStyles.button1, { width: "40%" }]}
@@ -101,7 +103,7 @@ export default function ViewRutina(props: propsType) {
                                     canviarRutina()
                                 }
                             }}>
-                            <Text style={themeStyles.button1Text}>{versio == 0 ? "Editar" : "Canviar"}</Text>
+                            <Text style={themeStyles.button1Text}>{versio == 0 ? texts.Edit : texts.Update}</Text>
                         </Pressable>
                     </View>
                 </View>
@@ -109,8 +111,8 @@ export default function ViewRutina(props: propsType) {
             <ModalConfirmacio
                 modalVisible={modalVisible}
                 closeModal={() => setModalVisible(false)}
-                missatge={versio == 0 ? "Estàs segur que vols eliminar la rutina?" : "Es donarà per finalitzada la rutina"}
-                titol={versio == 0 ? 'Eliminar rutina' : 'Acabar rutina'}
+                missatge={versio == 0 ? texts.SureDeleteRoutine : texts.RoutineWillFinish}
+                titol={versio == 0 ? texts.DeleteRoutine : texts.FinishRoutine}
                 confirmar={() => { versio == 0 ? handleEliminarRutina() : handleAcabar() }} />
         </View>
     )

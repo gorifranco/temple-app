@@ -1,5 +1,6 @@
 import { View, Text, Modal, Pressable, StyleSheet } from 'react-native'
 import { useThemeStyles } from '@/themes/theme'
+import { useText } from '@/hooks/useText'
 
 interface propsType {
     titol: string
@@ -10,6 +11,7 @@ interface propsType {
 }
 
 export default function ModalConfirmacio(props: propsType) {
+    const texts = useText();
     const { modalVisible, closeModal, missatge, confirmar, titol } = props
     const themeStyles = useThemeStyles()
 
@@ -28,13 +30,13 @@ export default function ModalConfirmacio(props: propsType) {
                         <Pressable style={themeStyles.buttonDanger} onPress={() => {
                             closeModal()
                         }}>
-                            <Text style={themeStyles.button1Text}>Cancelar</Text>
+                            <Text style={themeStyles.button1Text}>{texts.Cancel}</Text>
                         </Pressable>
                         <Pressable style={themeStyles.buttonSuccess} onPress={() => {
                             confirmar()
                             closeModal()
                         }}>
-                            <Text style={themeStyles.button1Text}>Confirmar</Text>
+                            <Text style={themeStyles.button1Text}>{texts.Confirm}</Text>
                         </Pressable>
                     </View>
                 </View>

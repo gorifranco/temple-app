@@ -3,6 +3,7 @@ import { View, Text, Pressable } from 'react-native'
 import { useThemeStyles } from '@/themes/theme'
 import TextInput from '@/components/inputs/TextInput'
 import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker'
+import { useText } from '@/hooks/useText'
 
 interface propsType {
     dia: string
@@ -14,6 +15,7 @@ interface propsType {
 }
 
 export default function DiaHorari(props: propsType) {
+    const texts = useText();
     const { dia, horaris, afegirHorari, llevarHorari, handleChange, errors } = props
     const themeStyles = useThemeStyles()
     const [timePickerVisible, setTimePickerVisible] = React.useState(false)
@@ -34,7 +36,7 @@ export default function DiaHorari(props: propsType) {
                         }}
                         style={{ width: "45%" }}>
                         <TextInput
-                            label="Desde"
+                            label={texts.From}
                             enterKeyHint="next"
                             value={horari.desde ? horari.desde : "_ _ : _ _"}
                             error={errors[i] ? !!errors[i].errDesde : false}
@@ -43,7 +45,7 @@ export default function DiaHorari(props: propsType) {
                             editable={false}
                         />
                     </Pressable>
-                    <Text style={{ width: "10%", textAlign: "center" }}>a</Text>
+                    <Text style={{ width: "10%", textAlign: "center" }}>{texts.To2}</Text>
                     <Pressable
                         onPress={() => {
                             setTimePickerVisible(true)
@@ -52,7 +54,7 @@ export default function DiaHorari(props: propsType) {
                         }}
                         style={{ width: "45%" }}>
                         <TextInput
-                            label="Fins"
+                            label={texts.To}
                             editable={false}
                             enterKeyHint="next"
                             value={horari.fins ? horari.fins : "_ _ : _ _"}
@@ -87,8 +89,8 @@ export default function DiaHorari(props: propsType) {
                     is24Hour={true}
                     minuteInterval={30}
                     display="spinner"
-                    positiveButton={{ label: 'Seleccionar', textColor: 'white' }}
-                    negativeButton={{ label: 'Cancelar', textColor: 'white' }}
+                    positiveButton={{ label: texts.Select, textColor: 'white' }}
+                    negativeButton={{ label: texts.Cancel, textColor: 'white' }}
                     onChange={(e: DateTimePickerEvent, time: Date | undefined) => {
                         if (time && e.type == "set") {
                             handleChange(new Date(e.nativeEvent.timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }), changing, dof)

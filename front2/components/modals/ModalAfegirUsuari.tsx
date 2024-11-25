@@ -6,6 +6,7 @@ import { nameValidator } from '@/helpers/nameValidator'
 import { useThemeStyles } from '@/themes/theme'
 import CloseButton from '../buttons/CloseButton'
 import { useAppSelector } from '@/store/reduxHooks'
+import { useText } from '@/hooks/useText'
 
 
 interface propsType {
@@ -15,6 +16,7 @@ interface propsType {
 }
 
 export default function ModalAfegirUsuari(props: propsType) {
+    const texts = useText();
     const auth = useAppSelector(state => state.auth);
     const themeStyles = useThemeStyles()
     const { modalVisible, closeModal, crearUsuariFictici } = props
@@ -75,15 +77,15 @@ export default function ModalAfegirUsuari(props: propsType) {
             {!crearFictici ? (
                 <View style={[themeStyles.background, { height: '100%' }]}>
                     <View style={{marginTop: 12}}/>
-                    <Text style={themeStyles.titol1}>Afegir alumne</Text>
-                    <Text style={themeStyles.text}>Codi d'entrenador: #{auth?.user?.codiEntrenador ?? ''}</Text>
+                    <Text style={themeStyles.titol1}>{texts.AddStudent}</Text>
+                    <Text style={themeStyles.text}>{texts.TrainerCode}: #{auth?.user?.codiEntrenador ?? ''}</Text>
                     <Pressable
                         onPress={() => {
                             share()
                         }}
                         style={themeStyles.button1}>
                         <View style={{ display: "flex", flexDirection: "row", alignItems: "center" }}>
-                            <Text style={themeStyles.button1Text}>Compartir  </Text>
+                            <Text style={themeStyles.button1Text}>{texts.Share}</Text>
                             <EvilIcons name="share-google" size={24} color="white" />
                         </View>
                     </Pressable>
@@ -92,12 +94,12 @@ export default function ModalAfegirUsuari(props: propsType) {
                             setCrearFictici(true)
                         }}
                         style={themeStyles.button1}>
-                        <Text style={themeStyles.button1Text}>Crear alumne</Text>
+                        <Text style={themeStyles.button1Text}>{texts.CreateStudent}</Text>
                     </Pressable>
                 </View>
             ) : (
                 <View style={[themeStyles.background, { height: '100%' }]}>
-                    <Text style={themeStyles.titol1}>Crear alumne</Text>
+                    <Text style={themeStyles.titol1}>{texts.CreateStudent}</Text>
                     <View style={{ width: "80%", alignSelf: "center" }}>
                         <TextInput
                             label="Nom"
@@ -113,7 +115,7 @@ export default function ModalAfegirUsuari(props: propsType) {
                             submit()
                         }}
                         style={themeStyles.button1}>
-                        <Text style={themeStyles.button1Text}>Crear alumne</Text>
+                        <Text style={themeStyles.button1Text}>{texts.CreateStudent}</Text>
                     </Pressable>
                 </View>
             )}
