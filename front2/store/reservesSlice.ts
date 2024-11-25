@@ -107,6 +107,34 @@ export const createReserva = createAsyncThunk<
   }
 );
 
+// Get reservations per month
+export const getReservesPerMes = createAsyncThunk<
+  ReservaType[], // Expected result type
+  { mes: number; year: number }, // Parameters type
+  { state: RootState }
+>("entrenador/getReservesPerMes", async ({ mes, year }, { getState, rejectWithValue }) => {
+  const state = getState();
+  const token = state.auth.user?.token;
+
+  const response = await fetch(
+    process.env.EXPO_PUBLIC_API_URL + "/entrenador/reserves/" + mes + "/" + year,
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  const data = await response.json();
+  if (!response.ok) {
+    return rejectWithValue(data.error ?? "Failed to fetch reserves");
+  }
+  console.log(`mes enviat: ${mes}, any enviat: ${year}`)
+  console.log(`reserves mes resposta: ${data.data}`)
+  return data.data;
+});
+
 const reservesSlice = createSlice({
   name: "reserves",
   initialState,
@@ -129,6 +157,25 @@ const reservesSlice = createSlice({
         }
       )
       .addCase(getReserves.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload as string;
+      })
+      // Get reserves per month
+      .addCase(getReservesPerMes.pending, (state) => {
+        state.status = "pending";
+      })
+      .addCase(
+        getReservesPerMes.fulfilled,
+        (state, action: PayloadAction<ReservaType[]>) => {
+          state.status = "succeeded";
+    
+          const existingIds = new Set(state.reserves.map(reserva => reserva.id));
+          const newReserves = action.payload.filter(reserva => !existingIds.has(reserva.id));
+      
+          state.reserves = [...state.reserves, ...newReserves];
+        }
+      )
+      .addCase(getReservesPerMes.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload as string;
       })
@@ -183,6 +230,16 @@ export const selectReservesByDay = createSelector(
       (reserva) =>
         new Date(reserva.hora).getTime() >= new Date(day.timestamp).getTime() &&
         new Date(reserva.hora).getTime() < new Date(day.timestamp).getTime() + 24 * 60 * 60 * 1000
+    )
+);
+
+export const selectReservesByMes = createSelector(
+  [selectAllReserves, (_, day: DateData) => day],
+  (reserves, day) =>
+    reserves.filter(
+      (reserva) =>
+        new Date(reserva.hora).getFullYear() === day.year &&
+        new Date(reserva.hora).getMonth() === day.month - 1
     )
 );
 export const { deleteReservesSlice } = reservesSlice.actions;

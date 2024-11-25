@@ -81,7 +81,7 @@ export default function Index() {
             <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 20, marginBottom: 20 }]}>
               Pròxims entrenos
             </Text>
-            {!reserves || reservesStatus == status.failed && (<Text style={[themeStyles.text, { marginBottom: 20 }]}>Error fetching reserves</Text>)}
+            {reservesStatus == status.failed && (<Text style={[themeStyles.text, { marginBottom: 20 }]}>Error fetching reserves</Text>)}
             {reserves && reserves.length == 0 && (<Text style={[themeStyles.text, { marginBottom: 20 }]}>Sense entrenos reservats</Text>)}
             {reserves && reserves.length > 0 && (
               reserves.map((r, i) => {

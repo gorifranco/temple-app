@@ -2,18 +2,19 @@ import { getAlumnes, selectAllAlumnes, selectAlumnesStatus } from '@/store/alumn
 import { getConfig, selectConfigStatus } from '@/store/configSlice';
 import { getExercicis, selectExercicisStatus } from '@/store/exercicisSlice';
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
-import { getReserves, selectAllReserves, selectReservesStatus, deleteReservesSlice, selectUpcomingReserves, selectReservesByDay } from '@/store/reservesSlice';
+import { selectReservesStatus, deleteReservesSlice, selectUpcomingReserves, selectReservesByDay, selectReservesByMes, getReservesPerMes } from '@/store/reservesSlice';
 import { deleteRutinesSlice, getRutinesEntrenador, selectAllRutines, selectRutinesStatus } from '@/store/rutinesSlice';
 import { calendarTheme, useThemeStyles } from '@/themes/theme';
 import { status, actions } from '@/types/apiTypes';
 import { router } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 import { View, Pressable, Text, ViewStyle } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppTheme } from '@/themes/theme';
 import { Calendar, DateData } from 'react-native-calendars';
 import Entreno from '@/components/viewers/Entreno';
+import { MarkedDates } from 'react-native-calendars/src/types';
 
 
 export default function Index() {
@@ -30,24 +31,49 @@ export default function Index() {
     const today = new Date()
     const [selectedDay, setSelectedDay] = useState<DateData>({
         year: today.getFullYear(), month: today.getMonth() + 1, day: today.getDate(),
-        timestamp: today.getMilliseconds(), dateString: `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+        timestamp: today.getTime(), dateString: `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
     });
-    const reserves = useAppSelector(state => selectReservesByDay(state, selectedDay));
-1
-    /*     useEffect(
-            () => {
-                dispatch(getConfig())
-                dispatch(getRutinesEntrenador())
-                dispatch(getExercicis())
-                dispatch(getReserves())
-                dispatch(getAlumnes())
-            }
-            , []); */
+    const [selectedMonth, setSelectedMonth] = useState<DateData>({
+        year: today.getFullYear(), month: today.getMonth() + 1, day: today.getDate(),
+        timestamp: today.getTime(), dateString: `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+    })
+    const reservesMes = useAppSelector(state => selectReservesByMes(state, selectedMonth));
+    const reservesAvui = useAppSelector(state => selectReservesByDay(state, selectedDay));
+    
+    const monthMarks = useMemo(() => {
+        return reservesMes.reduce((acc, reserva) => {
+            const dateString = reserva.hora.split("T")[0];
+            acc[dateString] = {
+                marked: true,
+                dotColor: 'green',
+            };
+            return acc;
+        }, {} as MarkedDates);
+    }, [selectedMonth]);
+
+    const markedDates = useMemo(() => {
+        return {
+            ...monthMarks,
+            [selectedDay.dateString]: {
+                selected: true,
+                selectedColor: appTheme.colors.primary,
+            },
+        };
+    }, [monthMarks, selectedDay]);
+
+    // useEffect(
+    //     () => {
+    //         dispatch(getConfig())
+    //         dispatch(getRutinesEntrenador())
+    //         dispatch(getExercicis())
+    //         dispatch(getReserves())
+    //         dispatch(getAlumnes())
+    //     }
+    //     , []);
 
     useEffect(() => {
         if (rutinesStatus == "idle") dispatch(getRutinesEntrenador())
         if (exercicisStatus == "idle") dispatch(getExercicis())
-        if (reservesStatus == "idle") dispatch(getReserves())
         if (configStatus == "idle") dispatch(getConfig())
         if (alumnesStatus[actions.index] == status.idle) dispatch(getAlumnes())
     }, []);
@@ -73,14 +99,15 @@ export default function Index() {
                         <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 25 }]}>Calendari</Text>
                         <Calendar
                             firstDay={1}
-                            onDayPress={(day: DateData) => { setSelectedDay(day) }}
+                            onDayPress={(day: DateData) => {
+                                setSelectedDay(day)
+                            }}
+                            onMonthChange={(mes: DateData) => {
+                                setSelectedMonth(mes);
+                            }}
                             theme={calendarTheme}
                             style={{ margin: 5 }}
-                            markedDates={
-                                selectedDay && {
-                                    [selectedDay.dateString]: { selected: true }
-                                }}
-
+                            markedDates={markedDates}
                         />
                     </View>
                 </View>
@@ -95,10 +122,10 @@ export default function Index() {
                             {selectedDay ? selectedDay.year : today.getFullYear()}
                             )
                         </Text>
-                        {!reserves || reservesStatus == status.failed && (<Text style={[themeStyles.text, { marginBottom: 20 }]}>Error fetching reserves</Text>)}
-                        {reserves && reserves.length == 0 && (<Text style={[themeStyles.text, { marginBottom: 20 }]}>No hi ha reserves per aquest dia</Text>)}
-                        {reserves && reserves.length > 0 && (
-                            reserves.map((r, i) => {
+                        {reservesStatus == status.failed && (<Text style={[themeStyles.text, { marginBottom: 20 }]}>Error fetching reserves</Text>)}
+                        {reservesAvui && reservesAvui.length == 0 && (<Text style={[themeStyles.text, { marginBottom: 20 }]}>No hi ha reserves per aquest dia</Text>)}
+                        {reservesAvui && reservesAvui.length > 0 && (
+                            reservesAvui.map((r, i) => {
                                 return (
                                     <Entreno alumneID={r.usuariID} hora={r.hora.split("T")[0].split("+")[0]} key={i} />
                                 )

@@ -26,8 +26,10 @@ export default function AlumneScreen() {
     const [assignarRutinaID, setAssignarRutinaID] = useState<number | null>(null)
     const [autocompleteRutinaError, setAutocompleteRutinaError] = useState("")
     const { alumneID } = useLocalSearchParams();
-    const [selectedDay, setSelectedDay] = useState<DateData>({year: today.getFullYear(), month: today.getMonth()+1, day: today.getDate(),
-       timestamp: today.getMilliseconds(), dateString: `${today.getFullYear()}-${today.getMonth()+1}-${today.getDate()}`});
+    const [selectedDay, setSelectedDay] = useState<DateData>({
+        year: today.getFullYear(), month: today.getMonth() + 1, day: today.getDate(),
+        timestamp: today.getMilliseconds(), dateString: `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+    });
     const [selectedTime, setSelectedTime] = useState<Date>(new Date())
     const dispatch = useAppDispatch();
     const [modalReservarVisible, setModalReservarVisible] = useState(false)
@@ -64,6 +66,7 @@ export default function AlumneScreen() {
             return;
         }
         const horaUTC = new Date(hora.getTime() - hora.getTimezoneOffset() * 60000);
+        console.log(`hora: ${horaUTC.toISOString()}, date: ${new Date(horaUTC.toISOString())}`)
         dispatch(createReserva({ usuariID: alumne!.id, hora: horaUTC.toISOString() }));
     }
 
@@ -140,8 +143,8 @@ export default function AlumneScreen() {
                                 <Text style={[themeStyles.text, { marginBottom: 20 }]}>Sense reserves</Text>
                             ) : (
                                 reservesAlumne.map((reserva) => (
-                                    <View key={reserva.id} style={{marginBottom: 20}}>
-                                        <Text style={themeStyles.text}>{reserva.hora.split("T")[0] + " - " + reserva.hora.split("T")[1].split("+")[0].substring(0,5)}</Text>
+                                    <View key={reserva.id} style={{ marginBottom: 20 }}>
+                                        <Text style={themeStyles.text}>{reserva.hora.split("T")[0] + " - " + reserva.hora.split("T")[1].split("+")[0].substring(0, 5)}</Text>
                                     </View>
                                 ))
                             )}
