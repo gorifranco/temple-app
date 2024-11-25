@@ -15,9 +15,11 @@ import { useAppTheme } from '@/themes/theme';
 import { Calendar, DateData } from 'react-native-calendars';
 import Entreno from '@/components/viewers/Entreno';
 import { MarkedDates } from 'react-native-calendars/src/types';
+import { useText } from '@/hooks/useText';
 
 
 export default function Index() {
+    const texts = useText();
     const themeStyles = useThemeStyles();
     const appTheme = useAppTheme();
     const dispatch = useAppDispatch();
@@ -71,6 +73,8 @@ export default function Index() {
     //     }
     //     , []);
 
+    useEffect(() => { dispatch(getReservesPerMes({ mes: selectedMonth.month, year: selectedMonth.year })) }, [selectedMonth]);
+
     useEffect(() => {
         if (rutinesStatus == "idle") dispatch(getRutinesEntrenador())
         if (exercicisStatus == "idle") dispatch(getExercicis())
@@ -96,7 +100,7 @@ export default function Index() {
                         </Pressable>
                     </View> */}
                     <View style={themeStyles.box}>
-                        <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 25 }]}>Calendari</Text>
+                        <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 25 }]}>{texts.Calendar}</Text>
                         <Calendar
                             firstDay={1}
                             onDayPress={(day: DateData) => {
@@ -122,8 +126,8 @@ export default function Index() {
                             {selectedDay ? selectedDay.year : today.getFullYear()}
                             )
                         </Text>
-                        {reservesStatus == status.failed && (<Text style={[themeStyles.text, { marginBottom: 20 }]}>Error fetching reserves</Text>)}
-                        {reservesAvui && reservesAvui.length == 0 && (<Text style={[themeStyles.text, { marginBottom: 20 }]}>No hi ha reserves per aquest dia</Text>)}
+                        {reservesStatus == status.failed && (<Text style={[themeStyles.text, { marginBottom: 20 }]}>{texts.ErrorFetchingReserves}</Text>)}
+                        {reservesAvui && reservesAvui.length == 0 && (<Text style={[themeStyles.text, { marginBottom: 20 }]}>{texts.NotReservationsForThisDay}</Text>)}
                         {reservesAvui && reservesAvui.length > 0 && (
                             reservesAvui.map((r, i) => {
                                 return (
@@ -134,12 +138,12 @@ export default function Index() {
                     </View>
 
                     <Pressable style={[themeStyles.box, { marginBottom: 20 }]} onPress={() => { router.push("/(alumnes)/alumnes") }}>
-                        <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 20 }]}>Alumnes ({alumnes.length}/{process.env.EXPO_PUBLIC_MAX_ALUMNES})</Text>
-                        <Text style={[themeStyles.text, { fontSize: 15, textAlign: "center", paddingTop: 13, color: appTheme.colors.primary, marginBottom: 20 }]}>Veure tots</Text>
+                        <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 20 }]}>{texts.Students} ({alumnes.length}/{process.env.EXPO_PUBLIC_MAX_ALUMNES})</Text>
+                        <Text style={[themeStyles.text, { fontSize: 15, textAlign: "center", paddingTop: 13, color: appTheme.colors.primary, marginBottom: 20 }]}>{texts.SeeEvery}</Text>
                     </Pressable>
                     <Pressable style={[themeStyles.box]} onPress={() => { router.push("/(rutines)/rutines") }}>
-                        <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 20 }]}>Rutines ({rutines.length}/{process.env.EXPO_PUBLIC_MAX_RUTINES})</Text>
-                        <Text style={[themeStyles.text, { fontSize: 15, textAlign: "center", paddingTop: 13, color: appTheme.colors.primary, marginBottom: 20 }]}>Veure totes</Text>
+                        <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 20 }]}>{texts.Rutines} ({rutines.length}/{process.env.EXPO_PUBLIC_MAX_RUTINES})</Text>
+                        <Text style={[themeStyles.text, { fontSize: 15, textAlign: "center", paddingTop: 13, color: appTheme.colors.primary, marginBottom: 20 }]}>{texts.SeeEveryFem}</Text>
                     </Pressable>
                 </View>
             </ScrollView>

@@ -1,9 +1,28 @@
 import { texts } from "@/hooks/useText";
 
 export const textsES: texts = {
-    Reservar: "Reservar",
-    Cancelar: "Cancelar",
-    Entrenar: "Entrenar",
+    Reservate: "Reservar",
+    Cancel: "Cancelar",
+    Train: "Entrenar",
+    Calendar: "Calendario",
+    ErrorFetchingReserves: "Error recuperando las reservas",
+    NotReservationsForThisDay: "No hay reservas para este día",
+    SeeEvery: "Ver todo",
+    SeeEveryFem: "Ver todas",
+    Students: "Alumnos",
+    Rutines: "Rutinas",
+    CreatorOfRoutines: "Creador de rutinas",
+    Name: "Nombre",
+    Description: "Descripción",
+    Days: "Días",
+    Cycles: "Ciclos",
+    Duration: "Duración",
+    Percentage: "Porcentaje RM",
+    Exercises: "Ejercicios",
+    AddExercise: "Añadir ejercicio",
+    Series: "Series",
+    Repetitions: "Repeticiones",
+    SaveRoutine: "Guardar rutina",
 }
 
 export const calendarLocaleesES = {

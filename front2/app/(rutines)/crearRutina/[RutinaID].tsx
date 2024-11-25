@@ -14,9 +14,11 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
 import { createRutina, selectRutinaById, updateRutina } from '@/store/rutinesSlice';
 import { useLocalSearchParams } from 'expo-router';
+import { useText } from '@/hooks/useText';
 
 
 export default function CrearRutina() {
+    const texts = useText();
     const { RutinaID } = useLocalSearchParams();
     const themeStyles = useThemeStyles();
     const [mode, setMode] = useState<"crear" | "editar">(RutinaID == '-1' ? "crear" : "editar");
@@ -85,11 +87,11 @@ export default function CrearRutina() {
         <AutocompleteDropdownContextProvider>
             <SafeAreaView style={[themeStyles.background, { height: '100%' }]}>
                 <BackButton href={"../"} styles={{ top: 60 }} />
-                <Text style={themeStyles.titol1}>Creador de rutines</Text>
+                <Text style={themeStyles.titol1}>{texts.CreatorOfRoutines}</Text>
                 <ScrollView>
                     <View style={{ width: "80%", alignSelf: "center" }}>
                         <TextInput
-                            label="Nom de la rutina"
+                            label={texts.Name}
                             error={errors.Nom != ""}
                             value={nom}
                             onChangeText={(text: string) => setNom(text)}
@@ -98,7 +100,7 @@ export default function CrearRutina() {
                     </View>
                     <View style={{ width: "80%", alignSelf: "center" }}>
                         <TextInput
-                            label="Descripció"
+                            label={texts.Description}
                             error={errors.Descripcio != ""}
                             value={descripcio}
                             onChangeText={(text: string) => setDescripcio(text)}
@@ -115,7 +117,7 @@ export default function CrearRutina() {
                             <TextInput
                                 error={errors.Dies != ""}
                                 errorText={errors.Dies}
-                                label="Dies"
+                                label={texts.Days}
                                 inputMode="numeric"
                                 style={{ width: "100%" }}
                                 value={dies ? dies.toString() : ""}
@@ -127,7 +129,7 @@ export default function CrearRutina() {
                             <TextInput
                                 errorText={errors.Cicles}
                                 error={errors.Cicles != ""}
-                                label="Cicles"
+                                label={texts.Cycles}
                                 style={{ width: "100%" }}
                                 inputMode="numeric"
                                 value={cicles ? cicles.toString() : ""}
@@ -172,7 +174,7 @@ export default function CrearRutina() {
                                             <View style={styles.container2}>
                                                 <TextInput
                                                     errorText={errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.numSeries}
-                                                    label={<Text style={{ fontSize: 12 }}>Series</Text>}
+                                                    label={<Text style={{ fontSize: 12 }}>{texts.Series}</Text>}
                                                     style={{ width: 65 }}
                                                     inputMode="numeric"
                                                     value={exercici.numSeries === 0 ? "" : exercici.numSeries.toString()}
@@ -192,7 +194,7 @@ export default function CrearRutina() {
                                             <View style={styles.container2}>
                                                 <TextInput
                                                     errorText={errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.numRepes}
-                                                    label={<Text style={{ fontSize: 12 }}>Repes</Text>}
+                                                    label={<Text style={{ fontSize: 12 }}>{texts.Repetitions}</Text>}
                                                     style={{ width: 65 }}
                                                     inputMode="numeric"
                                                     value={exercici.numRepes === 0 ? "" : exercici.numRepes.toString()}
@@ -244,9 +246,9 @@ export default function CrearRutina() {
                             setExercicisElegits([
                                 ...exercicisElegits,
                                 {
-                                    id: null,
+                                    id: -1,
                                     nom: "",
-                                    rutinaID: null,
+                                    rutinaID: -1,
                                     exerciciID: -1,
                                     ordre: exercicisElegits.length,
                                     numSeries: 0,
@@ -258,14 +260,14 @@ export default function CrearRutina() {
                             ]);
                         }}
                     >
-                        <Text style={themeStyles.button1Text}>Afegir exercici</Text>
+                        <Text style={themeStyles.button1Text}>{texts.AddExercise}</Text>
                     </Pressable>
 
                     <Pressable
                         style={[themeStyles.button1, { zIndex: -1, marginBottom: 20 }]}
                         onPress={() => guardarRutina()}
                     >
-                        <Text style={themeStyles.button1Text}>Guardar rutina</Text>
+                        <Text style={themeStyles.button1Text}>{texts.SaveRoutine}</Text>
                     </Pressable>
                 </ScrollView >
             </SafeAreaView >
@@ -274,18 +276,6 @@ export default function CrearRutina() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#f5f5f5',
-        padding: 16,
-    },
-    iconContainer: {
-        height: "100%",
-        width: 40,
-        justifyContent: "center",
-        alignItems: "center",
-        flex: 1,
-    },
     container2: {
         display: "flex",
         flexDirection: "column",
