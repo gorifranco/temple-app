@@ -24,6 +24,7 @@ export type texts = {
     NotReservationsForThisDay: string,
     SeeEvery: string,
     Students: string,
+    Routine: string,
     Rutines: string,
     SeeEveryFem: string,
     CreatorOfRoutines: string,
@@ -69,6 +70,29 @@ export type texts = {
     FinishRoutine: string,
     SureDeleteRoutine: string,
     RoutineWillFinish: string,
+    LoadingStudents: string,
+    LoadingStudent: string,
+    MaxStudentsReached: string,
+    WithoutRoutine: string,
+    SelectDay: string,
+    WithoutReservations: string,
+    IncomingTrainings: string,
+    CurrentRoutine: string,
+    Kick: string,
+    KickStudent: string,
+    SureWantKickStudent: string,
+    Password: string,
+    WelcomeBack: string,
+    DontHaveAccount: string,
+    SignUp: string,
+    ForgotPassword: string,
+    CreateAccount: string,
+    AlreadyHaveAccount: string,
+    SignIn: string,
+    RestorePassword: string,
+    SendInstructions: string,
+
+
 }
 
 const supportedLangs = ['es-ES', 'en-US', 'ca-ES'];

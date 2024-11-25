@@ -7,8 +7,10 @@ import TextInput from '@/components/inputs/TextInput'
 import Button from '@/components/Button'
 import { emailValidator } from '@/helpers/emailValidator'
 import { router } from 'expo-router'
+import { useText } from '@/hooks/useText'
 
 export default function ResetPasswordScreen() {
+  const texts = useText()
   const [email, setEmail] = useState({ value: '', error: '' })
   
 
@@ -26,9 +28,9 @@ export default function ResetPasswordScreen() {
     <Background>
       <BackButton href={"/LoginScreen"}/>
       <Logo />
-      <Header>Restore Password</Header>
+      <Header>{texts.RestorePassword}</Header>
       <TextInput
-        label="E-mail address"
+        label="Email"
         enterKeyHint="done"
         value={email.value}
         onChangeText={(text:string) => setEmail({ value: text, error: '' })}
@@ -45,7 +47,7 @@ export default function ResetPasswordScreen() {
         onPress={sendResetPasswordEmail}
         style={{ marginTop: 16 }}
       >
-        Send Instructions
+        {texts.SendInstructions}
       </Button>
     </Background>
   )

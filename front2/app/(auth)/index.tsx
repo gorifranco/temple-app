@@ -14,9 +14,11 @@ import Toast from 'react-native-toast-message';
 import { Pressable } from 'react-native';
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
 import { loginRedux, selectUser, selectUserError, selectUserStatus } from '@/store/authSlice';
+import { useText } from '@/hooks/useText';
 
 
 export default function Index() {
+  const texts = useText();
   const themeStyles = useThemeStyles();
   const dispatch = useAppDispatch();
   const user = useAppSelector(selectUser);
@@ -58,7 +60,7 @@ export default function Index() {
   return (
     <Background>
       <Logo />
-      <Header>Welcome back.</Header>
+      <Header>{texts.WelcomeBack}</Header>
       <TextInput
         label="Email"
         enterKeyHint="next"
@@ -73,7 +75,7 @@ export default function Index() {
         containerStyle={{ width: "80%", marginBottom: 10 }}
       />
       <TextInput
-        label="Password"
+        label={texts.Password}
         enterKeyHint="done"
         value={password}
         onChangeText={(text: string) => setPassword(text)}
@@ -90,15 +92,15 @@ export default function Index() {
             },]}
           onPress={() => router.replace('/ResetPasswordScreen')}
         >
-          <Text style={{ width: "100%", marginBottom: 24, alignItems: "flex-end" }}>Forgot your password?</Text>
+          <Text style={{ width: "100%", marginBottom: 24, alignItems: "flex-end" }}>{texts.ForgotPassword}</Text>
         </Pressable>
       </View>
       <Button mode="contained" onPress={onLoginPressed}>
         Login
       </Button>
       <View style={themeStyles.row}>
-        <Text>Don’t have an account? </Text>
-        <Link href={{ pathname: '/RegisterScreen' }} style={themeStyles.link}>Sign up</Link>
+        <Text>{texts.DontHaveAccount} </Text>
+        <Link href={{ pathname: '/RegisterScreen' }} style={themeStyles.link}>{texts.SignUp}</Link>
       </View>
     </Background>
   )

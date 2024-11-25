@@ -14,9 +14,11 @@ import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/d
 import { acabarRutina, assignarRutina, expulsarAlumne, selectAlumneByID, selectAlumnesError, selectAlumnesStatus } from '@/store/alumnesSlice';
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
 import { createReserva, selectUpcomingReservesByAlumneID } from '@/store/reservesSlice';
+import { useText } from '@/hooks/useText';
 
 
 export default function AlumneScreen() {
+    const texts = useText();
     const today = new Date()
     const themeStyles = useThemeStyles()
     const appTheme = useAppTheme()
@@ -47,7 +49,7 @@ export default function AlumneScreen() {
         router.replace("../")
         Toast.show({
             type: 'error',
-            text1: 'Error mostrant l\'usuari',
+            text1: texts.ErrorLoadingStudent,
             position: 'top',
         });
     }
@@ -62,7 +64,7 @@ export default function AlumneScreen() {
 
     async function reservar(hora: Date) {
         if (!selectedDay) {
-            setErrors({ ...errors, Dia: "Selecciona un dia" });
+            setErrors({ ...errors, Dia: texts.SelectDay });
             return;
         }
         const horaUTC = new Date(hora.getTime() - hora.getTimezoneOffset() * 60000);
@@ -85,7 +87,7 @@ export default function AlumneScreen() {
     }
 
     if (!alumne) {
-        return (<View><Text>Carregant alumne</Text></View>)
+        return (<View><Text>{texts.LoadingStudent}</Text></View>)
     }
 
     return (
@@ -114,7 +116,7 @@ export default function AlumneScreen() {
                                         setModalReservarVisible(true)
                                         setSelectedTime(new Date(selectedDay.timestamp))
                                     }}>
-                                        <Text style={themeStyles.button1Text}>Reservar</Text>
+                                        <Text style={themeStyles.button1Text}>{texts.Reservate}</Text>
                                     </Pressable>
                                 </View>}
                             </View>
@@ -126,8 +128,8 @@ export default function AlumneScreen() {
                             is24Hour={true}
                             value={new Date(selectedDay.timestamp)}
                             minuteInterval={30}
-                            positiveButton={{ label: 'Reservar', textColor: appTheme.colors.primary }}
-                            negativeButton={{ label: 'Cancelar', textColor: appTheme.colors.text }}
+                            positiveButton={{ label: texts.Reservate, textColor: appTheme.colors.primary }}
+                            negativeButton={{ label: texts.Cancel, textColor: appTheme.colors.text }}
                             onChange={(e: DateTimePickerEvent, time: Date | undefined) => {
                                 if (time && e.type == "set") {
                                     reservar(new Date(e.nativeEvent.timestamp))
@@ -138,9 +140,9 @@ export default function AlumneScreen() {
 
                         {/* Entrenos */}
                         <View style={[themeStyles.box, { marginBottom: 20 }]}>
-                            <Text style={[themeStyles.titol1]}>Pròxims entrenos</Text>
+                            <Text style={[themeStyles.titol1]}>{texts.IncomingTrainings}</Text>
                             {reservesAlumne.length === 0 ? (
-                                <Text style={[themeStyles.text, { marginBottom: 20 }]}>Sense reserves</Text>
+                                <Text style={[themeStyles.text, { marginBottom: 20 }]}>{texts.WithoutReservations}</Text>
                             ) : (
                                 reservesAlumne.map((reserva) => (
                                     <View key={reserva.id} style={{ marginBottom: 20 }}>
@@ -152,11 +154,11 @@ export default function AlumneScreen() {
 
                         {/* Rutina */}
                         <View style={[themeStyles.box, { paddingBottom: 20 }]}>
-                            <Text style={[themeStyles.titol1,]}>Rutina actual</Text>
+                            <Text style={[themeStyles.titol1,]}>{texts.CurrentRoutine}</Text>
                             {alumne.rutinaActual ? (<ViewRutina rutinaID={alumne.rutinaActual} versio={1} acabarRutina={acabarRutina} />
                             ) : (
                                 <View>
-                                    <Text style={themeStyles.text}>No té cap rutina assignada</Text>
+                                    <Text style={themeStyles.text}>{texts.WithoutAssignedRoutine}</Text>
                                     <View style={{ marginHorizontal: "auto", marginVertical: 10, width: "80%" }}>
                                         <AutocompleteRutines
                                             onSubmit={(id: number) => setAssignarRutinaID(id)}
@@ -165,7 +167,7 @@ export default function AlumneScreen() {
                                     <Pressable style={themeStyles.button1} onPress={() => {
                                         handleAssignarRutina()
                                     }}>
-                                        <Text style={themeStyles.button1Text}>Assignar rutina</Text>
+                                        <Text style={themeStyles.button1Text}>{texts.AssignRoutine}</Text>
                                     </Pressable>
                                 </View>
                             )}
@@ -175,11 +177,11 @@ export default function AlumneScreen() {
                         <Pressable style={[themeStyles.buttonDanger, { marginBottom: 40 }]} onPress={() => {
                             setModalVisible(true)
                         }}>
-                            <Text style={themeStyles.button1Text}>Expulsar</Text>
+                            <Text style={themeStyles.button1Text}>{texts.Kick}</Text>
                         </Pressable>
                         <ModalConfirmacio
-                            titol={'Expulsar usuari'}
-                            missatge={'Segur que vols eliminar l\'usuari?'}
+                            titol={texts.KickStudent}
+                            missatge={texts.SureWantKickStudent}
                             modalVisible={modalVisible}
                             closeModal={() => setModalVisible(false)}
                             confirmar={() => handleExpulsarUsuari()} />

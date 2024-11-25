@@ -12,8 +12,10 @@ import { passwordValidator } from '@/helpers/passwordValidator'
 import { nameValidator } from '@/helpers/nameValidator'
 import { Link, router } from 'expo-router';
 import { useThemeStyles } from '@/themes/theme'
+import { useText } from '@/hooks/useText'
 
 export default function RegisterScreen() {
+  const texts = useText()
   const themeStyles = useThemeStyles()
   const [nom, setNom] = useState('')
   const [email, setEmail] = useState('')
@@ -42,9 +44,9 @@ export default function RegisterScreen() {
     <Background>
       <BackButton href={"/"} />
       <Logo />
-      <Header>Create Account</Header>
+      <Header>{texts.CreateAccount}</Header>
       <TextInput
-        label="Name"
+        label={texts.Name}
         enterKeyHint="next"
         value={nom}
         onChangeText={(text:string) => setNom(text)}
@@ -64,7 +66,7 @@ export default function RegisterScreen() {
         inputMode="email"
       />
       <TextInput
-        label="Password"
+        label={texts.Password}
         enterKeyHint="done"
         value={password}
         onChangeText={(text:string) => setPassword(text)}
@@ -77,11 +79,11 @@ export default function RegisterScreen() {
         onPress={onSignUpPressed}
         style={{ marginTop: 24 }}
       >
-        Sign Up
+        {texts.SignUp}
       </Button>
       <View style={themeStyles.row}>
-        <Text>Already have an account? </Text>
-        <Link href={'/'} style={themeStyles.link}>Sign in</Link>
+        <Text>{texts.AlreadyHaveAccount}</Text>
+        <Link href={'/'} style={themeStyles.link}>{texts.SignIn}</Link>
       </View>
     </Background>
   )
