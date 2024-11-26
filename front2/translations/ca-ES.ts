@@ -2,6 +2,7 @@ import { texts } from "@/hooks/useText";
 
 export const textsCA:texts = {
   Reservate: "Reservar",
+  Reservations: "Reserves",
   Cancel: "Cancel·lar",
   Confirm: "Confirmar",
   Train: "Entrenar",

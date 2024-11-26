@@ -87,21 +87,8 @@ export default function Index() {
         <SafeAreaView style={themeStyles.background}>
             <ScrollView>
                 <View style={themeStyles.basicContainer}>
-                    {/* 
-                    <View>
-                        <Pressable
-                        style={themeStyles.button1}
-                            onPress={async () => {
-                                const date = new Date();
-                                date.setSeconds(date.getSeconds() + 10);
-                                await schedulePushNotification(date);
-                            }}
-                        >
-                            <Text style={themeStyles.button1Text}>Press to schedule a notification</Text>
-                        </Pressable>
-                    </View> */}
                     <View style={themeStyles.box}>
-                        <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 25 }]}>{texts.Calendar}</Text>
+                        <Text style={themeStyles.titol1}>{texts.Calendar}</Text>
                         <Calendar
                             firstDay={1}
                             onDayPress={(day: DateData) => {
@@ -111,7 +98,7 @@ export default function Index() {
                                 setSelectedMonth(mes);
                             }}
                             theme={calendarTheme}
-                            style={{ margin: 5 }}
+                            style={{ marginHorizontal: 5, marginBottom: 10 }}
                             markedDates={markedDates}
                         />
                     </View>
@@ -121,7 +108,7 @@ export default function Index() {
 
                     <View style={[themeStyles.box, { marginBottom: 20 }]}>
                         <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 20, marginBottom: 20 }]}>
-                            Reserves (
+                            {texts.Reservations} (
                             {selectedDay ? selectedDay.day : today.getDate()}/
                             {selectedDay ? selectedDay.month : today.getMonth() + 1}/
                             {selectedDay ? selectedDay.year : today.getFullYear()}

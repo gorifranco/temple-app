@@ -21,8 +21,9 @@ function getDeviceLanguage() {
   }
 }
 
-type texts = {
+export type texts = {
   Reservate: string;
+  Reservations: string,
   Cancel: string;
   Confirm: string;
   Train: string;
