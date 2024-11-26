@@ -32,7 +32,6 @@ export default function FentEntreno(props: propsType) {
                 </Text>
             </View>
         </Pressable>
-
     ) : (
         <View style={themeStyles.mainContainer1}>
             <Text style={themeStyles.text}>

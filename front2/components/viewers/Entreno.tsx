@@ -21,29 +21,31 @@ export default function Entreno(props: propsType) {
     const exercicis = useAppSelector(selectExercicis);
     const themeStyles = useThemeStyles()
     const alumne = useAppSelector(state => selectAlumneByID(state, alumneID));
-
-    if (!alumne) {
-        return <Text>{texts.ErrorLoadingStudent}</Text>
-    }
-    if (!alumne.rutinaActual) {
-        return <Text>{texts.WithoutAssignedRoutine}</Text>;
-    }
-
-    const rutina = useAppSelector(state => selectRutinaById(state, alumne.rutinaActual!));
-
-    if (!rutina) {
-        return <Text>{texts.ErrorLoadingRoutine}</Text>
-    }
-
-    const diaActual = alumne.resultatsRutinaActual.length % rutina.diesDuracio
-    const setmanaActual = Math.floor(alumne.resultatsRutinaActual.length / rutina.diesDuracio) + 1
+    const rutina = useAppSelector(state => alumne?.rutinaActual ? selectRutinaById(state, alumne.rutinaActual) : null);
+    const diaActual = alumne ? alumne.resultatsRutinaActual.length % (rutina?.diesDuracio || 1) : 0;
+    const setmanaActual = alumne ? Math.floor(alumne.resultatsRutinaActual.length / (rutina?.diesDuracio || 1)) + 1 : 1;
     const [diaSeleccionat, setDiaSeleccionat] = useState<number>(diaActual);
     const [setmanaSeleccionada, setSetmanaSeleccionada] = useState<number>(setmanaActual);
     const [resultats, setResultats] = useState<ResultatsExercici[]>([]);
+    const [desplegat, setDesplegat] = useState(false);
 
     useEffect(() => {
         buildResultats();
-    }, [diaActual, rutina]); // Recalcula los resultados cuando cambia el día o la rutina.
+    }, []); // Recalcula los resultados cuando cambia el día o la rutina.
+
+    if (!alumne) {
+        console.log("Error al recuperar alumne")
+        return <Text>{texts.ErrorLoadingStudent}</Text>
+    }
+    if (!alumne.rutinaActual) {
+        console.log("Alumne sense rutina")
+        console.log(alumne)
+        return <Text>{texts.WithoutAssignedRoutine}</Text>;
+    }
+    if (!rutina) {
+        console.log("Error al recuperar rutina")
+        return <Text>{texts.ErrorLoadingRoutine}</Text>
+    }
 
     function buildResultats() {
         if (!rutina) return;
@@ -59,9 +61,17 @@ export default function Entreno(props: propsType) {
 
         setResultats(resultatsTmp);
     }
-
     const exercicisArray = rutina?.exercicis || [];
-    return (
+
+    return !desplegat ? (
+        <Pressable onPress={() => setDesplegat(!desplegat)}>
+            <View style={themeStyles.mainContainer1}>
+                <Text style={themeStyles.text}>
+                    {alumne.nom + " - " + hora}
+                </Text>
+            </View>
+        </Pressable>
+    ) : (
         <View>
             <Text>{alumne.nom + " - " + hora}</Text>
             <Text style={[themeStyles.text, { marginTop: 5, marginBottom: 10 }]}>{texts.Week} {setmanaSeleccionada}</Text>

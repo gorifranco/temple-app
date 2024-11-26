@@ -179,7 +179,7 @@ export function useThemeStyles() {
       marginBottom: 10,
     },
     mainContainer1: {
-      marginVertical: 10,
+      marginBottom: 20,
       marginHorizontal: "auto",
       borderWidth: 1,
       borderColor: theme.colors.primary,
