@@ -1,6 +1,6 @@
 import { View, Text, Pressable, ScrollView, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
 import BackButton from '@/components/buttons/BackButton';
 import { Calendar, DateData } from 'react-native-calendars';
@@ -13,12 +13,14 @@ import { calendarTheme, useAppTheme, useThemeStyles } from '@/themes/theme';
 import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker'
 import { acabarRutina, assignarRutina, expulsarAlumne, selectAlumneByID, selectAlumnesError, selectAlumnesStatus } from '@/store/alumnesSlice';
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
-import { createReserva, selectUpcomingReservesByAlumneID } from '@/store/reservesSlice';
+import { createReserva, selectReservaByDayAndUser, selectReservesByMesAndUser, selectUpcomingReservesByAlumneID } from '@/store/reservesSlice';
 import { useText } from '@/hooks/useText';
+import { MarkedDates } from 'react-native-calendars/src/types';
 
 
 export default function AlumneScreen() {
     const texts = useText();
+    const dispatch = useAppDispatch();
     const today = new Date()
     const themeStyles = useThemeStyles()
     const appTheme = useAppTheme()
@@ -32,17 +34,22 @@ export default function AlumneScreen() {
         year: today.getFullYear(), month: today.getMonth() + 1, day: today.getDate(),
         timestamp: today.getMilliseconds(), dateString: `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
     });
-    const [selectedTime, setSelectedTime] = useState<Date>(new Date())
-    const dispatch = useAppDispatch();
+    const [selectedMonth, setSelectedMonth] = useState<DateData>({
+        year: today.getFullYear(), month: today.getMonth() + 1, day: today.getDate(),
+        timestamp: today.getTime(), dateString: `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+    })
+
     const [modalReservarVisible, setModalReservarVisible] = useState(false)
     const [errors, setErrors] = useState({
         Hora: "",
         Dia: "",
     })
+    const reservesMes = useAppSelector(state => selectReservesByMesAndUser(state, selectedMonth, Number(alumneID)));
+    const reservaAvui = useAppSelector(state => selectReservaByDayAndUser(state, selectedDay, Number(alumneID)));
+    const proximesReserves = useAppSelector(state => selectUpcomingReservesByAlumneID(state, Number(alumneID)));
 
 
     const alumne = useAppSelector(state => selectAlumneByID(state, Number(alumneID)));
-    const reservesAlumne = useAppSelector(state => selectUpcomingReservesByAlumneID(state, Number(alumneID)));
 
     //If student doesn't exist redirect to home
     if (!alumne) {
@@ -53,6 +60,32 @@ export default function AlumneScreen() {
             position: 'top',
         });
     }
+
+
+    const reservesAlumne = useAppSelector(state => selectUpcomingReservesByAlumneID(state, Number(alumneID)));
+
+
+    const monthMarks = useMemo(() => {
+        return reservesMes.reduce((acc, reserva) => {
+            const dateString = reserva.hora.split("T")[0];
+            acc[dateString] = {
+                marked: true,
+                dotColor: 'green',
+            };
+            return acc;
+        }, {} as MarkedDates);
+    }, [selectedMonth]);
+
+    const markedDates = useMemo(() => {
+        return {
+            ...monthMarks,
+            [selectedDay.dateString]: {
+                selected: true,
+                selectedColor: appTheme.colors.primary,
+            },
+        };
+    }, [monthMarks, selectedDay]);
+
 
     function handleDayPress(day: DateData) {
         setSelectedDay(day);
@@ -101,26 +134,33 @@ export default function AlumneScreen() {
                         <View style={[themeStyles.box, { marginBottom: 20 }]}>
                             <Calendar
                                 firstDay={1}
-                                onDayPress={(day: DateData) => handleDayPress(day)}
-                                markedDates={
-                                    selectedDay && {
-                                        [selectedDay.dateString]: { selected: true }
-                                    }}
+                                onDayPress={(day: DateData) => {
+                                    setSelectedDay(day)
+                                }}
+                                onMonthChange={(mes: DateData) => {
+                                    setSelectedMonth(mes);
+                                }}
                                 theme={calendarTheme}
                                 style={{ margin: 5 }}
+                                markedDates={markedDates}
                             />
 
                             <View style={{ width: "100%" }}>
                                 {selectedDay && selectedDay.dateString >= formatDate(new Date()) && <View>
                                     <Pressable style={[themeStyles.button1, { marginBottom: 20, marginTop: 0 }]} onPress={() => {
                                         setModalReservarVisible(true)
-                                        setSelectedTime(new Date(selectedDay.timestamp))
                                     }}>
                                         <Text style={themeStyles.button1Text}>{texts.Reservate}</Text>
                                     </Pressable>
                                 </View>}
                             </View>
                         </View>
+                        {/* Reservation of the selected day */}
+                        {reservaAvui && (
+                            <View style={[themeStyles.box, { marginBottom: 20 }]}>
+                                <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 20 }]}>{texts.TrainingOfTheDay}</Text>
+                            </View>
+                        )}
 
                         {modalReservarVisible && selectedDay && < RNDateTimePicker
                             mode='time'

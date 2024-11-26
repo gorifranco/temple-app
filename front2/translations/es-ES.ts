@@ -77,6 +77,7 @@ export const textsES: texts = {
     SignIn: "Iniciar sesión",
     RestorePassword: "Restaurar contraseña",
     SendInstructions: "Enviar instrucciones",
+    TrainingOfTheDay: "Entrenamiento del día",
 }
 
 export const calendarLocaleesES = {

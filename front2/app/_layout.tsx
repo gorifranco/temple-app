@@ -21,6 +21,7 @@ import { LocaleConfig } from 'react-native-calendars';
 import { calendarLocalecaES } from '@/translations/ca-ES';
 import { calendarLocaleenUS } from '@/translations/en-US';
 import { calendarLocaleesES } from '@/translations/es-ES';
+import { TranslationProvider } from '@/hooks/useText';
 
 
 SplashScreen.preventAutoHideAsync();
@@ -110,7 +111,6 @@ export default function RootLayout() {
     );
   };
 
-  const theme = useAppTheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -144,13 +144,15 @@ export default function RootLayout() {
   return (
     <NavigationContainer>
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <PaperProvider theme={theme}>
+        <PaperProvider theme={themeStyles}>
+        <TranslationProvider>
           <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
               <StackLayout />
             </PersistGate>
             <Toast />
           </Provider>
+          </TranslationProvider>
         </PaperProvider>
       </GestureHandlerRootView>
     </NavigationContainer>

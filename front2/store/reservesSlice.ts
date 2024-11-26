@@ -130,8 +130,6 @@ export const getReservesPerMes = createAsyncThunk<
   if (!response.ok) {
     return rejectWithValue(data.error ?? "Failed to fetch reserves");
   }
-  console.log(`mes enviat: ${mes}, any enviat: ${year}`)
-  console.log(`reserves mes resposta: ${data.data}`)
   return data.data;
 });
 
@@ -223,6 +221,34 @@ export const selectUpcomingReservesByAlumneID = createSelector(
         new Date(reserva.hora).getTime() >= Date.now()
     )
 );
+export const selectReservesByMesAndUser = createSelector(
+  [
+    selectAllReserves,
+    (_: RootState, mes: DateData) => mes,
+    (_: RootState, __: DateData, userID: number) => userID,
+  ],
+  (reserves, mes, userID) =>
+    reserves.filter(
+      (reserva) =>
+        new Date(reserva.hora).getFullYear() === mes.year &&
+        new Date(reserva.hora).getMonth() === mes.month - 1 &&
+        reserva.usuariID === userID
+    )
+);
+export const selectReservaByDayAndUser = createSelector(
+  [
+    selectAllReserves,
+    (_: RootState, day: DateData) => day,
+    (_: RootState, __: DateData, userID: number) => userID,
+  ],
+  (reserves, day, userID) =>
+    reserves.find(
+      (reserva) =>
+        new Date(reserva.hora).getTime() >= new Date(day.timestamp).getTime() &&
+        new Date(reserva.hora).getTime() < new Date(day.timestamp).getTime() + 24 * 60 * 60 * 1000 &&
+        reserva.usuariID === userID
+    ),  
+)
 export const selectReservesByDay = createSelector(
   [selectAllReserves, (_, day: DateData) => day],
   (reserves, day) =>
