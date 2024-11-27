@@ -16,6 +16,7 @@ import { Calendar, DateData } from 'react-native-calendars';
 import Entreno from '@/components/viewers/Entreno';
 import { MarkedDates } from 'react-native-calendars/src/types';
 import { useText } from '@/hooks/useText';
+import Toast from 'react-native-toast-message';
 
 
 export default function Index() {
@@ -81,6 +82,11 @@ export default function Index() {
         if (configStatus == "idle") dispatch(getConfig())
         if (alumnesStatus[actions.index] == status.idle) dispatch(getAlumnes())
         if(reservesStatus == "idle") dispatch(getReserves())
+            reservesStatus == "failed" && Toast.show({
+                type: 'error',
+                text1: texts.ErrorFetchingReserves,
+                position: 'top',
+            });
     }, []);
 
     return (
@@ -114,12 +120,11 @@ export default function Index() {
                             {selectedDay ? selectedDay.year : today.getFullYear()}
                             )
                         </Text>
-                        {reservesStatus == status.failed && (<Text style={[themeStyles.text, { marginBottom: 20 }]}>{texts.ErrorFetchingReserves}</Text>)}
                         {reservesAvui && reservesAvui.length == 0 && (<Text style={[themeStyles.text, { marginBottom: 20 }]}>{texts.NotReservationsForThisDay}</Text>)}
                         {reservesAvui && reservesAvui.length > 0 && (
                             reservesAvui.map((r, i) => {
                                 return (
-                                    <Entreno alumneID={r.usuariID} hora={r.hora.split("T")[0].split("+")[0]} key={i} />
+                                    <Entreno alumneID={r.usuariID} hora={r.hora.split("T")[1].split("+")[0]} key={i} />
                                 )
                             })
                         )}

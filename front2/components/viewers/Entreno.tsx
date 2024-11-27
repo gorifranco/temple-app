@@ -4,12 +4,13 @@ import BarraDies from '../BarraDies'
 import { ResultatsExercici } from '@/types/apiTypes'
 import { useThemeStyles } from '@/themes/theme'
 import TextInput from '@/components/inputs/TextInput';
-import { useAppSelector } from '@/store/reduxHooks'
+import { useAppDispatch, useAppSelector } from '@/store/reduxHooks'
 import { selectExercicis } from '@/store/exercicisSlice'
 import { selectRutinaById } from '@/store/rutinesSlice'
-import { selectAlumneByID } from '@/store/alumnesSlice'
+import { assignarRutina, selectAlumneByID } from '@/store/alumnesSlice'
 import { useText } from '@/hooks/useText'
 import FletxaDesplegar from '../icons/FletxaDesplegar'
+import AutocompleteRutines from '../inputs/selects/AutocompleteRutines'
 
 interface propsType {
     alumneID: number,
@@ -21,6 +22,7 @@ export default function Entreno(props: propsType) {
     const { alumneID, hora } = props
     const exercicis = useAppSelector(selectExercicis);
     const themeStyles = useThemeStyles()
+    const dispatch = useAppDispatch();
     const alumne = useAppSelector(state => selectAlumneByID(state, alumneID));
     const rutina = useAppSelector(state => alumne?.rutinaActual ? selectRutinaById(state, alumne.rutinaActual) : null);
     const diaActual = alumne ? alumne.resultatsRutinaActual.length % (rutina?.diesDuracio || 1) : 0;
@@ -30,10 +32,14 @@ export default function Entreno(props: propsType) {
     const [resultats, setResultats] = useState<ResultatsExercici[]>([]);
     const [desplegat, setDesplegat] = useState(false);
 
+
     useEffect(() => {
         buildResultats();
-    }, []); // Recalcula los resultados cuando cambia el día o la rutina.
+    }, []);
 
+    function handleAssignarRutina(rutinaId: number) {
+        dispatch(assignarRutina({ rutinaID: rutinaId, alumneID: alumneID }));
+    }
 
     function buildResultats() {
         if (!rutina) return;
@@ -55,88 +61,94 @@ export default function Entreno(props: propsType) {
         <Pressable onPress={() => setDesplegat(!desplegat)}>
             <View style={themeStyles.mainContainer1}>
                 <Text style={themeStyles.text}>
-                    {alumne!.nom + " - " + hora}
+                    {alumne!.nom + "  " + hora.substring(0, 5)}
                 </Text>
                 <FletxaDesplegar
                     amunt={desplegat}
                     containerStyle={{ position: "absolute", right: 13, top: 9 }}
                     size={24}
                     onPress={() => setDesplegat(!desplegat)} />
-            </View>
-            {desplegat && (
-            <View>
-                <Text>{alumne!.nom + " - " + hora}</Text>
-                <Text style={[themeStyles.text, { marginTop: 5, marginBottom: 10 }]}>{texts.Week} {setmanaSeleccionada}</Text>
-                <BarraDies editable={false} dies={rutina!.diesDuracio} canviaDia={(d: number) => setDiaSeleccionat(d)} currentDia={diaSeleccionat} />
-                {exercicisArray.map(e => {
-                    const resultat = resultats.find(f => f.exerciciRutinaID === e.id);
+                {desplegat && rutina && (
+                    <View>
+                        <Text style={[themeStyles.text, { marginTop: 5, marginBottom: 10 }]}>{texts.Week} {setmanaSeleccionada}</Text>
+                        <BarraDies editable={false} dies={rutina!.diesDuracio} canviaDia={(d: number) => setDiaSeleccionat(d)} currentDia={diaSeleccionat} />
+                        {exercicisArray.map(e => {
+                            const resultat = resultats.find(f => f.exerciciRutinaID === e.id);
 
-                    return e.diaRutina === diaSeleccionat && setmanaSeleccionada === e.cicle && (
-                        <View style={{ marginTop: 15 }} key={e.exerciciID}>
-                            <Text style={themeStyles.text}>{exercicis.find(exercici => exercici.id === e.exerciciID)?.nom}</Text>
-                            <View style={{ display: "flex", flexDirection: "row", gap: 25, margin: "auto", marginTop: 6 }}>
-                                <TextInput
-                                    label={<Text style={{ fontSize: 12 }}>{texts.Series}</Text>}
-                                    style={{ width: 65 }}
-                                    inputMode="numeric"
-                                    value={resultat?.series?.toString() || e.numSeries.toString()}
-                                    onChangeText={(text: string) => {
-                                        const updatedResultats = resultats.map(f => {
-                                            if (f.exerciciRutinaID === e.id) {
-                                                return { ...f, series: Number(text.replace(/[^0-9]/g, '')) };
-                                            }
-                                            return f;
-                                        });
-                                        setResultats(updatedResultats);
-                                    }}
-                                />
-                                <TextInput
-                                    label={<Text style={{ fontSize: 12 }}>{texts.Repetitions}</Text>}
-                                    style={{ width: 65 }}
-                                    inputMode="numeric"
-                                    value={resultat?.repeticions?.toString() || e.numRepes.toString()}
-                                    onChangeText={(text: string) => {
-                                        const updatedResultats = resultats.map(f => {
-                                            if (f.exerciciRutinaID === e.id) {
-                                                return {
-                                                    ...f,
-                                                    repeticions: Number(text.replace(/[^0-9]/g, ''))
-                                                };
-                                            }
-                                            return f;
-                                        });
-                                        setResultats(updatedResultats);
-                                    }} />
-                                <TextInput
-                                    label={<Text style={{ fontSize: 12 }}>{texts.Weight}</Text>}
-                                    style={{ width: 65 }}
-                                    inputMode="numeric"
-                                    value={resultat?.pes?.toString() || e.percentatgeRM.toString() + "%"}
-                                    onChangeText={(text: string) => {
-                                        const updatedResultats = resultats.map(f => {
-                                            if (f.exerciciRutinaID === e.id) {
-                                                return {
-                                                    ...f,
-                                                    pes: Number(text.replace(/[^0-9]/g, ''))
-                                                };
-                                            }
-                                            return f;
-                                        });
-                                        setResultats(updatedResultats);
-                                    }} />
-                            </View>
-                        </View>
-                    )
-                })}
+                            return e.diaRutina === diaSeleccionat && setmanaSeleccionada === e.cicle && (
+                                <View style={{ marginTop: 15 }} key={e.exerciciID}>
+                                    <Text style={themeStyles.text}>{exercicis.find(exercici => exercici.id === e.exerciciID)?.nom}</Text>
+                                    <View style={{ display: "flex", flexDirection: "row", gap: 25, margin: "auto", marginTop: 6 }}>
+                                        <TextInput
+                                            label={<Text style={{ fontSize: 12 }}>{texts.Series}</Text>}
+                                            style={{ width: 65 }}
+                                            inputMode="numeric"
+                                            value={resultat?.series?.toString() || e.numSeries.toString()}
+                                            onChangeText={(text: string) => {
+                                                const updatedResultats = resultats.map(f => {
+                                                    if (f.exerciciRutinaID === e.id) {
+                                                        return { ...f, series: Number(text.replace(/[^0-9]/g, '')) };
+                                                    }
+                                                    return f;
+                                                });
+                                                setResultats(updatedResultats);
+                                            }}
+                                        />
+                                        <TextInput
+                                            label={<Text style={{ fontSize: 12 }}>{texts.Repetitions}</Text>}
+                                            style={{ width: 65 }}
+                                            inputMode="numeric"
+                                            value={resultat?.repeticions?.toString() || e.numRepes.toString()}
+                                            onChangeText={(text: string) => {
+                                                const updatedResultats = resultats.map(f => {
+                                                    if (f.exerciciRutinaID === e.id) {
+                                                        return {
+                                                            ...f,
+                                                            repeticions: Number(text.replace(/[^0-9]/g, ''))
+                                                        };
+                                                    }
+                                                    return f;
+                                                });
+                                                setResultats(updatedResultats);
+                                            }} />
+                                        <TextInput
+                                            label={<Text style={{ fontSize: 12 }}>{texts.Weight}</Text>}
+                                            style={{ width: 65 }}
+                                            inputMode="numeric"
+                                            value={resultat?.pes?.toString() || e.percentatgeRM.toString() + "%"}
+                                            onChangeText={(text: string) => {
+                                                const updatedResultats = resultats.map(f => {
+                                                    if (f.exerciciRutinaID === e.id) {
+                                                        return {
+                                                            ...f,
+                                                            pes: Number(text.replace(/[^0-9]/g, ''))
+                                                        };
+                                                    }
+                                                    return f;
+                                                });
+                                                setResultats(updatedResultats);
+                                            }} />
+                                    </View>
+                                </View>
+                            )
+                        })}
 
-                <Pressable
-                    style={[themeStyles.button1, { marginBottom: 15, marginTop: 30 }]}
-                >
-                    <Text>{texts.Save}</Text>
-                </Pressable>
+                        <Pressable
+                            style={[themeStyles.button1, { marginBottom: 15, marginTop: 30 }]}
+                        >
+                            <Text>{texts.Save}</Text>
+                        </Pressable>
+                    </View>
+
+                )}
+
+                {desplegat && !rutina && (
+                    <View style={{ width: "97%", margin: "auto" }}>
+                        <Text style={[themeStyles.text, {marginVertical: 5}]}>{texts.AssignRoutine}</Text> 
+                        <AutocompleteRutines onSubmit={(rutinaId: number) => handleAssignarRutina(rutinaId)} />
+                    </View>
+                )}
             </View>
-            
-        )}
         </Pressable>
     )
 }

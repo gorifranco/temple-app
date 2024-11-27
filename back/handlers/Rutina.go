@@ -75,7 +75,6 @@ func (h *Handler) CreateRutina(c *gin.Context) {
 			c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "Datos incorrectos"})
 		}
 		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: v})
-		fmt.Printf("errs: %v: \n", errs)
 		return
 	}
 	var rutina models.Rutina
@@ -169,7 +168,6 @@ func (h Handler) UpdateRutina(c *gin.Context) {
 			c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "Datos incorrectos"})
 		}
 		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: v})
-		fmt.Printf("Error al validar la rutina: %v\n", errs)
 		return
 	}
 

@@ -16,6 +16,7 @@ import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
 import { createReserva, selectReservaByDayAndUser, selectReservesByMesAndUser, selectUpcomingReservesByAlumneID } from '@/store/reservesSlice';
 import { useText } from '@/hooks/useText';
 import { MarkedDates } from 'react-native-calendars/src/types';
+import Entreno from '@/components/viewers/Entreno';
 
 
 export default function AlumneScreen() {
@@ -155,10 +156,11 @@ export default function AlumneScreen() {
                                 </View>}
                             </View>
                         </View>
+
                         {/* Reservation of the selected day */}
                         {reservaAvui && (
                             <View style={[themeStyles.box, { marginBottom: 20 }]}>
-                                <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 20 }]}>{texts.TrainingOfTheDay}</Text>
+                                <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 20 }]}>{texts.TrainingOfTheDay} {selectedDay.day}</Text>
                             </View>
                         )}
 

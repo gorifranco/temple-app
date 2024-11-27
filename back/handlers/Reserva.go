@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"temple-app/models"
@@ -22,9 +21,6 @@ import (
 func (h *Handler) IndexReserva(c *gin.Context) {
 	var reserves []models.ReservaResponse
 	h.DB.Table("reserves").Select("id, usuari_id as usuariID, hora as hora, confirmed as confirmed").Scan(&reserves)
-
-	jsonData, _ := json.Marshal(reserves)
-	fmt.Println(string(jsonData))
 
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: reserves})
 }
@@ -224,7 +220,6 @@ func (h *Handler) GetReservesEntrenadorPerMes(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
 		return
 	}
-	fmt.Print(reserves)
 
 	if reserves == nil {
 		reserves = []models.ReservaResponse{}

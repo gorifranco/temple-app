@@ -3,7 +3,6 @@ package test
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"strconv"
@@ -97,7 +96,6 @@ func TestSolicitarUnioEntrenador(t *testing.T) {
 	req, _ := http.NewRequest("POST", "/api/solicitudUnioEntrenador", bytes.NewReader(solicitudJSON))
 
 	router.ServeHTTP(w, req)
-	fmt.Print(w.Body.String())
 	assert.Equal(t, http.StatusOK, w.Code)
 	assert.Equal(t, mockResponse, w.Body.Bytes())
 

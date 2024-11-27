@@ -252,11 +252,13 @@ export const selectReservaByDayAndUser = createSelector(
 export const selectReservesByDay = createSelector(
   [selectAllReserves, (_, day: DateData) => day],
   (reserves, day) =>
-    reserves.filter(
-      (reserva) =>
-        new Date(reserva.hora).getTime() >= new Date(day.timestamp).getTime() &&
-        new Date(reserva.hora).getTime() < new Date(day.timestamp).getTime() + 24 * 60 * 60 * 1000
-    )
+    reserves
+      .filter(
+        (reserva) =>
+          new Date(reserva.hora).getTime() >= new Date(day.timestamp).getTime() &&
+          new Date(reserva.hora).getTime() < new Date(day.timestamp).getTime() + 24 * 60 * 60 * 1000
+      )
+      .sort((a, b) => new Date(a.hora).getTime() - new Date(b.hora).getTime())
 );
 
 export const selectReservesByMes = createSelector(
