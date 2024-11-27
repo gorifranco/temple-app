@@ -364,6 +364,10 @@ func (h *Handler) RutinesEntrenador(c *gin.Context) {
 		})
 	}
 
+	if rutinesResposta == nil {
+		rutinesResposta = []models.RutinaResponse{}
+	}
+
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: rutinesResposta})
 }
 

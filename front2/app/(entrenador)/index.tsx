@@ -7,7 +7,7 @@ import { deleteRutinesSlice, getRutinesEntrenador, selectAllRutines, selectRutin
 import { calendarTheme, useThemeStyles } from '@/themes/theme';
 import { status, actions } from '@/types/apiTypes';
 import { router } from 'expo-router';
-import React, { memo, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { View, Pressable, Text, ViewStyle } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -64,15 +64,12 @@ export default function Index() {
         };
     }, [monthMarks, selectedDay]);
 
-    // useEffect(
-    //     () => {
-    //         dispatch(getConfig())
-    //         dispatch(getRutinesEntrenador())
-    //         dispatch(getExercicis())
-    //         dispatch(getReserves())
-    //         dispatch(getAlumnes())
-    //     }
-    //     , []);
+
+            // dispatch(getConfig())
+            // dispatch(getRutinesEntrenador())
+            // dispatch(getExercicis())
+            // dispatch(getReserves())
+            // dispatch(getAlumnes())
 
     useEffect(() => { dispatch(getReservesPerMes({ mes: selectedMonth.month, year: selectedMonth.year })) }, [selectedMonth]);
 
@@ -131,8 +128,8 @@ export default function Index() {
                     </View>
 
                     <Pressable style={[themeStyles.box, { marginBottom: 20 }]} onPress={() => { router.push("/(alumnes)/alumnes") }}>
-                        <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 20 }]}>{texts.Students} ({alumnes.length}/{process.env.EXPO_PUBLIC_MAX_ALUMNES})</Text>
-                        <Text style={[themeStyles.text, { fontSize: 15, textAlign: "center", paddingTop: 13, color: appTheme.colors.primary, marginBottom: 20 }]}>{texts.SeeEvery}</Text>
+                        {alumnesStatus[actions.index] == status.succeeded && <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 20 }]}>{texts.Students} ({alumnes.length}/{process.env.EXPO_PUBLIC_MAX_ALUMNES})</Text>}
+                        {rutinesStatus == status.succeeded && <Text style={[themeStyles.text, { fontSize: 15, textAlign: "center", paddingTop: 13, color: appTheme.colors.primary, marginBottom: 20 }]}>{texts.SeeEvery}</Text>}
                     </Pressable>
                     <Pressable style={[themeStyles.box]} onPress={() => { router.push("/(rutines)/rutines") }}>
                         <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 20 }]}>{texts.Rutines} ({rutines.length}/{process.env.EXPO_PUBLIC_MAX_RUTINES})</Text>

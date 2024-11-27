@@ -74,6 +74,10 @@ func (h *Handler) AlumnesEntrenador(c *gin.Context) {
 		resposta = append(resposta, tmp)
 	}
 
+	if(resposta == nil){
+		resposta = []models.AlumneResponse{}
+	}
+
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: resposta})
 }
 
