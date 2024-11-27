@@ -88,8 +88,8 @@ export default function HorariConfig() {
 
     return (
         <View style={{ display: "flex", flexDirection: "column", alignItems: "center", position: "relative", marginTop: 10 }}>
-            <Text style={themeStyles.text}>{texts.Shedule}</Text>
-            <View style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", marginTop: 10, width: "95%" }}>
+            <Text style={themeStyles.titol1}>{texts.Shedule}</Text>
+            <View style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", width: "95%" }}>
                 {cl.dayNames.map((d, i) => {
                     return (
                         <DiaHorari

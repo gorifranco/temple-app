@@ -87,6 +87,7 @@ func InsertData() error {
 		Email:         "entrenador@temple.com",
 		TipusUsuariID: 3,
 		Password:      cpass,
+		CodiEntrenador: "15JKSL8",
 	}
 
 	configEntrenador := models.ConfiguracioEntrenador{

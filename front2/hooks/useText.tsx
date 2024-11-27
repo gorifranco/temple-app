@@ -82,6 +82,7 @@ export type texts = {
   LoadingStudent: string;
   MaxStudentsReached: string;
   WithoutRoutine: string;
+  WithoutRoutines: string;
   SelectDay: string;
   WithoutReservations: string;
   IncomingTrainings: string;

@@ -79,6 +79,7 @@ export const textsEN: texts = {
   RestorePassword: "Restore password",
   SendInstructions: "Send instructions",
   TrainingOfTheDay: "Training of the day",
+  WithoutRoutines: "Without routines",
 };
 
 export const calendarLocaleenUS = {

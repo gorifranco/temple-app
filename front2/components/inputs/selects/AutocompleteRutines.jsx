@@ -4,9 +4,14 @@ import { Dimensions, Text } from 'react-native';
 import { useAppSelector } from '@/store/reduxHooks';
 import { useThemeStyles } from '@/themes/theme';
 import { selectAllRutines } from '@/store/rutinesSlice';
+import { useText } from '@/hooks/useText';
+import { useAppTheme } from '@/themes/theme';
+import { View } from 'react-native';
 
 
 function AutocompleteRutines(props) {
+    const texts = useText();
+    const appTheme = useAppTheme();
     const themeStyles = useThemeStyles()
     const { onSubmit, error } = props;
     const rutines = useAppSelector(selectAllRutines);
@@ -16,6 +21,10 @@ function AutocompleteRutines(props) {
     }));
     function handleSubmit(id) {
         onSubmit(id)
+    }
+
+    if (dataSet.length === 0) {
+        dataSet.push({ id: -1, title: texts.WithoutRoutines })
     }
 
     const errorStyle = {
@@ -28,24 +37,27 @@ function AutocompleteRutines(props) {
 
     return (
         <AutocompleteDropdown
-            containerStyle={errorStyle}
+            containerStyle={{ backgroundColor: appTheme.colors.surface }}
             rightButtonsContainerStyle={{ paddingRight: 20 }}
             clearOnFocus={false}
             closeOnBlur={true}
             onSelectItem={(item) => handleSubmit(item?.id)}
             dataSet={dataSet}
             textInputProps={{
-                style: { color: "black" },
+                style: { color: appTheme.colors.surface },
             }}
             suggestionsListMaxHeight={Dimensions.get('window').height * 0.3}
-            inputContainerStyle={{ backgroundColor: "#e7e0ec", paddingVertical: 5, marginVertical: 0 }}
+            inputContainerStyle={{ backgroundColor: appTheme.colors.surface, paddingVertical: 5, marginVertical: 0 }}
             renderItem={(item, text) => (
-                <Text key={item.id} style={[themeStyles.text, { padding: 15 }]}>
+                <View style={{ backgroundColor: appTheme.colors.surface }}>
+                    <Text key={item.id} style={{ fontSize: 15, alignSelf: 'center', padding: 15, color: appTheme.colors.backgroundº }}>
                     {item.title}
                 </Text>
+                </ View>
+
             )}
         />
-    )
+            )
 }
 
-export default memo(AutocompleteRutines)
+            export default memo(AutocompleteRutines)

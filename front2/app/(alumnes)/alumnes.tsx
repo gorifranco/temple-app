@@ -55,7 +55,7 @@ export default function Alumnes() {
                             <FontAwesome name="user-circle" size={40} color="lightgray" />
                             <View style={{ marginLeft: 10, display: "flex", flexDirection: "column" }}>
                                 <Text style={[themeStyles.text, { textAlign: "left", width: "100%" }]}>{alumne.nom}</Text>
-                                <Text style={[themeStyles.text, { textAlign: "left", width: "100%" }]}>{texts.Routine}:{alumne.rutinaActual || texts.WithoutRoutine}</Text>
+                                <Text style={[themeStyles.text, { textAlign: "left", width: "100%" }]}>{texts.Routine}: {alumne.rutinaActual || texts.WithoutRoutine}</Text>
                             </View>
                         </Pressable>
                     )

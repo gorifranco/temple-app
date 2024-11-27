@@ -79,6 +79,7 @@ export const textsCA:texts = {
   RestorePassword: "Restaura la contrasenya",
   SendInstructions: "Enviar instruccions",
   TrainingOfTheDay: "Entrenament del dia",
+  WithoutRoutines: "Sense rutines",
 
 };
 

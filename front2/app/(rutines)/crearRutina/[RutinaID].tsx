@@ -86,7 +86,7 @@ export default function CrearRutina() {
     return (
         <AutocompleteDropdownContextProvider>
             <SafeAreaView style={[themeStyles.background, { height: '100%' }]}>
-                <BackButton href={"../"} styles={{ top: 60 }} />
+                <BackButton href={"../"} styles={{ top: 27 }} />
                 <Text style={themeStyles.titol1}>{texts.CreatorOfRoutines}</Text>
                 <ScrollView>
                     <View style={{ width: "80%", alignSelf: "center" }}>

@@ -79,6 +79,7 @@ export const textsES: texts = {
     RestorePassword: "Restaurar contraseña",
     SendInstructions: "Enviar instrucciones",
     TrainingOfTheDay: "Entrenamiento del día",
+    WithoutRoutines: "Sin rutinas",
 }
 
 export const calendarLocaleesES = {
