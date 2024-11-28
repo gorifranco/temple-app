@@ -15,6 +15,7 @@ import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
 import { createRutina, selectRutinaById, updateRutina } from '@/store/rutinesSlice';
 import { useLocalSearchParams } from 'expo-router';
 import { useText } from '@/hooks/useText';
+import Toast from 'react-native-toast-message';
 
 
 export default function CrearRutina() {
@@ -34,10 +35,10 @@ export default function CrearRutina() {
     const [descripcio, setDescripcio] = useState(mode == "editar" ? rutina!.descripcio : "");
     const [errorsExercicis, setErrorsExercicis] = useState(new Map<number, ExerciciErrorType>());
     const [errors, setErrors] = useState({
-        Nom: "",
-        Descripcio: "",
-        Dies: "",
-        Cicles: "",
+        nom: "",
+        descripcio: "",
+        dies: "",
+        cicles: "",
     })
 
 
@@ -48,14 +49,15 @@ export default function CrearRutina() {
         for (let ciclo = 0; ciclo < Number(cicles); ciclo++) {
             const ejerciciosParaEsteCiclo: ExerciciRutinaType[] = tmp.map((exercici) => ({
                 ...exercici,
-                Cicle: ciclo,
+                cicle: ciclo,
             }));
             exercicisEnviats.push(...ejerciciosParaEsteCiclo);
         }
+        console.log(exercicisEnviats)
 
         if (!checkErrors(exercicisEnviats)) {
             const dataRutina: RutinaType = {
-                id: -1,
+                id: 0,
                 nom: nom,
                 descripcio: descripcio,
                 cicles: Number(cicles) ?? -1,
@@ -67,6 +69,12 @@ export default function CrearRutina() {
             } else {
                 dispatch(updateRutina({ rutina: dataRutina }))
             }
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: 'Error al crear la rutina',
+                position: 'top',
+            });
         }
     }
 
@@ -77,7 +85,7 @@ export default function CrearRutina() {
         const errCicles = ciclesValidator(cicles)
         const errDies = diesValidator(dies)
 
-        setErrors({ Nom: errNom, Descripcio: errDesc, Cicles: errCicles, Dies: errDies })
+        setErrors({ nom: errNom, descripcio: errDesc, cicles: errCicles, dies: errDies })
         setErrorsExercicis(errors.errors)
 
         return (errNom != "" || errDesc != "" || errCicles != "" || errDies != "" || errors.error)
@@ -92,50 +100,50 @@ export default function CrearRutina() {
                     <View style={{ width: "80%", alignSelf: "center" }}>
                         <TextInput
                             label={texts.Name}
-                            error={errors.Nom != ""}
+                            error={errors.nom != ""}
                             value={nom}
                             onChangeText={(text: string) => setNom(text)}
-                            errorText={errors.Nom} />
-                        {errors.Nom && errors.Nom != "" ? <Text style={themeStyles.textInputError}>* {errors.Nom}</Text> : null}
+                            errorText={errors.nom} />
+                        {errors.nom && errors.nom != "" ? <Text style={themeStyles.textInputError}>* {errors.nom}</Text> : null}
                     </View>
                     <View style={{ width: "80%", alignSelf: "center" }}>
                         <TextInput
                             label={texts.Description}
-                            error={errors.Descripcio != ""}
+                            error={errors.descripcio != ""}
                             value={descripcio}
                             onChangeText={(text: string) => setDescripcio(text)}
-                            errorText={errors.Descripcio}
+                            errorText={errors.descripcio}
                             multiline={true}
                             numberOfLines={4}
                             maxLength={150} />
                     </View>
 
-                    {errors.Descripcio && errors.Descripcio != "" ? <Text style={themeStyles.textInputError}>* {errors.Descripcio}</Text> : null}
+                    {errors.descripcio && errors.descripcio != "" ? <Text style={themeStyles.textInputError}>* {errors.descripcio}</Text> : null}
 
                     <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginHorizontal: "auto", marginBottom: 10, width: "80%" }}>
                         <View style={{ display: "flex", flexDirection: "column", width: "47%" }}>
                             <TextInput
-                                error={errors.Dies != ""}
-                                errorText={errors.Dies}
+                                error={errors.dies != ""}
+                                errorText={errors.dies}
                                 label={texts.Days}
                                 inputMode="numeric"
                                 style={{ width: "100%" }}
                                 value={dies ? dies.toString() : ""}
                                 onChangeText={(text: string) => setDies(Number(text.replace(/[^0-7]/g, '')))}
                             />
-                            {errors.Dies && errors.Dies != "" ? <Text style={themeStyles.textInputError}>* {errors.Dies}</Text> : null}
+                            {errors.dies && errors.dies != "" ? <Text style={themeStyles.textInputError}>* {errors.dies}</Text> : null}
                         </View>
                         <View style={{ display: "flex", flexDirection: "column", width: "47%" }}>
                             <TextInput
-                                errorText={errors.Cicles}
-                                error={errors.Cicles != ""}
+                                errorText={errors.cicles}
+                                error={errors.cicles != ""}
                                 label={texts.Cycles}
                                 style={{ width: "100%" }}
                                 inputMode="numeric"
                                 value={cicles ? cicles.toString() : ""}
                                 onChangeText={(text: string) => setCicles(Number(text.replace(/[^0-9]/g, '')))}
                             />
-                            {errors.Cicles && errors.Cicles != "" ? <Text style={[themeStyles.textInputError, { marginHorizontal: 0 }]}>* {errors.Cicles}</Text> : null}
+                            {errors.cicles && errors.cicles != "" ? <Text style={[themeStyles.textInputError, { marginHorizontal: 0 }]}>* {errors.cicles}</Text> : null}
                         </View>
                     </View>
 
@@ -239,18 +247,19 @@ export default function CrearRutina() {
                             );
                     })}
 
-
+                    {/* Add exercise button */}
                     <Pressable
                         style={[themeStyles.button1, { zIndex: -1 }]}
                         onPress={() => {
+                            const ordre = exercicisElegits.filter( d => d.diaRutina == currentDia).length
                             setExercicisElegits([
                                 ...exercicisElegits,
                                 {
-                                    id: -1,
+                                    id: 0,
                                     nom: "",
-                                    rutinaID: -1,
+                                    rutinaID: 0,
                                     exerciciID: -1,
-                                    ordre: exercicisElegits.length,
+                                    ordre: ordre,
                                     numSeries: 0,
                                     numRepes: 0,
                                     cicle: 0,
@@ -263,6 +272,7 @@ export default function CrearRutina() {
                         <Text style={themeStyles.button1Text}>{texts.AddExercise}</Text>
                     </Pressable>
 
+                    {/* Save routine button */}
                     <Pressable
                         style={[themeStyles.button1, { zIndex: -1, marginBottom: 20 }]}
                         onPress={() => guardarRutina()}

@@ -42,7 +42,7 @@ export default function Index() {
     })
     const reservesMes = useAppSelector(state => selectReservesByMes(state, selectedMonth));
     const reservesAvui = useAppSelector(state => selectReservesByDay(state, selectedDay));
-    
+
     const monthMarks = useMemo(() => {
         return reservesMes.reduce((acc, reserva) => {
             const dateString = reserva.hora.split("T")[0];
@@ -65,11 +65,11 @@ export default function Index() {
     }, [monthMarks, selectedDay]);
 
 
-            // dispatch(getConfig())
-            // dispatch(getRutinesEntrenador())
-            // dispatch(getExercicis())
-            // dispatch(getReserves())
-            // dispatch(getAlumnes())
+    // dispatch(getConfig())
+    // dispatch(getRutinesEntrenador())
+    // dispatch(getExercicis())
+    // dispatch(getReserves())
+    // dispatch(getAlumnes())
 
     useEffect(() => { dispatch(getReservesPerMes({ mes: selectedMonth.month, year: selectedMonth.year })) }, [selectedMonth]);
 
@@ -78,12 +78,12 @@ export default function Index() {
         if (exercicisStatus == "idle") dispatch(getExercicis())
         if (configStatus == "idle") dispatch(getConfig())
         if (alumnesStatus[actions.index] == status.idle) dispatch(getAlumnes())
-        if(reservesStatus == "idle") dispatch(getReserves())
-            reservesStatus == "failed" && Toast.show({
-                type: 'error',
-                text1: texts.ErrorFetchingReserves,
-                position: 'top',
-            });
+        if (reservesStatus == "idle") dispatch(getReserves())
+        reservesStatus == "failed" && Toast.show({
+            type: 'error',
+            text1: texts.ErrorFetchingReserves,
+            position: 'top',
+        });
     }, []);
 
     return (
@@ -127,10 +127,13 @@ export default function Index() {
                         )}
                     </View>
 
+                    {/* Alumnes */}
                     <Pressable style={[themeStyles.box, { marginBottom: 20 }]} onPress={() => { router.push("/(alumnes)/alumnes") }}>
                         {alumnesStatus[actions.index] == status.succeeded && <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 20 }]}>{texts.Students} ({alumnes.length}/{process.env.EXPO_PUBLIC_MAX_ALUMNES})</Text>}
-                        {rutinesStatus == status.succeeded && <Text style={[themeStyles.text, { fontSize: 15, textAlign: "center", paddingTop: 13, color: appTheme.colors.primary, marginBottom: 20 }]}>{texts.SeeEvery}</Text>}
+                        {alumnesStatus[actions.index] == status.succeeded && <Text style={[themeStyles.text, { fontSize: 15, textAlign: "center", paddingTop: 13, color: appTheme.colors.primary, marginBottom: 20 }]}>{texts.SeeEvery}</Text>}
                     </Pressable>
+
+                    {/* Rutines */}
                     <Pressable style={[themeStyles.box]} onPress={() => { router.push("/(rutines)/rutines") }}>
                         <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 20 }]}>{texts.Rutines} ({rutines.length}/{process.env.EXPO_PUBLIC_MAX_RUTINES})</Text>
                         <Text style={[themeStyles.text, { fontSize: 15, textAlign: "center", paddingTop: 13, color: appTheme.colors.primary, marginBottom: 20 }]}>{texts.SeeEveryFem}</Text>

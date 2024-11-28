@@ -33,11 +33,10 @@ export default function rutines() {
             </View>
             <ScrollView style={{ width: "100%", marginBottom: 10}}>
                 {rutinesStatus == st.pending && <Text style={themeStyles.text}>{texts.LoadingRoutines}</Text>}
-                {rutinesStatus == st.succeeded && (
                     <Pressable style={themeStyles.button1} onPress={() => handlePressCrearRutina()}>
                         <Text style={themeStyles.button1Text}>{texts.AddRoutine}</Text>
                     </Pressable>
-                )}
+                    
                 <View style={{ height: 20 }} />
                 {rutinesStatus == st.succeeded && rutines.map((rutina) => {
                     return (

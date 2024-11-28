@@ -28,49 +28,60 @@ func RutinaValidator(rutina *models.RutinaInput, db *gorm.DB) []error {
 		errs = append(errs, errors.New("exercicis de la rutina no pot estar buit"))
 	}
 
-	//IDs of the exercises
+	// Recuperar IDs válidos de ejercicios
 	var ids []uint
 	if err := db.Table("exercicis").Where("deleted_at IS NULL").Pluck("id", &ids).Error; err != nil {
 		errs = append(errs, fmt.Errorf("error al recuperar IDs de exercicis: %v", err))
 	}
 
-	// Convert the slice to a map for faster lookups
+	// Convertir la lista de IDs a un mapa para validación rápida
 	exerciseIDMap := make(map[uint]bool)
 	for _, id := range ids {
 		exerciseIDMap[id] = true
 	}
 
-	// Initializa the map of ordres
-	ordres := make(map[uint][]uint)
+	// Inicializar el mapa anidado para ordres
+	ordres := make(map[uint]map[uint][]uint)
 
-	// Validates every exercise
+	// Validar cada ejercicio
 	for _, exercici := range rutina.Exercicis {
-/* 		if !exerciseIDMap[exercici.ExerciciID] {
-			errs = append(errs, errors.New("exercici no existeix: "))
-		} */
+		if !exerciseIDMap[exercici.ExerciciID] {
+			errs = append(errs, fmt.Errorf("exercici no existeix: %d", exercici.ExerciciID))
+		}
 		if exercici.NumRepes <= 0 {
 			errs = append(errs, errors.New("NumRepes no pot estar buit"))
 		}
 		if exercici.Cicle > rutina.Cicles {
 			errs = append(errs, errors.New("cicle de l'exercici no coincideix amb els cicles de la rutina"))
 		}
-		if exercici.DiaRutina > rutina.DiesDuracio-1{
+		if exercici.DiaRutina >= rutina.DiesDuracio {
 			errs = append(errs, errors.New("dia de l'exercici no coincideix amb els dies de duració de la rutina"))
 		}
 
-		// Guardar el ordre en el mapa de ordres
-		ordres[exercici.Cicle] = append(ordres[exercici.Cicle], uint(exercici.Ordre))
+		// Inicializar mapa anidado si no existe
+		if ordres[exercici.Cicle] == nil {
+			ordres[exercici.Cicle] = make(map[uint][]uint)
+		}
+
+		// Agregar el orden al mapa
+		ordres[exercici.Cicle][exercici.DiaRutina] = append(ordres[exercici.Cicle][exercici.DiaRutina], uint(exercici.Ordre))
 	}
 
-	// Validar que los ordres sean consecutivos en cada cicle
-	for _, ordresCicle := range ordres {
-		if len(ordresCicle) > 1 {
-			sort.Slice(ordresCicle, func(i, j int) bool {
-				return ordresCicle[i] < ordresCicle[j]
-			})
-			for i := 1; i < len(ordresCicle); i++ {
-				if ordresCicle[i] != ordresCicle[i-1]+1 {
-					errs = append(errs, errors.New("els ordres no estan consecutius"))
+	// Validar que los ordres sean consecutivos en cada cicle y diaRutina
+	for cicle, ordresPerDia := range ordres {
+		for diaRutina, ordresDia := range ordresPerDia {
+			if len(ordresDia) > 1 {
+				// Ordenar los ordres dentro de un día
+				sort.Slice(ordresDia, func(i, j int) bool {
+					return ordresDia[i] < ordresDia[j]
+				})
+				// Validar consecutividad
+				for i := 1; i < len(ordresDia); i++ {
+					if ordresDia[i] != ordresDia[i-1]+1 {
+						errs = append(errs, fmt.Errorf(
+							"els ordres no estan consecutius en el cicle %d, dia %d", cicle, diaRutina,
+						))
+					}
 				}
 			}
 		}

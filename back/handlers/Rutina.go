@@ -65,11 +65,15 @@ func (h *Handler) CreateRutina(c *gin.Context) {
 	var err error
 
 	if err = c.ShouldBindJSON(&input); err != nil {
+		fmt.Println("Error blinding JSON")
+		fmt.Printf("%v\n", err)
 		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
 
 	if errs := validators.RutinaValidator(&input, h.DB); len(errs) > 0 {
+		fmt.Println("Error validating")
+		fmt.Print(errs)
 		v, err := json.Marshal(errs)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "Datos incorrectos"})
@@ -123,7 +127,7 @@ func (h *Handler) CreateRutina(c *gin.Context) {
 	}
 	// If the transaction was successful, load the created routine with the exercises
 	var createdRutina models.RutinaResponse
-	if err = h.DB.Table("rutines").Select("id, nom, dies_duracio, cicles, entrenadorID").Where("id = ?", rutina.ID).Scan(&createdRutina).Error; err != nil {
+	if err = h.DB.Table("rutines").Select("id, nom, dies_duracio, cicles, entrenador_id").Where("id = ?", rutina.ID).Scan(&createdRutina).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to load created rutina"})
 		return
 	}

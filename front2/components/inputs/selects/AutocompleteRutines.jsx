@@ -51,13 +51,13 @@ function AutocompleteRutines(props) {
             renderItem={(item, text) => (
                 <View style={{ backgroundColor: appTheme.colors.surface }}>
                     <Text key={item.id} style={{ fontSize: 15, alignSelf: 'center', padding: 15, color: appTheme.colors.backgroundº }}>
-                    {item.title}
-                </Text>
+                        {item.title}
+                    </Text>
                 </ View>
 
             )}
         />
-            )
+    )
 }
 
-            export default memo(AutocompleteRutines)
+export default memo(AutocompleteRutines)
