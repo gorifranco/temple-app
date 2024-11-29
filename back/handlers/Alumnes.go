@@ -29,7 +29,7 @@ func (h *Handler) AlumnesEntrenador(c *gin.Context) {
 	}
 
 	query := `select ure.id as id, ure.dia as dia, ure.repeticions as repeticions, ure.series as series, ure.pes as pes,
- ure.exercici_rutina_id as exercici_rutina_id from usuari_resultat_exercici ure
+ ure.exercici_rutina_id as exercici_rutina_id, ur.dia_actual as dia_rutrina_actual from usuari_resultat_exercici ure
   inner join usuari_rutina ur on ur.id = ure.usuari_rutina_id where ur.data_finalitzacio is null and Usuari_id = 1;`
 
 	var resposta []models.AlumneResponse
@@ -48,7 +48,6 @@ func (h *Handler) AlumnesEntrenador(c *gin.Context) {
 				Hora:       reserva.Hora,
 				Confirmada: reserva.Confirmada,
 				UsuariID:   reserva.UsuariID,
-				// Otros campos que quieras incluir
 			})
 		}
 

@@ -30,7 +30,7 @@ export default function CrearRutina() {
     const [cicles, setCicles] = useState<(Number | null)>(mode == "editar" ? rutina!.cicles : null);
     const [dies, setDies] = useState(mode == "editar" ? rutina!.diesDuracio : 1);
     const [currentDia, setCurrentDia] = useState(0);
-    const [exercicisElegits, setExercicisElegits] = useState<(ExerciciRutinaType)[]>(mode == "editar" ? rutina!.exercicis : []);
+    const [exercicisElegits, setExercicisElegits] = useState<(ExerciciRutinaType)[]>(mode == "editar" ? rutina!.exercicis.filter(e => e.cicle == 0) : []);
     const [nom, setNom] = useState(mode == "editar" ? rutina!.nom : "");
     const [descripcio, setDescripcio] = useState(mode == "editar" ? rutina!.descripcio : "");
     const [errorsExercicis, setErrorsExercicis] = useState(new Map<number, ExerciciErrorType>());

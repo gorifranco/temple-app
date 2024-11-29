@@ -46,4 +46,5 @@ type AlumneResponse struct {
 	Reserves              []ReservaResponse                `json:"reserves"`
 	RutinaActual          uint                             `json:"rutinaActual"`
 	ResultatsRutinaActual []UsuariResultatExerciciResponse `json:"resultatsRutinaActual"`
+	DiaRutrinaActual      uint                             `json:"diaRutrinaActual"`
 }

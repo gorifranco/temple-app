@@ -66,7 +66,7 @@ export default function ViewRutina(props: propsType) {
 
                     <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginTop: 10, width: "95%" }}>
                         <Text style={[themeStyles.text, { width: "50%", fontWeight: "bold" }]}>Exercici</Text>
-                        <Text style={[themeStyles.text, { fontWeight: "bold" }]}>{texts.Repetitions}</Text>
+                        <Text style={[themeStyles.text, { fontWeight: "bold" }]}>{texts.Reps}</Text>
                         <Text style={[themeStyles.text, { fontWeight: "bold" }]}>{texts.Series}</Text>
                         <Text style={[themeStyles.text, { fontWeight: "bold" }]}>% RM</Text>
                     </View>

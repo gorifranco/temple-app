@@ -95,7 +95,7 @@ export default function Entreno(props: propsType) {
                                             }}
                                         />
                                         <TextInput
-                                            label={<Text style={{ fontSize: 12 }}>{texts.Repetitions}</Text>}
+                                            label={<Text style={{ fontSize: 12 }}>{texts.Reps}</Text>}
                                             style={{ width: 65 }}
                                             inputMode="numeric"
                                             value={resultat?.repeticions?.toString() || e.numRepes.toString()}

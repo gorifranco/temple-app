@@ -38,6 +38,7 @@ export interface AlumneType {
   nom: string;
   resultatsRutinaActual: ResultatsExercici[];
   rutinaActual: number|null;
+  diaRutrinaActual: number;
 }
 
 export interface ReservaType {

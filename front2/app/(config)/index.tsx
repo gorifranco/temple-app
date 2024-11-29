@@ -30,11 +30,11 @@ export default function Index() {
         horariEntrenador: []
     });
     const initialDate = new Date();
-    const hours = Math.floor(config.duracioSessions/60);
+    const hours = Math.floor(config.duracioSessions / 60);
     const minutes = config.duracioSessions % 60;
     initialDate.setHours(hours, minutes, 0, 0);
 
-    function handleCanviarDuracio(minutes:number) {
+    function handleCanviarDuracio(minutes: number) {
         setConfigTmp({ ...configTmp, duracioSessions: minutes });
     }
 
@@ -45,14 +45,6 @@ export default function Index() {
     return (
         <SafeAreaView style={themeStyles.background}>
             <ScrollView>
-                <Pressable
-                    style={themeStyles.button1}
-                    onPress={() => {
-                        dispatch(logoutRedux())
-                        router.replace("/")
-                    }}>
-                    <Text style={themeStyles.button1Text}>Logout</Text>
-                </Pressable>
 
                 {/* Horari */}
                 <HorariConfig />
@@ -99,18 +91,28 @@ export default function Index() {
                     <Text style={themeStyles.button1Text}>Canviar configuració</Text>
                 </Pressable>
 
+                {/* Logout */}
+                <Pressable
+                    style={themeStyles.button1}
+                    onPress={() => {
+                        dispatch(logoutRedux())
+                        router.replace("/")
+                    }}>
+                    <Text style={themeStyles.button1Text}>Logout</Text>
+                </Pressable>
+
                 {/* Time picker */}
                 {timepickerVisible && < RNDateTimePicker
                     mode='time'
                     display="spinner"
                     is24Hour={true}
-                    value={initialDate} 
+                    value={initialDate}
                     minuteInterval={15}
                     positiveButton={{ label: 'acceptar', textColor: appTheme.colors.primary }}
                     negativeButton={{ label: 'Cancelar', textColor: appTheme.colors.text }}
                     onChange={(e: DateTimePickerEvent, time: Date | undefined) => {
                         if (time && e.type === "set") {
-                            handleCanviarDuracio(time.getHours()*60 + time.getMinutes());
+                            handleCanviarDuracio(time.getHours() * 60 + time.getMinutes());
                         }
                         setTimepickerVisible(false);
                     }}

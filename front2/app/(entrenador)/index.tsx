@@ -64,7 +64,6 @@ export default function Index() {
         };
     }, [monthMarks, selectedDay]);
 
-
     // dispatch(getConfig())
     // dispatch(getRutinesEntrenador())
     // dispatch(getExercicis())

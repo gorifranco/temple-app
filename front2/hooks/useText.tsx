@@ -101,6 +101,7 @@ export type texts = {
   RestorePassword: string;
   SendInstructions: string;
   TrainingOfTheDay: string;
+  Reps: string
 };
 
 const supportedLangs = ["es-ES", "en-US", "ca-ES"];
