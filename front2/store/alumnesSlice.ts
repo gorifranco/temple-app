@@ -53,8 +53,6 @@ export const getAlumnes = createAsyncThunk<
     }
 
     const data = await response.json();
-    console.log('fetch alumnes')
-    console.log(data.data)
     return data.data;
   } catch (error: any) {
     return rejectWithValue(error.message ?? "Failed to fetch alumnes");
@@ -256,6 +254,7 @@ const alumnesSlice = createSlice({
           );
           if (alumne) {
             alumne.rutinaActual = action.payload.rutinaID;
+            alumne.resultatsRutinaActual = [];
           }
         }
       )

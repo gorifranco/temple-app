@@ -86,7 +86,7 @@ export const createRutina = createAsyncThunk<
   return data.data;
 });
 
-// Create rutina
+// update rutina
 export const updateRutina = createAsyncThunk<
   RutinaType,
   { rutina: RutinaType }, // Parameters type

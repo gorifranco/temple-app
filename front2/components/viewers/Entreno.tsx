@@ -137,7 +137,7 @@ export default function Entreno(props: propsType) {
                         <Pressable
                             style={[themeStyles.button1, { marginBottom: 15, marginTop: 30 }]}
                         >
-                            <Text style={themeStyles.button1Text}>{texts.Save}</Text>
+                            <Text style={themeStyles.button1Text}>{texts.FinishTraining}</Text>
                         </Pressable>
                     </View>
 

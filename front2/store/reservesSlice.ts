@@ -72,7 +72,6 @@ export const createReservaAlumne = createAsyncThunk<
     if (!response.ok) {
       return rejectWithValue(data.error ?? "Failed to create reservation");
     }
-    console.log(data.data);
     return data.data;
   }
 );
@@ -255,8 +254,8 @@ export const selectReservesByDay = createSelector(
     reserves
       .filter(
         (reserva) =>
-          new Date(reserva.hora).getTime() >= new Date(day.timestamp).getTime() &&
-          new Date(reserva.hora).getTime() < new Date(day.timestamp).getTime() + 24 * 60 * 60 * 1000
+          new Date(reserva.hora).getFullYear() == day.year && new Date(reserva.hora).getMonth() == day.month - 1 &&
+         new Date(reserva.hora).getDate() == day.day
       )
       .sort((a, b) => new Date(a.hora).getTime() - new Date(b.hora).getTime())
 );

@@ -53,7 +53,6 @@ export default function CrearRutina() {
             }));
             exercicisEnviats.push(...ejerciciosParaEsteCiclo);
         }
-        console.log(exercicisEnviats)
 
         if (!checkErrors(exercicisEnviats)) {
             const dataRutina: RutinaType = {

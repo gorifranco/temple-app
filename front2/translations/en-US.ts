@@ -82,6 +82,7 @@ export const textsEN: texts = {
   WithoutRoutines: "Without routines",
   Reps: "Repes",
   Exercise: "Exercise",
+  FinishTraining: "Finish training",
 };
 
 export const calendarLocaleenUS = {

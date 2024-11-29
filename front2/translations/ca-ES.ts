@@ -82,6 +82,7 @@ export const textsCA:texts = {
   WithoutRoutines: "Sense rutines",
   Reps: "Reps",
   Exercise: "Exercici",
+  FinishTraining: "Acabar entreno",
 
 };
 

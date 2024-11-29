@@ -64,15 +64,20 @@ export default function Index() {
         };
     }, [monthMarks, selectedDay]);
 
+    console.log(reservesAvui)
+    console.log(selectedDay)
+
     // dispatch(getConfig())
     // dispatch(getRutinesEntrenador())
     // dispatch(getExercicis())
     // dispatch(getReserves())
     // dispatch(getAlumnes())
 
+
     useEffect(() => { dispatch(getReservesPerMes({ mes: selectedMonth.month, year: selectedMonth.year })) }, [selectedMonth]);
 
     useEffect(() => {
+        dispatch(getReservesPerMes({ mes: selectedMonth.month, year: selectedMonth.year }))
         if (rutinesStatus == "idle") dispatch(getRutinesEntrenador())
         if (exercicisStatus == "idle") dispatch(getExercicis())
         if (configStatus == "idle") dispatch(getConfig())

@@ -104,6 +104,7 @@ export type texts = {
   TrainingOfTheDay: string;
   Reps: string
   Exercise: string,
+  FinishTraining: string,
   
 };
 
