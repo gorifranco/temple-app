@@ -9,7 +9,7 @@ import { View } from 'react-native';
 
 
 function AutocompleteExercicis(props) {
-    const { onSubmit } = props;
+    const { onSubmit, initialValue } = props;
     const appTheme = useAppTheme();
     const themeStyles = useThemeStyles();
     const exercicis = useAppSelector(selectExercicis);
@@ -34,10 +34,11 @@ function AutocompleteExercicis(props) {
             textInputProps={{
                 style: { color: "black" },
             }}
+            initialValue={initialValue ?? {}}
             containerStyle={{ color: "black" }}
             renderItem={(item, text) => (
                 <View style={{ backgroundColor: appTheme.colors.surface }}>
-                    <Text key={item.id} style={{ fontSize: 15, alignSelf: 'center', padding: 15, color: appTheme.colors.backgroundº }}>
+                    <Text key={item.id} style={{ fontSize: 15, alignSelf: 'center', padding: 15, color: appTheme.colors.background }}>
                         {item.title}
                     </Text>
                 </ View>

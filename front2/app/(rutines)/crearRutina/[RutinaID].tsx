@@ -172,7 +172,7 @@ export default function CrearRutina() {
                                                 };
                                                 setExercicisElegits(updatedExercicisElegits);
                                             }}
-                                            selectedValue={exercici.nom}
+                                            initialValue={exercici}
                                         />
                                         {errorsExercicis && errorsExercicis.get(i) && errorsExercicis.get(i)!.exerciciID !== "" ? (
                                             <Text style={themeStyles.textInputError}>* {errorsExercicis.get(i)!.exerciciID}</Text>

@@ -3,6 +3,7 @@ import { calendarLocaleenUS, textsEN } from "@/translations/en-US";
 import { calendarLocaleesES, textsES } from "@/translations/es-ES";
 import { NativeModules, Platform } from "react-native";
 import React, { createContext, useContext, useMemo, ReactNode } from "react";
+import { LocaleConfig } from "react-native-calendars";
 
 function getDeviceLanguage() {
   try {
@@ -123,14 +124,27 @@ const TranslationContext = createContext<texts|null>(null);
 export function TranslationProvider({ children }: { children: ReactNode }) {
   const deviceLanguage = getDeviceLanguage();
 
+
+// Configurar el idioma
+LocaleConfig.locales['es'] = calendarLocaleesES;
+LocaleConfig.locales['ca'] = calendarLocalecaES;
+LocaleConfig.locales['en'] = calendarLocaleenUS;
+
+
   const texts:texts = useMemo(() => {
     switch (deviceLanguage) {
-      case 'es-ES':
+      case 'es-ES': {
+        LocaleConfig.defaultLocale = 'es';
         return textsES;
-      case 'ca-ES':
+      }
+      case 'ca-ES':{
+        LocaleConfig.defaultLocale = 'ca';
         return textsCA;
-      default:
+      }
+      default:{
+        LocaleConfig.defaultLocale = 'en';
         return textsEN;
+      }
     }
   }, [deviceLanguage]);
 
