@@ -6,13 +6,11 @@ import { guardarConfiguracio, selectConfig } from '@/store/configSlice';
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
 import { useAppTheme, useThemeStyles } from '@/themes/theme';
 import { ReducedConfigType } from '@/types/apiTypes';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
+import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { persistor } from '../../store';
-import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
-import { router } from 'expo-router';
 
 export default function Index() {
     const appTheme = useAppTheme();
@@ -86,14 +84,14 @@ export default function Index() {
                 </View>
 
                 <Pressable
-                    style={[themeStyles.button1, { marginBottom: 25 }]}
+                    style={[themeStyles.button1, { marginBottom: 10 }]}
                     onPress={() => handleCanviarConfiguracio()}>
                     <Text style={themeStyles.button1Text}>Canviar configuració</Text>
                 </Pressable>
 
                 {/* Logout */}
                 <Pressable
-                    style={themeStyles.button1}
+                    style={[themeStyles.button1, { marginBottom: 25 }]}
                     onPress={() => {
                         dispatch(logoutRedux())
                         router.replace("/")

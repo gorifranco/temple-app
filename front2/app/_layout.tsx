@@ -88,7 +88,7 @@ export default function RootLayout() {
           contentStyle: {backgroundColor: themeStyles.colors.background},
         }}
       >
-        {user && user.tipusUsuari == "Administrador" && <Stack.Screen name="(admin)" options={{ headerShown: false, contentStyle: {backgroundColor: themeStyles.colors.background}, }} />}
+        {user && user.tipusUsuari == "Administrador" && <Stack.Screen name="(admin)" options={{ headerShown: false, }} />}
         <Stack.Screen name="(auth)" options={{ headerShown: false}} />
         {user && user.tipusUsuari == "Basic" && <Stack.Screen name="(basic)" options={{ headerShown: false, contentStyle: {backgroundColor: themeStyles.colors.background}, }} />}
         {user && user.tipusUsuari == "Entrenador" && <Stack.Screen name="(entrenador)" options={{ headerShown: false, contentStyle: {backgroundColor: themeStyles.colors.background},}} />}

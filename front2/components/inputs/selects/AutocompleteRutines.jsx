@@ -44,13 +44,13 @@ function AutocompleteRutines(props) {
             onSelectItem={(item) => handleSubmit(item?.id)}
             dataSet={dataSet}
             textInputProps={{
-                style: { color: appTheme.colors.surface },
+                style: { color: appTheme.colors.background },
             }}
             suggestionsListMaxHeight={Dimensions.get('window').height * 0.3}
             inputContainerStyle={{ backgroundColor: appTheme.colors.surface, paddingVertical: 5, marginVertical: 0 }}
             renderItem={(item, text) => (
                 <View style={{ backgroundColor: appTheme.colors.surface }}>
-                    <Text key={item.id} style={{ fontSize: 15, alignSelf: 'center', padding: 15, color: appTheme.colors.backgroundº }}>
+                    <Text key={item.id} style={{ fontSize: 15, alignSelf: 'center', padding: 15, color: appTheme.colors.background }}>
                         {item.title}
                     </Text>
                 </ View>

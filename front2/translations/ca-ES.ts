@@ -80,7 +80,8 @@ export const textsCA:texts = {
   SendInstructions: "Enviar instruccions",
   TrainingOfTheDay: "Entrenament del dia",
   WithoutRoutines: "Sense rutines",
-  Reps: "Reps"
+  Reps: "Reps",
+  Exercise: "Exercici",
 
 };
 

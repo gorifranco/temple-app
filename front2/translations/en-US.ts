@@ -80,7 +80,8 @@ export const textsEN: texts = {
   SendInstructions: "Send instructions",
   TrainingOfTheDay: "Training of the day",
   WithoutRoutines: "Without routines",
-  Reps: "Repes"
+  Reps: "Repes",
+  Exercise: "Exercise",
 };
 
 export const calendarLocaleenUS = {

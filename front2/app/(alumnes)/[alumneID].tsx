@@ -101,9 +101,13 @@ export default function AlumneScreen() {
             setErrors({ ...errors, Dia: texts.SelectDay });
             return;
         }
-        const horaUTC = new Date(hora.getTime() - hora.getTimezoneOffset() * 60000);
-        console.log(`hora: ${horaUTC.toISOString()}, date: ${new Date(horaUTC.toISOString())}`)
-        dispatch(createReserva({ usuariID: alumne!.id, hora: horaUTC.toISOString() }));
+        const horaReservada = new Date()
+        horaReservada.setHours(hora.getHours() - hora.getTimezoneOffset()/60, hora.getMinutes(), 0, 0);
+        horaReservada.setDate(selectedDay.day)
+        horaReservada.setMonth(selectedDay.month - 1)
+        horaReservada.setFullYear(selectedDay.year)
+
+        dispatch(createReserva({ usuariID: alumne!.id, hora: horaReservada.toISOString() }));
     }
 
     function handleExpulsarUsuari() {
@@ -160,7 +164,8 @@ export default function AlumneScreen() {
                         {/* Reservation of the selected day */}
                         {reservaAvui && (
                             <View style={[themeStyles.box, { marginBottom: 20 }]}>
-                                <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 20 }]}>{texts.TrainingOfTheDay} {selectedDay.day}</Text>
+                                <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginVertical: 20 }]}>{texts.TrainingOfTheDay} {selectedDay.day}</Text>
+                                <Entreno alumneID={alumne!.id} hora={reservaAvui.hora} key={reservaAvui.id} />
                             </View>
                         )}
 

@@ -103,6 +103,8 @@ export type texts = {
   SendInstructions: string;
   TrainingOfTheDay: string;
   Reps: string
+  Exercise: string,
+  
 };
 
 const supportedLangs = ["es-ES", "en-US", "ca-ES"];

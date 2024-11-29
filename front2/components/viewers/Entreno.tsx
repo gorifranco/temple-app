@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { View, Text, Pressable } from 'react-native'
 import BarraDies from '../BarraDies'
 import { ResultatsExercici } from '@/types/apiTypes'
-import { useThemeStyles } from '@/themes/theme'
+import { useAppTheme, useThemeStyles } from '@/themes/theme'
 import TextInput from '@/components/inputs/TextInput';
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks'
 import { selectExercicis } from '@/store/exercicisSlice'
@@ -22,6 +22,7 @@ export default function Entreno(props: propsType) {
     const { alumneID, hora } = props
     const exercicis = useAppSelector(selectExercicis);
     const themeStyles = useThemeStyles()
+    const appTheme = useAppTheme()
     const dispatch = useAppDispatch();
     const alumne = useAppSelector(state => selectAlumneByID(state, alumneID));
     const rutina = useAppSelector(state => alumne?.rutinaActual ? selectRutinaById(state, alumne.rutinaActual) : null);
@@ -81,7 +82,7 @@ export default function Entreno(props: propsType) {
                                     <View style={{ display: "flex", flexDirection: "row", gap: 25, margin: "auto", marginTop: 6 }}>
                                         <TextInput
                                             label={<Text style={{ fontSize: 12 }}>{texts.Series}</Text>}
-                                            style={{ width: 65 }}
+                                            style={{ width: 65, backgroundColor: appTheme.colors.background2, borderRadius: 50, padding:'offset', textAlign: 'center' }}
                                             inputMode="numeric"
                                             value={resultat?.series?.toString() || e.numSeries.toString()}
                                             onChangeText={(text: string) => {
@@ -96,7 +97,7 @@ export default function Entreno(props: propsType) {
                                         />
                                         <TextInput
                                             label={<Text style={{ fontSize: 12 }}>{texts.Reps}</Text>}
-                                            style={{ width: 65 }}
+                                            style={{ width: 65, backgroundColor: appTheme.colors.background2, borderRadius: 50, padding:'offset', textAlign: 'center' }}
                                             inputMode="numeric"
                                             value={resultat?.repeticions?.toString() || e.numRepes.toString()}
                                             onChangeText={(text: string) => {
@@ -113,7 +114,7 @@ export default function Entreno(props: propsType) {
                                             }} />
                                         <TextInput
                                             label={<Text style={{ fontSize: 12 }}>{texts.Weight}</Text>}
-                                            style={{ width: 65 }}
+                                            style={{ width: 65, backgroundColor: appTheme.colors.background2, borderRadius: 50, padding:'offset', textAlign: 'center' }}
                                             inputMode="numeric"
                                             value={resultat?.pes?.toString() || e.percentatgeRM.toString() + "%"}
                                             onChangeText={(text: string) => {
@@ -136,7 +137,7 @@ export default function Entreno(props: propsType) {
                         <Pressable
                             style={[themeStyles.button1, { marginBottom: 15, marginTop: 30 }]}
                         >
-                            <Text>{texts.Save}</Text>
+                            <Text style={themeStyles.button1Text}>{texts.Save}</Text>
                         </Pressable>
                     </View>
 

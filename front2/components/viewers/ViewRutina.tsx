@@ -46,13 +46,13 @@ export default function ViewRutina(props: propsType) {
         dispatch(deleteRutina({ id: rutina!.id }))
     }
 
-    return rutina &&  (
+    return rutina && (
         <View key={rutina.id} style={themeStyles.mainContainer1}>
             <View style={{ display: "flex", flexDirection: "row", alignItems: "center", justifyContent: "space-between", position: "relative" }}>
                 <Text style={themeStyles.text}>{rutina.nom}</Text>
                 <FletxaDesplegar
                     amunt={desplegat}
-                    containerStyle={{ position: "absolute", right: 0, top:   0 }}
+                    containerStyle={{ position: "absolute", right: 0, top: 0 }}
                     size={24}
                     onPress={() => setDesplegat(!desplegat)} />
             </View>
@@ -65,7 +65,7 @@ export default function ViewRutina(props: propsType) {
                         currentDia={dia} />
 
                     <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginTop: 10, width: "95%" }}>
-                        <Text style={[themeStyles.text, { width: "50%", fontWeight: "bold" }]}>Exercici</Text>
+                        <Text style={[themeStyles.text, { width: "50%", fontWeight: "bold" }]}>{texts.Exercise}</Text>
                         <Text style={[themeStyles.text, { fontWeight: "bold" }]}>{texts.Reps}</Text>
                         <Text style={[themeStyles.text, { fontWeight: "bold" }]}>{texts.Series}</Text>
                         <Text style={[themeStyles.text, { fontWeight: "bold" }]}>% RM</Text>
@@ -84,27 +84,31 @@ export default function ViewRutina(props: propsType) {
                     })}
                     <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between", marginTop: 10, width: "90%", margin: "auto" }}>
                         <Pressable
-                            style={[themeStyles.buttonDanger, { width: "40%" }]}
+                            style={[themeStyles.buttonDanger, versio == 0 ? { width: "40%" } : { width: "80%", marginHorizontal: "auto" }]}
                             onPress={() => {
                                 setModalVisible(true)
                             }}>
                             <Text style={themeStyles.button1Text}>{versio == 0 ? texts.Delete : texts.Finish}</Text>
                         </Pressable>
-                        <Pressable
-                            style={[themeStyles.button1, { width: "40%" }]}
-                            onPress={() => {
-                                if (versio == 0) {
-                                    router.push({
-                                        pathname: '/crearRutina/[RutinaID]',
-                                        params: { RutinaID: rutina.id },
-                                      })
-                                }
-                                else {
-                                    canviarRutina()
-                                }
-                            }}>
-                            <Text style={themeStyles.button1Text}>{versio == 0 ? texts.Edit : texts.Update}</Text>
-                        </Pressable>
+
+                        {versio == 0 &&
+                            <Pressable
+                                style={[themeStyles.button1, { width: "40%" }]}
+                                onPress={() => {
+                                    if (versio == 0) {
+                                        router.push({
+                                            pathname: '/crearRutina/[RutinaID]',
+                                            params: { RutinaID: rutina.id },
+                                        })
+                                    }
+                                    else {
+                                        canviarRutina()
+                                    }
+                                }}>
+                                <Text style={themeStyles.button1Text}>{texts.Edit}</Text>
+                            </Pressable>
+                        }
+
                     </View>
                 </View>
             )}

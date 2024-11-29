@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Redirect } from 'expo-router';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
@@ -8,6 +8,7 @@ import StatsScreen from "../(stats)/index";
 import { useAppTheme } from '@/themes/theme';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store';
+import { Keyboard } from 'react-native';
 
 const Tabs = createMaterialTopTabNavigator();
 
@@ -18,7 +19,7 @@ export default function EntrenadorLayout({ children }: { children: React.ReactNo
   if(!auth.user){
     return <Redirect href="/(auth)" />
   }
-  
+
     return (
       <Tabs.Navigator
         screenOptions={{
