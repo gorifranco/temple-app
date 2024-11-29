@@ -64,9 +64,6 @@ export default function Index() {
         };
     }, [monthMarks, selectedDay]);
 
-    console.log(reservesAvui)
-    console.log(selectedDay)
-
     // dispatch(getConfig())
     // dispatch(getRutinesEntrenador())
     // dispatch(getExercicis())
@@ -82,8 +79,8 @@ export default function Index() {
         if (exercicisStatus == "idle") dispatch(getExercicis())
         if (configStatus == "idle") dispatch(getConfig())
         if (alumnesStatus[actions.index] == status.idle) dispatch(getAlumnes())
-        if (reservesStatus == "idle") dispatch(getReserves())
-        reservesStatus == "failed" && Toast.show({
+        if (reservesStatus[actions.index] == status.idle) dispatch(getReserves())
+        reservesStatus[actions.index] == status.failed && Toast.show({
             type: 'error',
             text1: texts.ErrorFetchingReserves,
             position: 'top',

@@ -108,4 +108,7 @@ export enum actions {
   delete = "delete",
   assign = "assign",
   acabar = "acabar",
+  createAsStudent = "createAsStudent",
+  getPerMonth = "getPerMonth",
+  finish = "finish"
 }

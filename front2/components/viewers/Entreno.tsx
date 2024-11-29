@@ -11,6 +11,7 @@ import { assignarRutina, selectAlumneByID } from '@/store/alumnesSlice'
 import { useText } from '@/hooks/useText'
 import FletxaDesplegar from '../icons/FletxaDesplegar'
 import AutocompleteRutines from '../inputs/selects/AutocompleteRutines'
+import { finishTraining } from '@/store/reservesSlice'
 
 interface propsType {
     alumneID: number,
@@ -40,6 +41,10 @@ export default function Entreno(props: propsType) {
 
     function handleAssignarRutina(rutinaId: number) {
         dispatch(assignarRutina({ rutinaID: rutinaId, alumneID: alumneID }));
+    }
+
+    function handleFinishTraining() {
+        dispatch(finishTraining({ alumneID: alumneID }));
     }
 
     function buildResultats() {
@@ -136,6 +141,7 @@ export default function Entreno(props: propsType) {
 
                         <Pressable
                             style={[themeStyles.button1, { marginBottom: 15, marginTop: 30 }]}
+                            onPress={() => handleFinishTraining()}
                         >
                             <Text style={themeStyles.button1Text}>{texts.FinishTraining}</Text>
                         </Pressable>
