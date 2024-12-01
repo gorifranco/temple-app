@@ -92,7 +92,9 @@ export interface ResultatsExercici {
   pes: number;
 }
 
-export interface RMDetail {
+export interface RmType {
+  exerciciID: number;
+  usuariID: number;
   pes: number;
 }
 
@@ -110,5 +112,6 @@ export enum actions {
   acabar = "acabar",
   createAsStudent = "createAsStudent",
   getPerMonth = "getPerMonth",
-  finish = "finish"
+  finish = "finish",
+  update = "update",
 }

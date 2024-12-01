@@ -7,7 +7,9 @@ import (
 type Rms struct {
 	gorm.Model
 	UsuariID   uint `gorm:"primaryKey"`
+	Usuari     Usuari
 	ExerciciID uint `gorm:"primaryKey"`
+	Exercici   Exercici
 	Pes        uint `gorm:"not null"`
 }
 

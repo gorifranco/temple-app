@@ -54,7 +54,7 @@ func (h *Handler) RmsByUser(c *gin.Context) {
 // @Failure 404 {object} models.ErrorResponse "Not found"
 // @Failure 500 {object} models.ErrorResponse "Internal server error"
 // @Router /api/rms/rmsEntrenador [get]
-func (h *Handler) RmsEntrenador(c *gin.Context) {
+func (h *Handler) GetRmsEntrenador(c *gin.Context) {
 	var rms []models.RmsResponse
 
 	if err := h.DB.Table("rms").Select("id, usuari_id, exercici_id, pes").Where("usuari_id = ?", c.MustGet("user").(*models.Usuari).ID).Scan(&rms).Error; err != nil {

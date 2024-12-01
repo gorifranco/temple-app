@@ -32,7 +32,7 @@ func InitializeDB() {
 		err = db.AutoMigrate(
 			&models.Usuari{}, &models.TipusUsuari{}, &models.Sala{}, &models.UsuarisSala{}, &models.Reserva{}, &models.SolicitudUnioSala{},
 			&models.Exercici{}, &models.Rutina{}, &models.ExerciciRutina{}, &models.SolicitudUnioEntrenador{}, &models.UsuariResultatExercici{},
-			&models.UsuariRutina{}, &models.HorarisEntrenador{}, &models.ConfiguracioEntrenador{},
+			&models.UsuariRutina{}, &models.HorarisEntrenador{}, &models.ConfiguracioEntrenador{},&models.Rms{},
 		)
 
 		if err != nil {
