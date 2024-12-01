@@ -55,9 +55,14 @@ export default function Index() {
     }, [selectedMonth]);
 
     const markedDates = useMemo(() => {
+        let selectedDayString = selectedDay.dateString;
+        if (selectedDay.dateString.length != 10) {
+            selectedDayString = selectedDay.dateString.substring(0, 8) + "0" + selectedDay.dateString.substring(8);
+        }
+
         return {
             ...monthMarks,
-            [selectedDay.dateString]: {
+            [selectedDayString]: {
                 selected: true,
                 selectedColor: appTheme.colors.primary,
             },
@@ -69,7 +74,6 @@ export default function Index() {
     // dispatch(getExercicis())
     // dispatch(getReserves())
     // dispatch(getAlumnes())
-
 
     useEffect(() => { dispatch(getReservesPerMes({ mes: selectedMonth.month, year: selectedMonth.year })) }, [selectedMonth]);
 
