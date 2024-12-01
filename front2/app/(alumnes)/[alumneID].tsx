@@ -78,15 +78,19 @@ export default function AlumneScreen() {
     }, [selectedMonth]);
 
     const markedDates = useMemo(() => {
+        let selectedDayString = selectedDay.dateString;
+        if (selectedDay.dateString.length != 10) {
+            selectedDayString = selectedDay.dateString.substring(0, 8) + "0" + selectedDay.dateString.substring(8);
+        }
+
         return {
             ...monthMarks,
-            [selectedDay.dateString]: {
+            [selectedDayString]: {
                 selected: true,
                 selectedColor: appTheme.colors.primary,
             },
         };
     }, [monthMarks, selectedDay]);
-
 
     function handleDayPress(day: DateData) {
         setSelectedDay(day);
