@@ -82,7 +82,7 @@ export default function Entreno(props: propsType) {
                         <BarraDies editable={false} dies={rutina!.diesDuracio} canviaDia={(d: number) => setDiaSeleccionat(d)} currentDia={diaSeleccionat} />
                         {exercicisArray.map(e => {
                             const resultat = resultats.find(f => f.exerciciRutinaID === e.id);
-                            const rm = rms.find(f => f.exerciciID === e.id && f.usuariID === alumneID);
+                            const rm = rms.find(f => f.exerciciID === e.exerciciID && f.usuariID === alumneID);
 
                             return e.diaRutina === diaSeleccionat && setmanaSeleccionada === e.cicle && (
                                 <View style={{ marginTop: 15 }} key={e.exerciciID}>
@@ -125,8 +125,7 @@ export default function Entreno(props: propsType) {
                                             style={{ width: 65, backgroundColor: appTheme.colors.background2, borderRadius: 50, padding: 'offset', textAlign: 'center' }}
                                             inputMode="numeric"
                                             value={
-                                                resultat?.pes?.toString() ||
-                                                (rm ? (rm.pes * e.percentatgeRM).toFixed(2) : e.percentatgeRM.toString() + "%")
+                                                (rm ? (rm.pes * e.percentatgeRM / 100).toFixed(0) : e.percentatgeRM.toString() + "%")
                                             } onChangeText={(text: string) => {
                                                 const updatedResultats = resultats.map(f => {
                                                     if (f.exerciciRutinaID === e.id) {
