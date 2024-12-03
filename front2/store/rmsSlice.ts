@@ -50,11 +50,11 @@ export const getRmsEntrenador = createAsyncThunk<
 
 export const updateRm = createAsyncThunk<
   RmType, // Expected result type
-  { data: RmType }, // Parameters type
+  { usuariID: number; exerciciID: number; pes: number }, // Parameters type
   { state: RootState }
 >(
   "rms/updateRm",
-  async ({data}, { getState, rejectWithValue }) => {
+  async ({ usuariID, exerciciID, pes }, { getState, rejectWithValue }) => {
     const state = getState();
     const token = state.auth.user?.token;
     const response = await fetch(
@@ -65,7 +65,11 @@ export const updateRm = createAsyncThunk<
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          usuariID,
+          exerciciID,
+          pes,
+        }),
       }
     );
     const r = await response.json();
@@ -130,4 +134,5 @@ export const selectAllRms = (state: RootState) => state.rms.rms;
 export const selectRmsStatus = (state: RootState) => state.rms.actionsStatus;
 export const selectRmsError = (state: RootState) => state.rms.errors;
 
+export const { deleteRmsSlice } = rmsSlice.actions;
 export default rmsSlice.reducer;

@@ -76,6 +76,7 @@ export function useThemeStyles() {
     alumneContainer: ViewStyle;
     //calendarTheme: ViewStyle;
     modalConfirmContent: ViewStyle;
+    subtitle: TextStyle;
   };
   
 
@@ -110,6 +111,12 @@ export function useThemeStyles() {
       marginBottom: 20,
       color: theme.colors.text,
       textAlign: 'center',
+    },
+    subtitle: {
+      fontSize: 15,
+      color: theme.colors.primary,
+      textAlign: 'center',
+      alignSelf: 'center',
     },
     text: {
       fontSize: 15,

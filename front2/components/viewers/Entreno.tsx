@@ -12,6 +12,7 @@ import { useText } from '@/hooks/useText'
 import FletxaDesplegar from '../icons/FletxaDesplegar'
 import AutocompleteRutines from '../inputs/selects/AutocompleteRutines'
 import { finishTraining } from '@/store/reservesSlice'
+import { selectAllRms } from '@/store/rmsSlice'
 
 interface propsType {
     alumneID: number,
@@ -26,6 +27,7 @@ export default function Entreno(props: propsType) {
     const appTheme = useAppTheme()
     const dispatch = useAppDispatch();
     const alumne = useAppSelector(state => selectAlumneByID(state, alumneID));
+    const rms = useAppSelector(selectAllRms);
     const rutina = useAppSelector(state => alumne?.rutinaActual ? selectRutinaById(state, alumne.rutinaActual) : null);
     const diaActual = alumne ? alumne.resultatsRutinaActual.length % (rutina?.diesDuracio || 1) : 0;
     const setmanaActual = alumne ? Math.floor(alumne.resultatsRutinaActual.length / (rutina?.diesDuracio || 1)) + 1 : 1;
@@ -80,6 +82,7 @@ export default function Entreno(props: propsType) {
                         <BarraDies editable={false} dies={rutina!.diesDuracio} canviaDia={(d: number) => setDiaSeleccionat(d)} currentDia={diaSeleccionat} />
                         {exercicisArray.map(e => {
                             const resultat = resultats.find(f => f.exerciciRutinaID === e.id);
+                            const rm = rms.find(f => f.exerciciID === e.id && f.usuariID === alumneID);
 
                             return e.diaRutina === diaSeleccionat && setmanaSeleccionada === e.cicle && (
                                 <View style={{ marginTop: 15 }} key={e.exerciciID}>
@@ -87,7 +90,7 @@ export default function Entreno(props: propsType) {
                                     <View style={{ display: "flex", flexDirection: "row", gap: 25, margin: "auto", marginTop: 6 }}>
                                         <TextInput
                                             label={<Text style={{ fontSize: 12 }}>{texts.Series}</Text>}
-                                            style={{ width: 65, backgroundColor: appTheme.colors.background2, borderRadius: 50, padding:'offset', textAlign: 'center' }}
+                                            style={{ width: 65, backgroundColor: appTheme.colors.background2, borderRadius: 50, padding: 'offset', textAlign: 'center' }}
                                             inputMode="numeric"
                                             value={resultat?.series?.toString() || e.numSeries.toString()}
                                             onChangeText={(text: string) => {
@@ -102,7 +105,7 @@ export default function Entreno(props: propsType) {
                                         />
                                         <TextInput
                                             label={<Text style={{ fontSize: 12 }}>{texts.Reps}</Text>}
-                                            style={{ width: 65, backgroundColor: appTheme.colors.background2, borderRadius: 50, padding:'offset', textAlign: 'center' }}
+                                            style={{ width: 65, backgroundColor: appTheme.colors.background2, borderRadius: 50, padding: 'offset', textAlign: 'center' }}
                                             inputMode="numeric"
                                             value={resultat?.repeticions?.toString() || e.numRepes.toString()}
                                             onChangeText={(text: string) => {
@@ -119,10 +122,12 @@ export default function Entreno(props: propsType) {
                                             }} />
                                         <TextInput
                                             label={<Text style={{ fontSize: 12 }}>{texts.Weight}</Text>}
-                                            style={{ width: 65, backgroundColor: appTheme.colors.background2, borderRadius: 50, padding:'offset', textAlign: 'center' }}
+                                            style={{ width: 65, backgroundColor: appTheme.colors.background2, borderRadius: 50, padding: 'offset', textAlign: 'center' }}
                                             inputMode="numeric"
-                                            value={resultat?.pes?.toString() || e.percentatgeRM.toString() + "%"}
-                                            onChangeText={(text: string) => {
+                                            value={
+                                                resultat?.pes?.toString() ||
+                                                (rm ? (rm.pes * e.percentatgeRM).toFixed(2) : e.percentatgeRM.toString() + "%")
+                                            } onChangeText={(text: string) => {
                                                 const updatedResultats = resultats.map(f => {
                                                     if (f.exerciciRutinaID === e.id) {
                                                         return {
@@ -151,7 +156,7 @@ export default function Entreno(props: propsType) {
 
                 {desplegat && !rutina && (
                     <View style={{ width: "97%", margin: "auto" }}>
-                        <Text style={[themeStyles.text, {marginVertical: 5}]}>{texts.AssignRoutine}</Text> 
+                        <Text style={[themeStyles.text, { marginVertical: 5 }]}>{texts.AssignRoutine}</Text>
                         <AutocompleteRutines onSubmit={(rutinaId: number) => handleAssignarRutina(rutinaId)} />
                     </View>
                 )}

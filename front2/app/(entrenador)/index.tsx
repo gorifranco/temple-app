@@ -17,6 +17,7 @@ import Entreno from '@/components/viewers/Entreno';
 import { MarkedDates } from 'react-native-calendars/src/types';
 import { useText } from '@/hooks/useText';
 import Toast from 'react-native-toast-message';
+import { deleteRmsSlice, getRmsEntrenador, selectAllRms, selectRmsStatus } from '@/store/rmsSlice';
 
 
 export default function Index() {
@@ -31,6 +32,7 @@ export default function Index() {
     const configStatus = useAppSelector(selectConfigStatus);
     const alumnes = useAppSelector(selectAllAlumnes);
     const rutines = useAppSelector(selectAllRutines);
+    const rmsStatus = useAppSelector(selectRmsStatus);
     const today = new Date()
     const [selectedDay, setSelectedDay] = useState<DateData>({
         year: today.getFullYear(), month: today.getMonth() + 1, day: today.getDate(),
@@ -75,6 +77,10 @@ export default function Index() {
     // dispatch(getReserves())
     // dispatch(getAlumnes())
 
+    // useEffect(() => {
+    //     dispatch(getRmsEntrenador())
+    // }, [])
+
     useEffect(() => { dispatch(getReservesPerMes({ mes: selectedMonth.month, year: selectedMonth.year })) }, [selectedMonth]);
 
     useEffect(() => {
@@ -84,6 +90,7 @@ export default function Index() {
         if (configStatus == "idle") dispatch(getConfig())
         if (alumnesStatus[actions.index] == status.idle) dispatch(getAlumnes())
         if (reservesStatus[actions.index] == status.idle) dispatch(getReserves())
+        if (rmsStatus[actions.index] == status.idle) dispatch(getRmsEntrenador())
         reservesStatus[actions.index] == status.failed && Toast.show({
             type: 'error',
             text1: texts.ErrorFetchingReserves,
@@ -135,13 +142,13 @@ export default function Index() {
                     {/* Alumnes */}
                     <Pressable style={[themeStyles.box, { marginBottom: 20 }]} onPress={() => { router.push("/(alumnes)/alumnes") }}>
                         {alumnesStatus[actions.index] == status.succeeded && <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 20 }]}>{texts.Students} ({alumnes.length}/{process.env.EXPO_PUBLIC_MAX_ALUMNES})</Text>}
-                        {alumnesStatus[actions.index] == status.succeeded && <Text style={[themeStyles.text, { fontSize: 15, textAlign: "center", paddingTop: 13, color: appTheme.colors.primary, marginBottom: 20 }]}>{texts.SeeEvery}</Text>}
+                        {alumnesStatus[actions.index] == status.succeeded && <Text style={[themeStyles.subtitle, { paddingTop: 13, marginBottom: 20 }]}>{texts.SeeEvery}</Text>}
                     </Pressable>
 
                     {/* Rutines */}
                     <Pressable style={[themeStyles.box]} onPress={() => { router.push("/(rutines)/rutines") }}>
                         <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 20 }]}>{texts.Rutines} ({rutines.length}/{process.env.EXPO_PUBLIC_MAX_RUTINES})</Text>
-                        <Text style={[themeStyles.text, { fontSize: 15, textAlign: "center", paddingTop: 13, color: appTheme.colors.primary, marginBottom: 20 }]}>{texts.SeeEveryFem}</Text>
+                        <Text style={[themeStyles.subtitle, { paddingTop: 13, marginBottom: 20 }]}>{texts.SeeEveryFem}</Text>
                     </Pressable>
                 </View>
             </ScrollView>

@@ -19,6 +19,7 @@ export default function TextInput({ ...props }) {
         multiline={props.multiline}
         numberOfLines={props.numberOfLines}
         editable={props.editable}
+        onPress={props.onPress}
       />
       {props.errorText ? <Text style={themeStyles.textInputError}>{props.errorText}</Text> : null}
     </View>

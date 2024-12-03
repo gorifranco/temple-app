@@ -20,7 +20,7 @@ import (
 func (h *Handler) RmsByUser(c *gin.Context) {
 	var rms []models.RmsResponse
 	var user models.Usuari
-    
+
 	if err := h.DB.Where("id = ?", c.Param("id")).Find(&user).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
 		return
@@ -34,7 +34,7 @@ func (h *Handler) RmsByUser(c *gin.Context) {
 	if err := h.DB.Table("rms").Select("id, usuari_id, exercici_id, pes").Where("usuari_id = ?", user.ID).Scan(&rms).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: err.Error()})
 		return
-	} 
+	}
 
 	if rms == nil {
 		rms = []models.RmsResponse{}
@@ -56,8 +56,12 @@ func (h *Handler) RmsByUser(c *gin.Context) {
 // @Router /api/rms/rmsEntrenador [get]
 func (h *Handler) GetRmsEntrenador(c *gin.Context) {
 	var rms []models.RmsResponse
+	query := `select rms.id as id, rms.usuari_id as usuari_id, rms.exercici_id as exercici_id, rms.pes as pes
+	 from rms 
+	 inner join usuaris u on u.id = rms.usuari_id 
+	 where u.entrenador_id = ? and rms.deleted_at is null`
 
-	if err := h.DB.Table("rms").Select("id, usuari_id, exercici_id, pes").Where("usuari_id = ?", c.MustGet("user").(*models.Usuari).ID).Scan(&rms).Error; err != nil {
+	if err := h.DB.Raw(query, c.MustGet("user").(*models.Usuari).ID).Scan(&rms).Error; err != nil {
 		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: err.Error()})
 		return
 	}
@@ -90,13 +94,17 @@ func (h *Handler) UpdateRm(c *gin.Context) {
 		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
 	}
-
-	if err := h.DB.Where("id = ?", input.UsuariID).Find(&user).Error; err != nil {
-		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
+	if(input.ExerciciID == 0 || input.UsuariID == 0){
+		c.AbortWithStatusJSON(http.StatusBadRequest, models.ErrorResponse{Error: "ExerciciID o UsuariID no poden ser 0"})
 		return
 	}
 
-	if user.ID != c.MustGet("user").(*models.Usuari).ID || *user.EntrenadorID != c.MustGet("user").(*models.Usuari).ID {
+	if err := h.DB.Where("id = ?", input.UsuariID).Find(&user).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: err.Error()})
+		return
+	}
+
+	if user.ID != c.MustGet("user").(*models.Usuari).ID && (user.EntrenadorID == nil || *user.EntrenadorID != c.MustGet("user").(*models.Usuari).ID) {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Unauthorized"})
 		return
 	}
@@ -106,12 +114,16 @@ func (h *Handler) UpdateRm(c *gin.Context) {
 
 	if err := h.DB.Where("exercici_id = ? and usuari_id = ?", input.ExerciciID, user.ID).First(&oldRm).Error; err != nil {
 		h.DB.Create(&newRm)
-		c.JSON(http.StatusOK, models.SuccessResponse{Data: newRm})
+	} else {
+		h.DB.Delete(&oldRm)
+		h.DB.Create(&newRm)
+	}
+
+	var response models.RmsResponse
+	if err := h.DB.Table("rms").Where("usuari_id = ? and exercici_id = ? and deleted_at is null", user.ID, input.ExerciciID).Select("id, usuari_id, exercici_id, pes").Scan(&response).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to retrieve rms"})
 		return
 	}
 
-	h.DB.Delete(&oldRm)
-	h.DB.Create(&newRm)
-
-	c.JSON(http.StatusOK, models.SuccessResponse{Data: newRm})
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: response})
 }
