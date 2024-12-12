@@ -3,6 +3,7 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from ".";
 import { actions, ReservaType } from "@/types/apiTypes";
 import { status } from "@/types/apiTypes";
+import * as env_constants from '@/constants/env.config';
 
 interface StatsState {
   rms: RmType[];
@@ -32,7 +33,7 @@ export const getRmsEntrenador = createAsyncThunk<
   const token = state.auth.user?.token;
 
   const response = await fetch(
-    process.env.EXPO_PUBLIC_API_URL + "/entrenador/rms",
+    env_constants.EXPO_PUBLIC_API_URL + "/rms",
     {
       method: "GET",
       headers: {
@@ -58,7 +59,7 @@ export const updateRm = createAsyncThunk<
     const state = getState();
     const token = state.auth.user?.token;
     const response = await fetch(
-      `${process.env.EXPO_PUBLIC_API_URL}/rms`,
+      `${env_constants.EXPO_PUBLIC_API_URL}/rms`,
       {
         method: "PUT",
         headers: {

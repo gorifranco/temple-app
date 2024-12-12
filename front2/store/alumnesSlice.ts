@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/store/index";
 import { actions, status, AlumneType } from "@/types/apiTypes";
+import * as env_constants from '@/constants/env.config';
 
 interface AlumnesState {
   alumnes: AlumneType[];
@@ -37,7 +38,7 @@ export const getAlumnes = createAsyncThunk<
 
   try {
     const response = await fetch(
-      `${process.env.EXPO_PUBLIC_API_URL}/entrenador/alumnes`,
+      `${env_constants.EXPO_PUBLIC_API_URL}/entrenador/alumnes`,
       {
         method: "GET",
         headers: {
@@ -71,7 +72,7 @@ export const createAlumneFictici = createAsyncThunk<
     const token = state.auth.user?.token;
     try {
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/entrenador/usuarisFicticis`,
+        `${env_constants.EXPO_PUBLIC_API_URL}/entrenador/usuarisFicticis`,
         {
           method: "POST",
           headers: {
@@ -107,7 +108,7 @@ export const expulsarAlumne = createAsyncThunk<
     const token = state.auth.user?.token;
 
     const response = await fetch(
-      `${process.env.EXPO_PUBLIC_API_URL}/entrenador/alumnes/${id}`,
+      `${env_constants.EXPO_PUBLIC_API_URL}/entrenador/alumnes/${id}`,
       {
         method: "DELETE",
         headers: {
@@ -139,7 +140,7 @@ export const assignarRutina = createAsyncThunk<
     const token = state.auth.user?.token;
 
     const response = await fetch(
-      `${process.env.EXPO_PUBLIC_API_URL}/entrenador/assignarRutina`,
+      `${env_constants.EXPO_PUBLIC_API_URL}/entrenador/assignarRutina`,
       {
         method: "POST",
         headers: {
@@ -172,7 +173,7 @@ export const acabarRutina = createAsyncThunk<
     const token = state.auth.user?.token;
 
     const response = await fetch(
-      `${process.env.EXPO_PUBLIC_API_URL}/entrenador/acabarRutina`,
+      `${env_constants.EXPO_PUBLIC_API_URL}/entrenador/acabarRutina`,
       {
         method: "POST",
         headers: {
