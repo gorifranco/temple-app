@@ -52,13 +52,14 @@ export default function Entreno(props: propsType) {
     function buildResultats() {
         if (!rutina) return;
 
+
         const resultatsTmp: ResultatsExercici[] = rutina.exercicis
             .filter(e => e.diaRutina === diaActual) // Filtra los ejercicios del día actual
             .map(e => ({
                 exerciciRutinaID: e.id,
                 repeticions: e.numRepes,
                 series: e.numSeries,
-                pes: e.percentatgeRM,
+                pes: e.percentatgeRM * (rms.find(f => f.exerciciID === e.exerciciID && f.usuariID === alumneID)?.pes ?? 1),
             })); // Genera el array de resultados.
 
         setResultats(resultatsTmp);
@@ -92,11 +93,11 @@ export default function Entreno(props: propsType) {
                                             label={<Text style={{ fontSize: 12 }}>{texts.Series}</Text>}
                                             style={{ width: 65, backgroundColor: appTheme.colors.background2, borderRadius: 50, padding: 'offset', textAlign: 'center' }}
                                             inputMode="numeric"
-                                            value={resultat?.series?.toString() || e.numSeries.toString()}
+                                            value={resultat?.series?.toString() ?? e.numSeries.toString()}
                                             onChangeText={(text: string) => {
                                                 const updatedResultats = resultats.map(f => {
                                                     if (f.exerciciRutinaID === e.id) {
-                                                        return { ...f, series: Number(text.replace(/[^0-9]/g, '')) };
+                                                        return { ...f, series: Number(text) };
                                                     }
                                                     return f;
                                                 });
@@ -107,13 +108,13 @@ export default function Entreno(props: propsType) {
                                             label={<Text style={{ fontSize: 12 }}>{texts.Reps}</Text>}
                                             style={{ width: 65, backgroundColor: appTheme.colors.background2, borderRadius: 50, padding: 'offset', textAlign: 'center' }}
                                             inputMode="numeric"
-                                            value={resultat?.repeticions?.toString() || e.numRepes.toString()}
+                                            value={resultat?.repeticions?.toString() ?? e.numRepes.toString()}
                                             onChangeText={(text: string) => {
                                                 const updatedResultats = resultats.map(f => {
                                                     if (f.exerciciRutinaID === e.id) {
                                                         return {
                                                             ...f,
-                                                            repeticions: Number(text.replace(/[^0-9]/g, ''))
+                                                            repeticions: Number(text)
                                                         };
                                                     }
                                                     return f;
@@ -124,14 +125,13 @@ export default function Entreno(props: propsType) {
                                             label={<Text style={{ fontSize: 12 }}>{texts.Weight}</Text>}
                                             style={{ width: 65, backgroundColor: appTheme.colors.background2, borderRadius: 50, padding: 'offset', textAlign: 'center' }}
                                             inputMode="numeric"
-                                            value={
-                                                (rm ? (rm.pes * e.percentatgeRM / 100).toFixed(0) : e.percentatgeRM.toString() + "%")
-                                            } onChangeText={(text: string) => {
+                                            value={(resultat ? (resultat?.pes).toFixed(0) : e.percentatgeRM.toString() + "%")} 
+                                            onChangeText={(text: string) => {
                                                 const updatedResultats = resultats.map(f => {
                                                     if (f.exerciciRutinaID === e.id) {
                                                         return {
                                                             ...f,
-                                                            pes: Number(text.replace(/[^0-9]/g, ''))
+                                                            pes: Number(text)
                                                         };
                                                     }
                                                     return f;
