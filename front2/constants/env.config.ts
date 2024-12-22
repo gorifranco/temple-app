@@ -1,5 +1,0 @@
-export const {
-  EXPO_PUBLIC_API_URL,
-  EXPO_PUBLIC_MAX_ALUMNES,
-  EXPO_PUBLIC_MAX_RUTINES,
-} = process.env;

@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from ".";
 import { ConfigType, HorariType, ReducedConfigType } from "../types/apiTypes";
-import * as env_constants from '@/constants/env.config';
 
 interface ConfigState {
   duracioSessions: number;
@@ -31,7 +30,7 @@ export const getConfig = createAsyncThunk<
   const token = state.auth.user?.token;
 
   const response = await fetch(
-    env_constants.EXPO_PUBLIC_API_URL + "/configuracioEntrenador",
+    process.env.EXPO_PUBLIC_API_URL + "/configuracioEntrenador",
     {
       method: "GET",
       headers: {
@@ -59,7 +58,7 @@ export const guardarConfiguracio = createAsyncThunk<
     const token = state.auth.user?.token;
 
     const response = await fetch(
-      `${env_constants.EXPO_PUBLIC_API_URL}/entrenador/guardarConfiguracioEntrenador`,
+      `${process.env.EXPO_PUBLIC_API_URL}/entrenador/guardarConfiguracioEntrenador`,
       {
         method: "POST",
         headers: {
@@ -89,7 +88,7 @@ export const guardarHoraris = createAsyncThunk<
     const token = state.auth.user?.token;
 
     const response = await fetch(
-      `${env_constants.EXPO_PUBLIC_API_URL}/entrenador/guardarHorariEntrenador`,
+      `${process.env.EXPO_PUBLIC_API_URL}/entrenador/guardarHorariEntrenador`,
       {
         method: "POST",
         headers: {
