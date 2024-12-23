@@ -17,9 +17,11 @@ import { createReserva, selectReservaByDayAndUser, selectReservesByMesAndUser, s
 import { useText } from '@/hooks/useText';
 import { MarkedDates } from 'react-native-calendars/src/types';
 import Entreno from '@/components/viewers/Entreno';
+import { useLoading } from '@/hooks/LoadingContext';
 
 
 export default function AlumneScreen() {
+    const { showLoading, hideLoading } = useLoading();
     const texts = useText();
     const dispatch = useAppDispatch();
     const today = new Date()
@@ -61,10 +63,6 @@ export default function AlumneScreen() {
             position: 'top',
         });
     }
-
-
-    const reservesAlumne = useAppSelector(state => selectUpcomingReservesByAlumneID(state, Number(alumneID)));
-
 
     const monthMarks = useMemo(() => {
         return reservesMes.reduce((acc, reserva) => {
@@ -169,7 +167,7 @@ export default function AlumneScreen() {
                         {reservaAvui && (
                             <View style={[themeStyles.box, { marginBottom: 20 }]}>
                                 <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginVertical: 20 }]}>{texts.TrainingOfTheDay} {selectedDay.day}</Text>
-                                <Entreno alumneID={alumne!.id} hora={reservaAvui.hora} key={reservaAvui.id} />
+                                <Entreno alumneID={alumne!.id} hora={reservaAvui.hora.split("T")[1].split("+")[0]} key={reservaAvui.id} />
                             </View>
                         )}
 
@@ -192,10 +190,10 @@ export default function AlumneScreen() {
                         {/* Entrenos */}
                         <View style={[themeStyles.box, { marginBottom: 20 }]}>
                             <Text style={[themeStyles.titol1]}>{texts.IncomingTrainings}</Text>
-                            {reservesAlumne.length === 0 ? (
+                            {proximesReserves.length === 0 ? (
                                 <Text style={[themeStyles.text, { marginBottom: 20 }]}>{texts.WithoutReservations}</Text>
                             ) : (
-                                reservesAlumne.map((reserva) => (
+                                proximesReserves.map((reserva) => (
                                     <View key={reserva.id} style={{ marginBottom: 20 }}>
                                         <Text style={themeStyles.text}>{reserva.hora.split("T")[0] + " - " + reserva.hora.split("T")[1].split("+")[0].substring(0, 5)}</Text>
                                     </View>

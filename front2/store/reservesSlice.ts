@@ -272,13 +272,20 @@ export const selectReservesStatus = (state: RootState) => state.reserves.actions
 export const selectReservesError = (state: RootState) => state.reserves.errors;
 export const selectUpcomingReservesByAlumneID = createSelector(
   [selectAllReserves, (_, alumneID: number) => alumneID],
-  (reserves, alumneID) =>
-    reserves.filter(
-      (reserva) =>
+  (reserves, alumneID) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return reserves.filter((reserva) => {
+      const reservaDate = new Date(reserva.hora);
+      return (
         reserva.usuariID === alumneID &&
-        new Date(reserva.hora).getTime() >= Date.now()
-    )
+        (reservaDate.getTime() >= Date.now() || reservaDate >= today)
+      );
+    });
+  }
 );
+
 export const selectReservesByMesAndUser = createSelector(
   [
     selectAllReserves,
