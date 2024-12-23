@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { RootState } from ".";
-import * as env_constants from '@/constants/env.config';
 
 interface User {
   id: number;
@@ -28,7 +27,7 @@ export const loginRedux = createAsyncThunk<
   { state: RootState }
 >("login", async ({ email, password }, { rejectWithValue }) => {
   try {
-    const response = await fetch(`${env_constants.EXPO_PUBLIC_API_URL}/login`, {
+    const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

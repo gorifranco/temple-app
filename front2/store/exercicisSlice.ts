@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ExerciciType } from "../types/apiTypes";
 import { RootState } from ".";
-import * as env_constants from '@/constants/env.config';
 
 interface ExercicisState {
   exercicis: ExerciciType[];
@@ -24,7 +23,7 @@ export const getExercicis = createAsyncThunk<
   const state = getState();
   const token = state.auth.user?.token;
 
-    const response = await fetch(env_constants.EXPO_PUBLIC_API_URL + "/exercicis", {
+    const response = await fetch(process.env.EXPO_PUBLIC_API_URL + "/exercicis", {
       method: "GET",
       headers: {
         "Content-Type": "application/json",

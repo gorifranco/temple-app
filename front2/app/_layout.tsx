@@ -21,7 +21,7 @@ import { TranslationProvider } from '@/hooks/useText';
 
 
 SplashScreen.preventAutoHideAsync();
-process.loadEnvFile();
+
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,

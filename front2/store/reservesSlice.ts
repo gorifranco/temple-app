@@ -8,7 +8,6 @@ import { actions, ReservaType } from "@/types/apiTypes";
 import { RootState } from ".";
 import { DateData } from "react-native-calendars";
 import { status } from "@/types/apiTypes";
-import * as env_constants from '@/constants/env.config';
 
 interface ReservesState {
   reserves: ReservaType[];
@@ -44,7 +43,7 @@ export const getReserves = createAsyncThunk<
   const token = state.auth.user?.token;
 
   const response = await fetch(
-    env_constants.EXPO_PUBLIC_API_URL + "/entrenador/reserves",
+    process.env.EXPO_PUBLIC_API_URL + "/entrenador/reserves",
     {
       method: "GET",
       headers: {
@@ -72,7 +71,7 @@ export const createReservaAlumne = createAsyncThunk<
     const token = state.auth.user?.token;
 
     const response = await fetch(
-      env_constants.EXPO_PUBLIC_API_URL + "/reserves",
+      process.env.EXPO_PUBLIC_API_URL + "/reserves",
       {
         method: "POST",
         headers: {
@@ -102,7 +101,7 @@ export const createReserva = createAsyncThunk<
     const token = state.auth.user?.token;
 
     const response = await fetch(
-      env_constants.EXPO_PUBLIC_API_URL + "/reserves",
+      process.env.EXPO_PUBLIC_API_URL + "/reserves",
       {
         method: "POST",
         headers: {
@@ -130,7 +129,7 @@ export const getReservesPerMes = createAsyncThunk<
   const token = state.auth.user?.token;
 
   const response = await fetch(
-    env_constants.EXPO_PUBLIC_API_URL + "/entrenador/reserves/" + mes + "/" + year,
+    process.env.EXPO_PUBLIC_API_URL + "/entrenador/reserves/" + mes + "/" + year,
     {
       method: "GET",
       headers: {
@@ -158,7 +157,7 @@ export const finishTraining = createAsyncThunk<
     const token = state.auth.user?.token;
 
     const response = await fetch(
-      env_constants.EXPO_PUBLIC_API_URL + "/guardarResultats",
+      process.env.EXPO_PUBLIC_API_URL + "/entrenador/guardarExercicisRutina",
       {
         method: "POST",
         headers: {

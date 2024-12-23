@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../store";
 import { RutinaType } from "../types/apiTypes";
-import * as env_constants from '@/constants/env.config';
 
 interface RutinesState {
   rutines: RutinaType[];
@@ -25,7 +24,7 @@ export const getRutinesEntrenador = createAsyncThunk<
   const token = state.auth.user?.token;
 
   const response = await fetch(
-    env_constants.EXPO_PUBLIC_API_URL + "/rutines/rutinesEntrenador",
+    process.env.EXPO_PUBLIC_API_URL + "/rutines/rutinesEntrenador",
     {
       method: "GET",
       headers: {
@@ -50,7 +49,7 @@ export const deleteRutina = createAsyncThunk<
   const state = getState();
   const token = state.auth.user?.token;
 
-  const response = await fetch(`${env_constants.EXPO_PUBLIC_API_URL}/rutines/${id}`, {
+  const response = await fetch(`/rutines/${id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -72,7 +71,7 @@ export const createRutina = createAsyncThunk<
 >("rutines/createRutina", async ({ rutina }, { getState, rejectWithValue }) => {
   const state = getState();
   const token = state.auth.user?.token;
-  const response = await fetch(env_constants.EXPO_PUBLIC_API_URL + "/rutines", {
+  const response = await fetch(process.env.EXPO_PUBLIC_API_URL + "/rutines", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -96,7 +95,7 @@ export const updateRutina = createAsyncThunk<
   const state = getState();
   const token = state.auth.user?.token;
   const response = await fetch(
-    env_constants.EXPO_PUBLIC_API_URL + "/rutines/" + rutina.id,
+    process.env.EXPO_PUBLIC_API_URL + "/rutines/" + rutina.id,
     {
       method: "PUT",
       headers: {
