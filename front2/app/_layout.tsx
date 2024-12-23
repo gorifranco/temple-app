@@ -18,6 +18,8 @@ import * as Notifications from 'expo-notifications';
 import { DefaultTheme, NavigationContainer } from '@react-navigation/native';
 import { registerForPushNotificationsAsync } from '@/hooks/notifications';
 import { TranslationProvider } from '@/hooks/useText';
+import ModalLoading from '@/components/modals/ModalLoading';
+import { LoadingProvider } from '@/hooks/LoadingContext';
 
 
 SplashScreen.preventAutoHideAsync();
@@ -85,18 +87,18 @@ export default function RootLayout() {
           navigationBarHidden: true,
           statusBarBackgroundColor: themeStyles.colors.background,
           statusBarStyle: colorScheme == 'light' ? 'dark' : 'light', // Texto acorde al tema
-          contentStyle: {backgroundColor: themeStyles.colors.background},
+          contentStyle: { backgroundColor: themeStyles.colors.background },
         }}
       >
         {user && user.tipusUsuari == "Administrador" && <Stack.Screen name="(admin)" options={{ headerShown: false, }} />}
-        <Stack.Screen name="(auth)" options={{ headerShown: false}} />
-        {user && user.tipusUsuari == "Basic" && <Stack.Screen name="(basic)" options={{ headerShown: false, contentStyle: {backgroundColor: themeStyles.colors.background}, }} />}
-        {user && user.tipusUsuari == "Entrenador" && <Stack.Screen name="(entrenador)" options={{ headerShown: false, contentStyle: {backgroundColor: themeStyles.colors.background},}} />}
+        <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+        {user && user.tipusUsuari == "Basic" && <Stack.Screen name="(basic)" options={{ headerShown: false, contentStyle: { backgroundColor: themeStyles.colors.background }, }} />}
+        {user && user.tipusUsuari == "Entrenador" && <Stack.Screen name="(entrenador)" options={{ headerShown: false, contentStyle: { backgroundColor: themeStyles.colors.background }, }} />}
         <Stack.Screen name="(config)" options={{ headerShown: false }} />
-        {user && user.tipusUsuari == "Entrenador" && <Stack.Screen name="(rutines)" options={{ headerShown: false, contentStyle: {backgroundColor: themeStyles.colors.background}, }} />}
-        {user && user.tipusUsuari == "Entrenador" && <Stack.Screen name="(alumnes)" options={{ headerShown: false, contentStyle: {backgroundColor: themeStyles.colors.background},}} />}
+        {user && user.tipusUsuari == "Entrenador" && <Stack.Screen name="(rutines)" options={{ headerShown: false, contentStyle: { backgroundColor: themeStyles.colors.background }, }} />}
+        {user && user.tipusUsuari == "Entrenador" && <Stack.Screen name="(alumnes)" options={{ headerShown: false, contentStyle: { backgroundColor: themeStyles.colors.background }, }} />}
         <Stack.Screen name="+not-found" />
-        <Stack.Screen name="(stats)" options={{ headerShown: false, contentStyle: {backgroundColor: themeStyles.colors.background}, }} />
+        <Stack.Screen name="(stats)" options={{ headerShown: false, contentStyle: { backgroundColor: themeStyles.colors.background }, }} />
       </Stack>
     );
   };
@@ -132,13 +134,16 @@ export default function RootLayout() {
 
 
   return (
-    <NavigationContainer theme={{...DefaultTheme, colors: {...DefaultTheme.colors, background: themeStyles.colors.background}}}>
+    <NavigationContainer theme={{ ...DefaultTheme, colors: { ...DefaultTheme.colors, background: themeStyles.colors.background } }}>
       <GestureHandlerRootView style={{ flex: 1, backgroundColor: themeStyles.colors.background }}>
         <PaperProvider theme={themeStyles}>
           <TranslationProvider>
             <Provider store={store}>
               <PersistGate loading={null} persistor={persistor}>
-                <StackLayout />
+                <LoadingProvider>
+                  <ModalLoading />
+                  <StackLayout />
+                </LoadingProvider>
               </PersistGate>
               <Toast />
             </Provider>
