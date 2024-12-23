@@ -59,7 +59,7 @@ export default function Entreno(props: propsType) {
                 exerciciRutinaID: e.id,
                 repeticions: e.numRepes,
                 series: e.numSeries,
-                pes: e.percentatgeRM * (rms.find(f => f.exerciciID === e.exerciciID && f.usuariID === alumneID)?.pes ?? 1),
+                pes: e.percentatgeRM * (rms.find(f => f.exerciciID === e.exerciciID && f.usuariID === alumneID)?.pes ?? 1) / 100,
             })); // Genera el array de resultados.
 
         setResultats(resultatsTmp);
