@@ -111,7 +111,11 @@ export default function AlumneScreen() {
         horaReservada.setMonth(selectedDay.month - 1)
         horaReservada.setFullYear(selectedDay.year)
 
-        dispatch(createReserva({ usuariID: alumne!.id, hora: horaReservada.toISOString() }));
+        const time = `${selectedDay.year}-${selectedDay.month-1}-${selectedDay.day}T${hora.getHours()}:${hora.getMinutes()}:00.000Z`;
+
+        console.log(time)
+        console.log(horaReservada.toISOString())
+        //dispatch(createReserva({ usuariID: alumne!.id, hora: time }));
     }
 
     function handleExpulsarUsuari() {
