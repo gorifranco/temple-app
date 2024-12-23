@@ -36,7 +36,7 @@ export interface RutinaType {
 export interface AlumneType {
   id: number;
   nom: string;
-  resultatsRutinaActual: ResultatsExercici[];
+  resultatsRutinaActual: ResultatExercici[];
   rutinaActual: number|null;
   diaRutrinaActual: number;
 }
@@ -85,17 +85,19 @@ export interface HorariType {
   fins: string;
 }
 
-export interface ResultatsExercici {
-  exerciciRutinaID: number;
-  repeticions: number;
-  series: number;
-  pes: number;
-}
-
 export interface RmType {
   exerciciID: number;
   usuariID: number;
   pes: number;
+}
+
+export interface ResultatExercici {
+usuariRutinaID: number;
+exerciciRutinaID: number;
+repeticions: number;
+series: number;
+pes: number;
+dia: string;
 }
 
 export enum status {

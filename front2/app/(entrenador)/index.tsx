@@ -18,9 +18,11 @@ import { MarkedDates } from 'react-native-calendars/src/types';
 import { useText } from '@/hooks/useText';
 import Toast from 'react-native-toast-message';
 import { deleteRmsSlice, getRmsEntrenador, selectAllRms, selectRmsStatus } from '@/store/rmsSlice';
+import { useLoading } from '@/hooks/LoadingContext';
 
 
 export default function Index() {
+    const {showLoading, hideLoading} = useLoading();
     const texts = useText();
     const themeStyles = useThemeStyles();
     const appTheme = useAppTheme();
@@ -91,11 +93,6 @@ export default function Index() {
         if (alumnesStatus[actions.index] == status.idle) dispatch(getAlumnes())
         if (reservesStatus[actions.index] == status.idle) dispatch(getReserves())
         if (rmsStatus[actions.index] == status.idle) dispatch(getRmsEntrenador())
-        reservesStatus[actions.index] == status.failed && Toast.show({
-            type: 'error',
-            text1: texts.ErrorFetchingReserves,
-            position: 'top',
-        });
     }, []);
 
     return (
@@ -133,7 +130,7 @@ export default function Index() {
                         {reservesAvui && reservesAvui.length > 0 && (
                             reservesAvui.map((r, i) => {
                                 return (
-                                    <Entreno alumneID={r.usuariID} hora={r.hora.split("T")[1].split("+")[0]} key={i} />
+                                    <Entreno alumneID={r.usuariID} data={r.hora} key={i} />
                                 )
                             })
                         )}

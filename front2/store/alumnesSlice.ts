@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "@/store/index";
-import { actions, status, AlumneType } from "@/types/apiTypes";
+import { actions, status, AlumneType, ResultatExercici } from "@/types/apiTypes";
 
 interface AlumnesState {
   alumnes: AlumneType[];
@@ -16,6 +16,7 @@ const initialState: AlumnesState = {
     [actions.delete]: null,
     [actions.assign]: null,
     [actions.acabar]: null,
+    [actions.finish]: null,
   },
   actionsStatus: {
     [actions.index]: status.idle,
@@ -23,6 +24,7 @@ const initialState: AlumnesState = {
     [actions.delete]: status.idle,
     [actions.assign]: status.idle,
     [actions.acabar]: status.idle,
+    [actions.finish]: status.idle,
   },
 };
 
@@ -162,8 +164,8 @@ export const assignarRutina = createAsyncThunk<
 
 // Acabar rutina
 export const acabarRutina = createAsyncThunk<
-  {UsuariID: number}, // Expected result type
-  {UsuariID: number}, // Parameters type
+  { UsuariID: number }, // Expected result type
+  { UsuariID: number }, // Parameters type
   { state: RootState }
 >(
   "entrenador/acabarRutina",
@@ -191,6 +193,37 @@ export const acabarRutina = createAsyncThunk<
     return UsuariID;
   }
 );
+
+//finish training
+export const finishTraining = createAsyncThunk<
+ResultatExercici[], // Expected result type
+  { data: ResultatExercici[] }, // Parameters type
+  { state: RootState }
+>(
+  "/finishTraining", async ({ data }, { getState, rejectWithValue }) => {
+    const state = getState();
+    const token = state.auth.user?.token;
+
+    const response = await fetch(
+      process.env.EXPO_PUBLIC_API_URL + "/guardarResultats",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ data }),
+      }
+    );
+    const rsp = await response.json();
+    console.log(data)
+    if (!response.ok) {
+      return rejectWithValue(rsp.error ?? "Failed to finish training");
+    }
+    return data;
+  }
+)
+
 
 const alumnesSlice = createSlice({
   name: "alumnes",
@@ -268,7 +301,7 @@ const alumnesSlice = createSlice({
       // Acabar rutina
       .addCase(
         acabarRutina.fulfilled,
-        (state, action: PayloadAction<{UsuariID: number}>) => {
+        (state, action: PayloadAction<{ UsuariID: number }>) => {
           state.actionsStatus[actions.acabar] = status.succeeded;
           const alumne = state.alumnes.find(
             (alumne) => alumne.id === action.payload.UsuariID
@@ -284,6 +317,21 @@ const alumnesSlice = createSlice({
       .addCase(acabarRutina.rejected, (state, action) => {
         state.actionsStatus[actions.acabar] = status.failed;
         state.errors[actions.acabar] = action.payload as string;
+      })
+      // Finish training
+      .addCase(finishTraining.pending, (state) => {
+        state.actionsStatus[actions.finish] = status.pending;
+      })
+      .addCase(
+        finishTraining.fulfilled,
+        (state, action: PayloadAction<ResultatExercici[]>) => {
+          state.actionsStatus[actions.finish] = status.succeeded;
+          state.alumnes.find(a => a.id = action.payload[0].usuariRutinaID)!.resultatsRutinaActual.concat(action.payload)
+        }
+      )
+      .addCase(finishTraining.rejected, (state, action) => {
+        state.actionsStatus[actions.finish] = status.failed;
+        state.errors[actions.finish] = action.payload as string;
       });
   },
 });

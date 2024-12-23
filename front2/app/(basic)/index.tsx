@@ -11,7 +11,7 @@ import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
 import { createReservaAlumne, selectAllReserves, selectReservesStatus, selectUpcomingReservesByAlumneID } from '@/store/reservesSlice';
 import { selectUser } from '@/store/authSlice';
 import Entreno from '@/components/viewers/Entreno';
-import { status } from '@/types/apiTypes';
+import { actions, status } from '@/types/apiTypes';
 import { useText } from '@/hooks/useText';
 
 export default function Index() {
@@ -70,7 +70,7 @@ export default function Index() {
                   setModalReservarVisible(true)
                   setSelectedTime(new Date(selectedDay.timestamp))
                 }}>
-                  <Text style={themeStyles.button1Text}>{texts.Reservar}</Text>
+                  <Text style={themeStyles.button1Text}>{texts.Reservate}</Text>
                 </Pressable>
               </View>}
             </View>
@@ -81,12 +81,12 @@ export default function Index() {
             <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginTop: 20, marginBottom: 20 }]}>
               Pròxims entrenos
             </Text>
-            {reservesStatus == status.failed && (<Text style={[themeStyles.text, { marginBottom: 20 }]}>Error fetching reserves</Text>)}
+            {reservesStatus[actions.index] == status.failed && (<Text style={[themeStyles.text, { marginBottom: 20 }]}>Error fetching reserves</Text>)}
             {reserves && reserves.length == 0 && (<Text style={[themeStyles.text, { marginBottom: 20 }]}>Sense entrenos reservats</Text>)}
             {reserves && reserves.length > 0 && (
               reserves.map((r, i) => {
                 return (
-                  <Entreno alumneID={r.usuariID} hora={r.hora.split("T")[0].split("+")[0]} key={i} />
+                  <Entreno alumneID={r.usuariID} data={r.hora} key={i} />
                 )
               })
             )}

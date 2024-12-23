@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { View, Text, Pressable } from 'react-native'
 import BarraDies from '../BarraDies'
-import { ResultatsExercici } from '@/types/apiTypes'
 import { useAppTheme, useThemeStyles } from '@/themes/theme'
 import TextInput from '@/components/inputs/TextInput';
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks'
@@ -11,17 +10,18 @@ import { assignarRutina, selectAlumneByID } from '@/store/alumnesSlice'
 import { useText } from '@/hooks/useText'
 import FletxaDesplegar from '../icons/FletxaDesplegar'
 import AutocompleteRutines from '../inputs/selects/AutocompleteRutines'
-import { finishTraining } from '@/store/reservesSlice'
+import { finishTraining } from '@/store/alumnesSlice'
 import { selectAllRms } from '@/store/rmsSlice'
+import { ResultatExercici } from '@/types/apiTypes'
 
 interface propsType {
     alumneID: number,
-    hora: string
+    data: string
 }
 
 export default function Entreno(props: propsType) {
     const texts = useText();
-    const { alumneID, hora } = props
+    const { alumneID, data } = props
     const exercicis = useAppSelector(selectExercicis);
     const themeStyles = useThemeStyles()
     const appTheme = useAppTheme()
@@ -33,7 +33,7 @@ export default function Entreno(props: propsType) {
     const setmanaActual = alumne ? Math.floor(alumne.resultatsRutinaActual.length / (rutina?.diesDuracio || 1)) + 1 : 1;
     const [diaSeleccionat, setDiaSeleccionat] = useState<number>(diaActual);
     const [setmanaSeleccionada, setSetmanaSeleccionada] = useState<number>(setmanaActual);
-    const [resultats, setResultats] = useState<ResultatsExercici[]>([]);
+    const [resultats, setResultats] = useState<ResultatExercici[]>([]);
     const [desplegat, setDesplegat] = useState(false);
 
 
@@ -46,20 +46,30 @@ export default function Entreno(props: propsType) {
     }
 
     function handleFinishTraining() {
-        dispatch(finishTraining({ alumneID: alumneID }));
+        const resultatEntreno:ResultatExercici[] = resultats.map(r => ({
+            usuariRutinaID: alumneID,
+            exerciciRutinaID: r.exerciciRutinaID,
+            repeticions: r.repeticions,
+            series: r.series,
+            pes: r.pes,
+            dia: data
+        }));
+        dispatch(finishTraining({data: resultatEntreno}));
     }
 
     function buildResultats() {
         if (!rutina) return;
 
 
-        const resultatsTmp: ResultatsExercici[] = rutina.exercicis
-            .filter(e => e.diaRutina === diaActual) // Filtra los ejercicios del día actual
+        const resultatsTmp: ResultatExercici[] = rutina.exercicis
+            .filter(e => e.diaRutina === diaActual && setmanaActual-1 === e.cicle)
             .map(e => ({
+                dia: data,
+                usuariRutinaID: alumneID,
                 exerciciRutinaID: e.id,
                 repeticions: e.numRepes,
                 series: e.numSeries,
-                pes: e.percentatgeRM * (rms.find(f => f.exerciciID === e.exerciciID && f.usuariID === alumneID)?.pes ?? 1),
+                pes: e.percentatgeRM * (rms.find(f => f.exerciciID === e.exerciciID && f.usuariID === alumneID)?.pes ?? 1) /100,
             })); // Genera el array de resultados.
 
         setResultats(resultatsTmp);
@@ -70,7 +80,7 @@ export default function Entreno(props: propsType) {
         <Pressable onPress={() => setDesplegat(!desplegat)}>
             <View style={themeStyles.mainContainer1}>
                 <Text style={themeStyles.text}>
-                    {alumne!.nom + "  " + hora.substring(0, 5)}
+                    {alumne!.nom + "  " + data.substring(10, 15)}
                 </Text>
                 <FletxaDesplegar
                     amunt={desplegat}
@@ -83,9 +93,8 @@ export default function Entreno(props: propsType) {
                         <BarraDies editable={false} dies={rutina!.diesDuracio} canviaDia={(d: number) => setDiaSeleccionat(d)} currentDia={diaSeleccionat} />
                         {exercicisArray.map(e => {
                             const resultat = resultats.find(f => f.exerciciRutinaID === e.id);
-                            const rm = rms.find(f => f.exerciciID === e.exerciciID && f.usuariID === alumneID);
 
-                            return e.diaRutina === diaSeleccionat && setmanaSeleccionada === e.cicle && (
+                            return e.diaRutina === diaSeleccionat && setmanaSeleccionada-1 === e.cicle && (
                                 <View style={{ marginTop: 15 }} key={e.exerciciID}>
                                     <Text style={themeStyles.text}>{exercicis.find(exercici => exercici.id === e.exerciciID)?.nom}</Text>
                                     <View style={{ display: "flex", flexDirection: "row", gap: 25, margin: "auto", marginTop: 6 }}>

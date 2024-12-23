@@ -146,36 +146,6 @@ export const getReservesPerMes = createAsyncThunk<
 });
 
 
-//finish training
-export const finishTraining = createAsyncThunk<
-  ReservaType, // Expected result type
-  { alumneID: number }, // Parameters type
-  { state: RootState }
->(
-  "entrenador/finishTraining", async ({ alumneID }, { getState, rejectWithValue }) => {
-    const state = getState();
-    const token = state.auth.user?.token;
-
-    const response = await fetch(
-      process.env.EXPO_PUBLIC_API_URL + "/entrenador/guardarExercicisRutina",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ alumneID }),
-      }
-    );
-    const data = await response.json();
-    if (!response.ok) {
-      return rejectWithValue(data.error ?? "Failed to finish training");
-    }
-    return data.data;
-  }
-)
-
-
 const reservesSlice = createSlice({
   name: "reserves",
   initialState,
@@ -235,21 +205,6 @@ const reservesSlice = createSlice({
         state.actionsStatus[actions.create] = status.failed;
         state.errors[actions.create] = action.payload as string;
       })
-      // Finish training
-      .addCase(finishTraining.pending, (state) => {
-        state.actionsStatus[actions.finish] = status.pending;
-      })
-      .addCase(
-        finishTraining.fulfilled,
-        (state, action: PayloadAction<ReservaType>) => {
-          state.actionsStatus[actions.finish] = status.succeeded;
-          state.reserves = state.reserves.filter(reserve => reserve.id !== action.payload.id);
-        }
-      )
-      .addCase(finishTraining.rejected, (state, action) => {
-        state.actionsStatus[actions.finish] = status.failed;
-        state.errors[actions.finish] = action.payload as string;
-      });
   },
 });
 

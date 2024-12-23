@@ -1,6 +1,6 @@
 import { View, Text, Pressable, ScrollView, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useLocalSearchParams, router } from 'expo-router';
 import BackButton from '@/components/buttons/BackButton';
 import { Calendar, DateData } from 'react-native-calendars';
@@ -18,7 +18,7 @@ import { useText } from '@/hooks/useText';
 import { MarkedDates } from 'react-native-calendars/src/types';
 import Entreno from '@/components/viewers/Entreno';
 import { useLoading } from '@/hooks/LoadingContext';
-
+import { actions, status as st } from '@/types/apiTypes';
 
 export default function AlumneScreen() {
     const { showLoading, hideLoading } = useLoading();
@@ -51,8 +51,12 @@ export default function AlumneScreen() {
     const reservaAvui = useAppSelector(state => selectReservaByDayAndUser(state, selectedDay, Number(alumneID)));
     const proximesReserves = useAppSelector(state => selectUpcomingReservesByAlumneID(state, Number(alumneID)));
 
-
     const alumne = useAppSelector(state => selectAlumneByID(state, Number(alumneID)));
+    
+    useEffect(() => {
+        alumneStatus[actions.finish] == st.pending ? showLoading() : hideLoading();
+        alumneStatus[actions.delete] == st.pending ? showLoading() : hideLoading();
+    }, [alumneStatus]);
 
     //If student doesn't exist redirect to home
     if (!alumne) {
@@ -103,22 +107,13 @@ export default function AlumneScreen() {
             setErrors({ ...errors, Dia: texts.SelectDay });
             return;
         }
-        const horaReservada = new Date()
-        horaReservada.setHours(hora.getHours() - hora.getTimezoneOffset()/60, hora.getMinutes(), 0, 0);
-        horaReservada.setDate(selectedDay.day)
-        horaReservada.setMonth(selectedDay.month - 1)
-        horaReservada.setFullYear(selectedDay.year)
-
         const time = `${selectedDay.year}-${selectedDay.month-1}-${selectedDay.day}T${hora.getHours()}:${hora.getMinutes()}:00.000Z`;
 
-        console.log(time)
-        console.log(horaReservada.toISOString())
-        //dispatch(createReserva({ usuariID: alumne!.id, hora: time }));
+        dispatch(createReserva({ usuariID: alumne!.id, hora: time }));
     }
 
     function handleExpulsarUsuari() {
         dispatch(expulsarAlumne({ id: alumne!.id }));
-
     }
 
     function handleAssignarRutina() {
@@ -126,9 +121,6 @@ export default function AlumneScreen() {
         dispatch(assignarRutina({ rutinaID: assignarRutinaID, alumneID: alumne!.id }));
     }
 
-    async function handleAcabarRutina() {
-        dispatch(acabarRutina({ UsuariID: alumne!.id }));
-    }
 
     if (!alumne) {
         return (<View><Text>{texts.LoadingStudent}</Text></View>)
@@ -171,7 +163,7 @@ export default function AlumneScreen() {
                         {reservaAvui && (
                             <View style={[themeStyles.box, { marginBottom: 20 }]}>
                                 <Text style={[themeStyles.text, { fontSize: 20, textAlign: "center", marginVertical: 20 }]}>{texts.TrainingOfTheDay} {selectedDay.day}</Text>
-                                <Entreno alumneID={alumne!.id} hora={reservaAvui.hora.split("T")[1].split("+")[0]} key={reservaAvui.id} />
+                                <Entreno alumneID={alumne!.id} data={reservaAvui.hora} key={reservaAvui.id} />
                             </View>
                         )}
 
