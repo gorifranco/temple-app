@@ -100,6 +100,12 @@ pes: number;
 dia: string;
 }
 
+export interface RegisterCredentials {
+  nom: string;
+  email: string;
+  password: string;
+}
+
 export enum status {
   idle = "idle",
   pending = "pending",

@@ -13,6 +13,7 @@ type Usuari struct {
 	TipusUsuari              TipusUsuari `gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"` //1 = administrador, 2 = basic , 3 = entrenador, 4 = fictici
 	TipusUsuariID            uint        `gorm:"default:2"`
 	Password                 string      `gorm:"not null;"`
+	Verificat                bool        `gorm:"not null;default:false"`
 	Sales                    []Sala      `gorm:"many2many:usuari_sala;"`
 	SalesAdministrades       []Sala      `gorm:"foreignKey:AdminID"`
 	Reserves                 []Reserva   `gorm:"many2many:reserves;"`

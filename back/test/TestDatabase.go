@@ -5,7 +5,7 @@ import (
 	"os"
 	"sync"
 	"temple-app/models"
-	"temple-app/services"
+	"temple-app/services/cryptServices"
 
 	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
@@ -74,7 +74,7 @@ func InsertData() error {
 	}
 	GetDBTest().Create(&tipos)
 
-	cpass, err := services.EncryptPassword("1234")
+	cpass, err := cryptServices.EncryptPassword("1234")
 	if err != nil {
 		return err
 	}

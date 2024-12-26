@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"temple-app/auth"
 	"temple-app/models"
-	"temple-app/services"
+	"temple-app/services/cryptServices"
 
 	"golang.org/x/crypto/bcrypt"
 
@@ -27,7 +27,7 @@ type usuariInput struct {
 	Nom           string `json:"nom" binding:"required"`
 	Email         string `json:"email" binding:"required"`
 	Password      string `json:"password" binding:"required"`
-	TipusUsuariID int    `json:"tipusUsuariID" binding:"required"`
+	TipusUsuariID int    `json:"tipusUsuariID" binding:"required"` // 1 = administrador, 2 = basic , 3 = entrenador, 4 = fictici
 }
 
 // @Description Data needed when logging in
@@ -65,6 +65,11 @@ func (h *Handler) Login(c *gin.Context) {
 		return
 	}
 
+	if !user.Verificat {
+		c.JSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Email not verified"})
+		return
+	}
+ 
 	//Generates the JWT token
 	token, err = auth.GenerarToken(user)
 
@@ -127,12 +132,13 @@ func (h *Handler) Registre(c *gin.Context) {
 		return
 	}
 
-	if h.UsuariExisteix(userInput.Email) {
-		c.JSON(http.StatusConflict, models.ErrorResponse{Error: "User already exists"})
-		return
-	}
 	if userInput.TipusUsuariID == 1 {
 		c.JSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Cannot register an admin"})
+		return
+	}
+
+	if h.UsuariExisteix(userInput.Email) {
+		c.JSON(http.StatusConflict, models.ErrorResponse{Error: "User already exists"})
 		return
 	}
 
@@ -157,7 +163,6 @@ func (h *Handler) Registre(c *gin.Context) {
 		newUser.CodiEntrenador = codi
 	}
 
-	// Simulando una función que guardaría los datos del usuario en alguna parte
 	if err = h.SaveUser(newUser); err != nil {
 		c.JSON(http.StatusInternalServerError, models.ErrorResponse{Error: err.Error()})
 		return
@@ -182,7 +187,7 @@ func (h *Handler) UsuariExisteix(email string) bool {
 func (h *Handler) SaveUser(usuari models.Usuari) error {
 	var err error
 
-	usuari.Password, err = services.EncryptPassword(usuari.Password)
+	usuari.Password, err = cryptServices.EncryptPassword(usuari.Password)
 	if err != nil {
 		return err
 	}

@@ -5,7 +5,8 @@ import (
 	"os"
 	"sync"
 	"temple-app/models"
-	"temple-app/services"
+	"temple-app/services/cryptServices"
+
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -63,7 +64,7 @@ func InsertData() error {
 	}
 	GetDB().Create(&tipos)
 
-	cpass, err := services.EncryptPassword("1234")
+	cpass, err := cryptServices.EncryptPassword("1234")
 	if err != nil {
 		return err
 	}

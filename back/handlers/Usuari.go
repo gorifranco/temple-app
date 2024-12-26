@@ -3,7 +3,7 @@ package handlers
 import (
 	"net/http"
 	"temple-app/models"
-	"temple-app/services"
+	"temple-app/services/cryptServices"
 
 	"github.com/gin-gonic/gin"
 )
@@ -64,7 +64,7 @@ func (h *Handler) CreateUsuari(c *gin.Context) {
 		return
 	}
 
-	hash, err := services.EncryptPassword(input.Password)
+	hash, err := cryptServices.EncryptPassword(input.Password)
 	if err != nil {		
 		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Error crypting password"})
 		return
@@ -119,7 +119,7 @@ func (h *Handler) UpdateUsuari(c *gin.Context) {
 	hash := input.Password
 
 	if hash != "" {
-		hash, err = services.EncryptPassword(input.Password)
+		hash, err = cryptServices.EncryptPassword(input.Password)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Error crypting password"})
 			return

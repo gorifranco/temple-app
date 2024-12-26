@@ -2,11 +2,12 @@ package auth
 
 import (
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"temple-app/db"
 	"temple-app/models"
-	"os"
+	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -24,14 +25,14 @@ type Claims struct {
 func GenerarToken(user *models.Usuari) (string, error) {
 	claims := &Claims{
 		Id:             user.ID,
-		TipusUsuari:    user.TipusUsuari.Nom,
-		StandardClaims: jwt.StandardClaims{},
+		StandardClaims: jwt.StandardClaims{ExpiresAt: int64(10 * time.Minute)},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	tokenString, err := token.SignedString(jwtKey)
 	return tokenString, err
 }
+
 
 func UserAuthMiddleware(tipusAdmesos []string) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -128,7 +129,7 @@ func GetUsuari(c *gin.Context) *models.Usuari {
 
 	var usuari models.Usuari
 	db := db.GetDB()
-	if err := db.Where("id = ?", claims.Id).First(&usuari).Error ; err != nil {
+	if err := db.Where("id = ?", claims.Id).First(&usuari).Error; err != nil {
 		return nil
 	}
 

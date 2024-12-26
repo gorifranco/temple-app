@@ -7,19 +7,25 @@ import Header from '@/components/Header'
 import Button from '@/components/Button'
 import TextInput from '@/components/inputs/TextInput'
 import BackButton from '@/components/buttons/BackButton'
-import { emailValidator } from '@/helpers/emailValidator' 
+import { emailValidator } from '@/helpers/emailValidator'
 import { passwordValidator } from '@/helpers/passwordValidator'
 import { nameValidator } from '@/helpers/nameValidator'
-import { Link, router } from 'expo-router';
+import { Link } from 'expo-router';
 import { useThemeStyles } from '@/themes/theme'
 import { useText } from '@/hooks/useText'
+import { useAppDispatch } from '@/store/reduxHooks'
+import { register } from '@/store/authSlice'
+import { RegisterCredentials } from '@/types/apiTypes'
 
 export default function RegisterScreen() {
+  const dispatch = useAppDispatch();
   const texts = useText()
   const themeStyles = useThemeStyles()
-  const [nom, setNom] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [credentials, setCredentials] = useState<RegisterCredentials>({
+    nom: "",
+    email: "",
+    password: "",
+  });
   const [errors, setErrors] = useState({
     nom: '',
     email: '',
@@ -27,9 +33,9 @@ export default function RegisterScreen() {
   });
 
   const onSignUpPressed = async () => {
-    const nameError = nameValidator(nom)
-    const emailError = emailValidator(email)
-    const passwordError = passwordValidator(password)
+    const nameError = nameValidator(credentials.nom)
+    const emailError = emailValidator(credentials.email)
+    const passwordError = passwordValidator(credentials.password)
     if (emailError || passwordError || nameError) {
       setErrors({
         nom: nameError,
@@ -37,7 +43,8 @@ export default function RegisterScreen() {
         password: passwordError
       })
       return
-    }    
+    }
+    dispatch(register({ data: credentials }));
   }
 
   return (
@@ -48,16 +55,16 @@ export default function RegisterScreen() {
       <TextInput
         label={texts.Name}
         enterKeyHint="next"
-        value={nom}
-        onChangeText={(text:string) => setNom(text)}
+        value={credentials.nom}
+        onChangeText={(text: string) => setCredentials({ ...credentials, nom: text })}
         error={!!errors.nom}
         errorText={errors.nom}
       />
       <TextInput
         label="Email"
         enterKeyHint="next"
-        value={email}
-        onChangeText={(text:string) => setEmail(text)}
+        value={credentials.email}
+        onChangeText={(text: string) => setCredentials({ ...credentials, email: text })}
         error={!!errors.email}
         errorText={errors.email}
         autoCapitalize="none"
@@ -68,10 +75,10 @@ export default function RegisterScreen() {
       <TextInput
         label={texts.Password}
         enterKeyHint="done"
-        value={password}
-        onChangeText={(text:string) => setPassword(text)}
+        value={credentials.password}
+        onChangeText={(text: string) => setCredentials({ ...credentials, password: text })}
         error={!!errors.password}
-        errorText={errors.password} 
+        errorText={errors.password}
         secureTextEntry
       />
       <Button

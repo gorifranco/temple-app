@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { RootState } from ".";
+import { RegisterCredentials } from "@/types/apiTypes";
 
 interface User {
   id: number;
@@ -10,7 +11,8 @@ interface User {
   codiEntrenador: string | null;
 }
 interface authState {
-  user: User | null;  status: "idle" | "pending" | "succeeded" | "failed";
+  user: User | null;
+  status: "idle" | "pending" | "succeeded" | "failed";
   error: string | null;
 }
 
@@ -39,6 +41,33 @@ export const loginRedux = createAsyncThunk<
       return rejectWithValue(data.error ?? "Failed to login");
     }
     return data.data;
+  } catch (error) {
+    return rejectWithValue("Network error or unexpected error occurred");
+  }
+});
+
+// Register
+export const register = createAsyncThunk<
+  User, // Expected result type
+  { data: RegisterCredentials }, // Parameters type
+  { state: RootState }
+>("auth/register", async (data, { rejectWithValue }) => {
+  try {
+    const response = await fetch(
+      `${process.env.EXPO_PUBLIC_API_URL}/register`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    const rsp = await response.json();
+    if (!response.ok) {
+      return rejectWithValue(rsp.data ?? "Failed to register");
+    }
+    return rsp.data;
   } catch (error) {
     return rejectWithValue("Network error or unexpected error occurred");
   }

@@ -9,16 +9,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"temple-app/auth"
 
-	"github.com/swaggo/gin-swagger"
 	"github.com/swaggo/files"
-
+	"github.com/swaggo/gin-swagger"
 )
 
 func Routing() *gin.Engine {
 	router := gin.Default()
 
 	router.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
 
 	router.Use(cors.New(cors.Config{
 		AllowAllOrigins:  true,
@@ -108,6 +106,7 @@ func Routing() *gin.Engine {
 		admin.GET("/rutines", handler.IndexRutina)
 	}
 
+	// Auth
 	router.POST("/api/login", handler.Login)
 	router.POST("/api/register", handler.Registre)
 
