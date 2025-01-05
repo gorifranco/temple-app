@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"fmt"
 	"net/http"
 	"temple-app/auth"
 	"temple-app/models"
+	"temple-app/services"
 	"temple-app/services/cryptServices"
 
 	"golang.org/x/crypto/bcrypt"
@@ -127,6 +129,8 @@ func (h *Handler) Registre(c *gin.Context) {
 	var userInput usuariInput
 	var err error
 
+	fmt.Println("Registre reached")
+
 	if err = c.ShouldBindJSON(&userInput); err != nil {
 		c.JSON(http.StatusBadRequest, models.ErrorResponse{Error: err.Error()})
 		return
@@ -168,6 +172,8 @@ func (h *Handler) Registre(c *gin.Context) {
 		return
 	}
 
+	services.SendVerificationEmail(&newUser)
+
 	// Responder éxito si todo va bien
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: "User registered successfully"})
 }
@@ -197,4 +203,17 @@ func (h *Handler) SaveUser(usuari models.Usuari) error {
 		return err
 	}
 	return nil
+}
+
+func (h *Handler) VerifyUser(c *gin.Context) {
+	var err error
+	user := c.MustGet("user").(*models.Usuari)
+
+	user.Verificat = true
+	if err = h.DB.Save(&user).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusInternalServerError, models.ErrorResponse{Error: "Failed to update user"})
+		return
+	}
+
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
 }

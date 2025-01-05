@@ -2,6 +2,7 @@ package routes
 
 import (
 	"temple-app/db"
+	"temple-app/services"
 	"temple-app/handlers"
 	"time"
 
@@ -109,6 +110,7 @@ func Routing() *gin.Engine {
 	// Auth
 	router.POST("/api/login", handler.Login)
 	router.POST("/api/register", handler.Registre)
+	router.GET("/api/verificarEmail/:token", services.VerifyEmailMiddleware, handler.VerifyUser)
 
 	return router
 }

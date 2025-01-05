@@ -104,6 +104,7 @@ export interface RegisterCredentials {
   nom: string;
   email: string;
   password: string;
+  tipusUsuariID: number;
 }
 
 export enum status {

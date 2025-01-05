@@ -5,5 +5,5 @@ import { useThemeStyles } from '@/themes/theme'
 export default function Header(props) {
   const themeStyles = useThemeStyles();
 
-  return <Text style={themeStyles.header} {...props} />
+  return <Text style={[themeStyles.header, {fontSize: 25}]} {...props} />
 }
