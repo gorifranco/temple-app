@@ -59,6 +59,7 @@ func Routing() *gin.Engine {
 	}
 
 	router.POST("/api/reserves", auth.UserAuthMiddleware([]string{}), handler.CreateReserva)
+	router.GET("/api/reserves", auth.UserAuthMiddleware([]string{"Basic"}), handler.GetReservesBasic)
 
 	entrenador := router.Group("/api/entrenador", auth.UserAuthMiddleware([]string{"Entrenador"}))
 	{

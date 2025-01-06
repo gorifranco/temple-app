@@ -1,13 +1,13 @@
 package auth
 
 import (
+	"log"
 	"net/http"
 	"os"
 	"strconv"
 	"strings"
 	"temple-app/db"
 	"temple-app/models"
-	"time"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
@@ -25,7 +25,8 @@ type Claims struct {
 func GenerarToken(user *models.Usuari) (string, error) {
 	claims := &Claims{
 		Id:             user.ID,
-		StandardClaims: jwt.StandardClaims{ExpiresAt: int64(10 * time.Minute)},
+		Email:          user.Email,
+		TipusUsuari:    user.TipusUsuari.Nom,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -112,6 +113,7 @@ func TokenValid(c *gin.Context, token *jwt.Token, err error) bool {
 // UserTypeValid verifica si el tipo de usuario es válido
 func UserTypeValid(c *gin.Context, claims *Claims, tipusAdmesos []string) bool {
 	if !contains(tipusAdmesos, claims.TipusUsuari) {
+		log.Printf("Access denied for user type. User type: %s, allowed types: %v", claims.TipusUsuari, tipusAdmesos)
 		c.AbortWithStatusJSON(http.StatusUnauthorized, models.ErrorResponse{Error: "Access denied for user type"})
 		return false
 	}

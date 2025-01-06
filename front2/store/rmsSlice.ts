@@ -87,6 +87,9 @@ const rmsSlice = createSlice({
     deleteRmsSlice: (state) => {
       state.rms = [];
     },
+    clearRmsError: (state, action: PayloadAction<actions>) => {
+      state.errors[action.payload] = null;
+  },
   },
   extraReducers: (builder) => {
     builder
@@ -134,5 +137,5 @@ export const selectAllRms = (state: RootState) => state.rms.rms;
 export const selectRmsStatus = (state: RootState) => state.rms.actionsStatus;
 export const selectRmsError = (state: RootState) => state.rms.errors;
 
-export const { deleteRmsSlice } = rmsSlice.actions;
+export const { deleteRmsSlice, clearRmsError } = rmsSlice.actions;
 export default rmsSlice.reducer;

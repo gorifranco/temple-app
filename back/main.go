@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	// "io"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
@@ -11,12 +11,12 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	// "time"
+	"time"
 )
 
 func main() {
 
-	// gin.DisableConsoleColor()
+	//gin.DisableConsoleColor()
 	err := godotenv.Load()
 	if err != nil {
 		fmt.Println("Error loading .env file")
@@ -42,7 +42,13 @@ func main() {
 	}
 	defer f.Close()
 
-	// gin.DefaultWriter = io.MultiWriter(f, os.Stdout) // For production mode delete os.Stdout
+	//Custom logs output
+	log.SetOutput(f)
+
+	// Custom logs format
+	log.SetFlags(log.Lshortfile | log.LstdFlags)
+
+	gin.DefaultWriter = io.MultiWriter(f, os.Stdout) // For production mode delete os.Stdout
 
 	router := routes.Routing()
 
@@ -62,7 +68,8 @@ func main() {
 		)
 	}))
  */
-/* 	router.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
+
+	router.Use(gin.LoggerWithFormatter(func(param gin.LogFormatterParams) string {
 		return fmt.Sprintf("%s - [%s] \"%s %s %d %s %s\"\n",
 				param.ClientIP,
 				param.TimeStamp.Format(time.RFC1123),
@@ -72,7 +79,7 @@ func main() {
 				param.Latency,
 				param.ErrorMessage,
 		)
-	})) */
+	}))
 
 	router.Run(":" + os.Getenv("API_PORT"))
 }

@@ -2,7 +2,7 @@ import { getAlumnes, selectAllAlumnes, selectAlumnesStatus } from '@/store/alumn
 import { getConfig, selectConfigStatus } from '@/store/configSlice';
 import { getExercicis, selectExercicisStatus } from '@/store/exercicisSlice';
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
-import { selectReservesStatus, deleteReservesSlice, selectUpcomingReserves, selectReservesByDay, selectReservesByMes, getReservesPerMes, getReserves } from '@/store/reservesSlice';
+import { selectReservesStatus, deleteReservesSlice, selectUpcomingReserves, selectReservesByDay, selectReservesByMes, getReservesPerMes, getReservesEntrenador } from '@/store/reservesSlice';
 import { deleteRutinesSlice, getRutinesEntrenador, selectAllRutines, selectRutinesStatus } from '@/store/rutinesSlice';
 import { calendarTheme, useThemeStyles } from '@/themes/theme';
 import { status, actions } from '@/types/apiTypes';
@@ -91,7 +91,7 @@ export default function Index() {
         if (exercicisStatus == "idle") dispatch(getExercicis())
         if (configStatus == "idle") dispatch(getConfig())
         if (alumnesStatus[actions.index] == status.idle) dispatch(getAlumnes())
-        if (reservesStatus[actions.index] == status.idle) dispatch(getReserves())
+        if (reservesStatus[actions.index] == status.idle) dispatch(getReservesEntrenador())
         if (rmsStatus[actions.index] == status.idle) dispatch(getRmsEntrenador())
     }, []);
 

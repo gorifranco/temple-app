@@ -33,17 +33,43 @@ const initialState: ReservesState = {
   },
 };
 
-// Fetch reserves API
-export const getReserves = createAsyncThunk<
+// Fetch reserves API as trainer
+export const getReservesEntrenador = createAsyncThunk<
   ReservaType[], // Expected result type
   void, // No parameters required here
   { state: RootState }
->("entrenador/getReserves", async (_, { getState, rejectWithValue }) => {
+>("entrenador/getReservesEntrenador", async (_, { getState, rejectWithValue }) => {
   const state = getState();
   const token = state.auth.user?.token;
 
   const response = await fetch(
     process.env.EXPO_PUBLIC_API_URL + "/entrenador/reserves",
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  const data = await response.json();
+  if (!response.ok) {
+    return rejectWithValue(data.error ?? "Failed getting reservations");
+  }
+  return data.data;
+});
+
+// Fetch reserves API as student
+export const getReservesBasic = createAsyncThunk<
+  ReservaType[], // Expected result type
+  void, // No parameters required here
+  { state: RootState }
+>("alumne/getReservesBasic", async (_, { getState, rejectWithValue }) => {
+  const state = getState();
+  const token = state.auth.user?.token;
+
+  const response = await fetch(
+    process.env.EXPO_PUBLIC_API_URL + "/reserves",
     {
       method: "GET",
       headers: {
@@ -157,17 +183,17 @@ const reservesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       // Get reserves
-      .addCase(getReserves.pending, (state) => {
+      .addCase(getReservesEntrenador.pending, (state) => {
         state.actionsStatus[actions.index] = status.pending;
       })
       .addCase(
-        getReserves.fulfilled,
+        getReservesEntrenador.fulfilled,
         (state, action: PayloadAction<ReservaType[]>) => {
           state.actionsStatus[actions.index] = status.succeeded;
           state.reserves = action.payload;
         }
       )
-      .addCase(getReserves.rejected, (state, action) => {
+      .addCase(getReservesEntrenador.rejected, (state, action) => {
         state.actionsStatus[actions.index] = status.failed;
         state.errors[actions.index] = action.payload as string;
       })
@@ -204,6 +230,20 @@ const reservesSlice = createSlice({
       .addCase(createReserva.rejected, (state, action) => {
         state.actionsStatus[actions.create] = status.failed;
         state.errors[actions.create] = action.payload as string;
+      })
+      .addCase(getReservesBasic.pending, (state) => {
+        state.actionsStatus[actions.index] = status.pending;
+      })
+      .addCase(
+        getReservesBasic.fulfilled,
+        (state, action: PayloadAction<ReservaType[]>) => {
+          state.actionsStatus[actions.index] = status.succeeded;
+          state.reserves = action.payload;
+        }
+      )
+      .addCase(getReservesBasic.rejected, (state, action) => {
+        state.actionsStatus[actions.index] = status.failed;
+        state.errors[actions.index] = action.payload as string;
       })
   },
 });

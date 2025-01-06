@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
 	"temple-app/models"
 
@@ -119,6 +120,7 @@ func (h *Handler) CrearUsuariFictici(c *gin.Context) {
 		return
 	}
 
+	log.Printf("Usuari fictici creat. Creador ID: %d, usuari creat: %d", *usuari.EntrenadorID, usuari.ID)
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: models.AlumneResponse{ID: usuari.ID, Nom: usuari.Nom, TipusUsuari: usuari.TipusUsuari.Nom}})
 }
 
@@ -169,6 +171,7 @@ func (h *Handler) UpdateUsuariFictici(c *gin.Context) {
 		return
 	}
 
+	log.Printf("User updated. Updater: %d, previous user: %v, new user: %v", c.MustGet("user").(*models.Usuari).ID, usuari, updatedUsuari)
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: "success"})
 }
 

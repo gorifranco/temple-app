@@ -1,29 +1,33 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Pressable } from 'react-native';
+import { getConfig, selectConfigStatus } from '@/store/configSlice';
+import { View, Pressable } from 'react-native';
 import { Calendar, DateData } from 'react-native-calendars';
-import { Picker } from '@react-native-picker/picker';
 import { Text } from 'react-native';
 import { calendarTheme, useThemeStyles } from '@/themes/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScrollView } from 'react-native-gesture-handler';
 import RNDateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
-import { createReservaAlumne, selectAllReserves, selectReservesStatus, selectUpcomingReservesByAlumneID } from '@/store/reservesSlice';
+import { createReservaAlumne, getReservesBasic, getReservesPerMes, selectAllReserves, selectReservesStatus, selectUpcomingReservesByAlumneID } from '@/store/reservesSlice';
 import { selectUser } from '@/store/authSlice';
 import Entreno from '@/components/viewers/Entreno';
 import { actions, status } from '@/types/apiTypes';
 import { useText } from '@/hooks/useText';
+import { getExercicis, selectExercicisStatus } from '@/store/exercicisSlice';
+import { getRmsEntrenador, selectRmsStatus } from '@/store/rmsSlice';
 
 export default function Index() {
   const texts = useText();
   const user = useAppSelector(selectUser);
   const today = new Date()
-  const [selectedDay, setSelectedDay] = useState<DateData>({
-    year: today.getFullYear(), month: today.getMonth() + 1, day: today.getDate(),
-    timestamp: today.getMilliseconds(), dateString: `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
-  });
-  const [selectedHour, setSelectedHour] = useState('');
-  const [selectedTime, setSelectedTime] = useState<Date>(new Date())
+    const [selectedDay, setSelectedDay] = useState<DateData>({
+        year: today.getFullYear(), month: today.getMonth() + 1, day: today.getDate(),
+        timestamp: today.getTime(), dateString: `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+    });
+    const [selectedMonth, setSelectedMonth] = useState<DateData>({
+        year: today.getFullYear(), month: today.getMonth() + 1, day: today.getDate(),
+        timestamp: today.getTime(), dateString: `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+    })
   const [errors, setErrors] = useState({
     Dia: ''
   });
@@ -32,7 +36,17 @@ export default function Index() {
   const dispatch = useAppDispatch()
   const reserves = useAppSelector(state => selectUpcomingReservesByAlumneID(state, user!.id));
   const reservesStatus = useAppSelector(selectReservesStatus);
-
+  const exercicisStatus = useAppSelector(selectExercicisStatus);
+  const configStatus = useAppSelector(selectConfigStatus);
+  const rmsStatus = useAppSelector(selectRmsStatus);
+  
+      useEffect(() => {
+          if (exercicisStatus == "idle") dispatch(getExercicis())
+          if (configStatus == "idle") dispatch(getConfig())
+          if (reservesStatus[actions.index] == status.idle) dispatch(getReservesBasic())
+          if (rmsStatus[actions.index] == status.idle) dispatch(getRmsEntrenador())
+      }, []);
+  
 
   async function reservar(hora: Date) {
     if (!selectedDay) {
@@ -68,7 +82,6 @@ export default function Index() {
               {selectedDay && selectedDay.dateString >= formatDate(new Date()) && <View>
                 <Pressable style={[themeStyles.button1, { marginBottom: 20, marginTop: 0 }]} onPress={() => {
                   setModalReservarVisible(true)
-                  setSelectedTime(new Date(selectedDay.timestamp))
                 }}>
                   <Text style={themeStyles.button1Text}>{texts.Reservate}</Text>
                 </Pressable>

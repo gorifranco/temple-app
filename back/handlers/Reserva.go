@@ -227,3 +227,19 @@ func (h *Handler) GetReservesEntrenadorPerMes(c *gin.Context) {
 
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: reserves})
 }
+
+func (h *Handler) GetReservesBasic(c *gin.Context) {
+	var reserves []models.ReservaResponse
+
+	if err := h.DB.Table("reserves").Where("usuari_id = ?", c.MustGet("user").(*models.Usuari).ID).Where("hora >= ?", time.Now().
+	Truncate(24*time.Hour)).Select("id, usuari_id, hora, confirmada").Scan(&reserves).Error; err != nil {
+	c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: err.Error()})
+	return
+}
+
+	if reserves == nil {
+		reserves = []models.ReservaResponse{}
+	}
+
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: reserves})
+}

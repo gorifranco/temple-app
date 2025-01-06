@@ -3,7 +3,7 @@ import TextInput from '@/components/inputs/TextInput';
 import { selectAllAlumnes } from '@/store/alumnesSlice';
 import { selectExercicis } from '@/store/exercicisSlice';
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
-import { selectAllRms, selectRmsError, selectRmsStatus, updateRm } from '@/store/rmsSlice';
+import { clearRmsError, selectAllRms, selectRmsError, selectRmsStatus, updateRm } from '@/store/rmsSlice';
 import { useThemeStyles } from '@/themes/theme';
 import React, { useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
@@ -12,16 +12,18 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 import { actions, status } from '@/types/apiTypes';
+import { selectUser } from '@/store/authSlice';
 
 export default function Index() {
     const dispatch = useAppDispatch();
+    const user = useAppSelector(selectUser);
     const themeStyles = useThemeStyles();
     const alumnes = useAppSelector(selectAllAlumnes)
     const exercicis = useAppSelector(selectExercicis);
     const rms = useAppSelector(selectAllRms);
     const rmsStatus = useAppSelector(selectRmsStatus);
     const rmsError = useAppSelector(selectRmsError);
-    const [selectedStudent, setSelectedStudent] = useState<number>(alumnes && alumnes.length > 0 ? alumnes[0].id : -1)
+    const [selectedStudent, setSelectedStudent] = useState<number>(alumnes && alumnes.length > 0 ? alumnes[0].id : user!.id)
     const [displayedExercises, setDisplayedExercises] = useState<string[]>(["Press de banca", "Sentadilla", "Peso muerto", "Press militar"]);
     const [editing, setEditing] = useState<number | null>(null);
     const [values, setValues] = useState<number[]>([0, 0, 0, 0])
@@ -40,12 +42,13 @@ export default function Index() {
     }, [selectedStudent, displayedExercises, rms]);
 
     useEffect(() => {
-        if (rmsStatus[actions.update] == status.failed) {
+        if (rmsStatus[actions.update] == status.failed && rmsError[actions.update]) {
             Toast.show({
                 type: 'error',
-                text1: rmsError[actions.update] ?? 'Error guardant l\'RM',
+                text1: rmsError[actions.update],
                 position: 'top',
             });
+            dispatch(clearRmsError(actions.update));
         }
 
         if (rmsStatus[actions.update] == status.succeeded) {
@@ -70,7 +73,7 @@ export default function Index() {
     }
 
 
-    return !alumnes || alumnes.length == 0 ? (
+    return user?.tipusUsuari == 'Entrenador' && (!alumnes || alumnes.length == 0) ? (
         <View>
             <Text style={themeStyles.titol1}>Aún no tienes alumnos</Text>
         </View>
@@ -81,11 +84,13 @@ export default function Index() {
                     <Text style={themeStyles.titol1}>RMs</Text>
 
                     {/* Picker alumnes */}
-                    <View style={{ width: "90%", marginVertical: 15, margin: 'auto' }}>
-                        <AutocompleteAlumnes
-                            onSubmit={(id: number) => setSelectedStudent(id)}
-                            initialValue={alumnes.find(a => a.id == selectedStudent)} />
-                    </View>
+                    {user?.tipusUsuari == 'Entrenador' && (
+                        <View style={{ width: "90%", marginVertical: 15, margin: 'auto' }}>
+                            <AutocompleteAlumnes
+                                onSubmit={(id: number) => setSelectedStudent(id)}
+                                initialValue={alumnes.find(a => a.id == selectedStudent)} />
+                        </View>
+                    )}
 
                     {values && displayedExercises.map((exerciseName, i) => {
                         const exercise = exercicis.find((ex) => ex.nom === exerciseName);
