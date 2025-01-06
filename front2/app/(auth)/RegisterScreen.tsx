@@ -10,7 +10,7 @@ import BackButton from '@/components/buttons/BackButton'
 import { emailValidator } from '@/helpers/emailValidator'
 import { passwordValidator } from '@/helpers/passwordValidator'
 import { nameValidator } from '@/helpers/nameValidator'
-import { Link } from 'expo-router';
+import { Link, router } from 'expo-router';
 import { useAppTheme, useThemeStyles } from '@/themes/theme'
 import { useText } from '@/hooks/useText'
 import { useAppDispatch } from '@/store/reduxHooks'
@@ -20,6 +20,8 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { StyleSheet } from 'react-native'
 
 export default function RegisterScreen() {
+  router.replace("/(auth)/verifyEmail")
+  
   const dispatch = useAppDispatch();
   const texts = useText()
   const themeStyles = useThemeStyles()
@@ -105,7 +107,7 @@ export default function RegisterScreen() {
           {texts.SignUp}
         </Button>
         <View style={themeStyles.row}>
-          <Text>{texts.AlreadyHaveAccount}</Text>
+          <Text style={{marginRight: 5}}>{texts.AlreadyHaveAccount}</Text>
           <Link href={'/'} style={themeStyles.link}>{texts.SignIn}</Link>
         </View>
       </Background>
