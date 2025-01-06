@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
-import { View, Switch } from 'react-native'
+import { View, Switch, Pressable } from 'react-native'
 import { Text } from 'react-native-paper'
 import Background from '@/components/Background'
 import Logo from '@/components/Logo'
 import Header from '@/components/Header'
-import Button from '@/components/Button'
 import TextInput from '@/components/inputs/TextInput'
 import BackButton from '@/components/buttons/BackButton'
 import { emailValidator } from '@/helpers/emailValidator'
@@ -21,7 +20,7 @@ import { StyleSheet } from 'react-native'
 
 export default function RegisterScreen() {
   router.replace("/(auth)/verifyEmail")
-  
+
   const dispatch = useAppDispatch();
   const texts = useText()
   const themeStyles = useThemeStyles()
@@ -66,7 +65,7 @@ export default function RegisterScreen() {
           value={credentials.tipusUsuariID == 2}
           style={styles.switch}
         />
-        <Text style={[themeStyles.text, {fontSize: 20, marginBottom: 15}]}>{credentials.tipusUsuariID == 3 ? "Entrenador" : "Alumne"}</Text>
+        <Text style={[themeStyles.text, { fontSize: 20, marginBottom: 15 }]}>{credentials.tipusUsuariID == 3 ? "Entrenador" : "Alumne"}</Text>
         <TextInput
           label={texts.Name}
           enterKeyHint="next"
@@ -99,15 +98,11 @@ export default function RegisterScreen() {
           secureTextEntry
           containerStyle={{ width: "80%", marginBottom: 10 }}
         />
-        <Button
-          mode="contained"
-          onPress={onSignUpPressed}
-          style={{ marginTop: 24 }}
-        >
-          {texts.SignUp}
-        </Button>
+        <Pressable style={[themeStyles.button1, { marginBottom: 7 }]} onPress={onSignUpPressed}>
+          <Text style={themeStyles.button1Text}>{texts.SignUp}</Text>
+        </Pressable>
         <View style={themeStyles.row}>
-          <Text style={{marginRight: 5}}>{texts.AlreadyHaveAccount}</Text>
+          <Text style={{ marginRight: 5 }}>{texts.AlreadyHaveAccount}</Text>
           <Link href={'/'} style={themeStyles.link}>{texts.SignIn}</Link>
         </View>
       </Background>

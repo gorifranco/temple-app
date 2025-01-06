@@ -203,7 +203,7 @@ export function useThemeStyles() {
     },
     row: {
       flexDirection: 'row',
-      marginTop: 4,
+      marginTop: 7,
     },
     link: {
       fontWeight: 'bold',

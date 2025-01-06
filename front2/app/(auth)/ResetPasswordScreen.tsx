@@ -4,15 +4,18 @@ import BackButton from '@/components/buttons/BackButton'
 import Logo from '@/components/Logo'
 import Header from '@/components/Header'
 import TextInput from '@/components/inputs/TextInput'
-import Button from '@/components/Button'
 import { emailValidator } from '@/helpers/emailValidator'
 import { router } from 'expo-router'
 import { useText } from '@/hooks/useText'
+import { Pressable } from 'react-native'
+import { useThemeStyles } from '@/themes/theme'
+import { Text } from 'react-native'
 
 export default function ResetPasswordScreen() {
+  const themeStyles = useThemeStyles()
   const texts = useText()
   const [email, setEmail] = useState({ value: '', error: '' })
-  
+
 
 
   const sendResetPasswordEmail = () => {
@@ -26,14 +29,14 @@ export default function ResetPasswordScreen() {
 
   return (
     <Background>
-      <BackButton href={"/LoginScreen"}/>
+      <BackButton href={"/"} />
       <Logo />
       <Header>{texts.RestorePassword}</Header>
       <TextInput
         label="Email"
         enterKeyHint="done"
         value={email.value}
-        onChangeText={(text:string) => setEmail({ value: text, error: '' })}
+        onChangeText={(text: string) => setEmail({ value: text, error: '' })}
         error={!!email.error}
         errorText={email.error}
         autoCapitalize="none"
@@ -42,13 +45,10 @@ export default function ResetPasswordScreen() {
         inputMode="email"
         description="You will receive email with password reset link."
       />
-      <Button
-        mode="contained"
+      <Pressable
         onPress={sendResetPasswordEmail}
-        style={{ marginTop: 16 }}
-      >
-        {texts.SendInstructions}
-      </Button>
+        style={[themeStyles.button1, { marginBottom: 7 }]}
+      ><Text style={themeStyles.button1Text}>{texts.SendInstructions}</Text></Pressable>
     </Background>
   )
 }
