@@ -72,6 +72,32 @@ func (h *Handler) GetRmsEntrenador(c *gin.Context) {
 	c.JSON(http.StatusOK, models.SuccessResponse{Data: rms})
 }
 
+
+// @Summary Get all rms of a student
+// @Description Retrieves all the rms of a student from the database.
+// @Tags Rms
+// @Security Bearer
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.SuccessResponse{data=[]models.RmsResponse}
+// @Failure 401 {object} models.ErrorResponse "Unauthorized"
+// @Failure 404 {object} models.ErrorResponse "Not found"
+// @Failure 500 {object} models.ErrorResponse "Internal server error"
+// @Router /api/rms [get]
+func (h *Handler) GetRmsBasic(c *gin.Context) {
+	var rms []models.RmsResponse
+
+	if err := h.DB.Table("rms").Where("usuari_id = ?", c.MustGet("user").(*models.Usuari).ID).Select("id, usuari_id, exercici_id, pes").Scan(&rms).Error; err != nil {
+		c.AbortWithStatusJSON(http.StatusNotFound, models.ErrorResponse{Error: err.Error()})
+		return
+	}
+	if rms == nil {
+		rms = []models.RmsResponse{}
+	}
+
+	c.JSON(http.StatusOK, models.SuccessResponse{Data: rms})
+}
+
 // @Summary Upadate an rm
 // @Description Updates a rm in the database.
 // @Tags Rms

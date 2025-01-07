@@ -77,7 +77,9 @@ func Routing() *gin.Engine {
 		entrenador.GET("/resultats/:mes/:any", handler.GetResultatsPerMes)
 		entrenador.GET("/rms", handler.GetRmsEntrenador)
 	}
+
 	router.PUT("/api/rms", auth.UserAuthMiddleware([]string{}), handler.UpdateRm)
+	router.GET("/api/rms", auth.UserAuthMiddleware([]string{"Basic"}), handler.GetRmsBasic)
 	router.POST("/api/solicitudUnioEntrenador", auth.UserAuthMiddleware([]string{}), handler.SolicitarUnioEntrenador)
 	router.GET("/api/configuracioEntrenador", auth.UserAuthMiddleware([]string{}), handler.FindConfiguracioEntrenador)
 	router.POST("api/guardarResultats", auth.UserAuthMiddleware([]string{}), handler.GuardarResultats)

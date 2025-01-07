@@ -3,7 +3,7 @@ import TextInput from '@/components/inputs/TextInput';
 import { selectAllAlumnes } from '@/store/alumnesSlice';
 import { selectExercicis } from '@/store/exercicisSlice';
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
-import { clearRmsError, selectAllRms, selectRmsError, selectRmsStatus, updateRm } from '@/store/rmsSlice';
+import { clearRmsError, clearRmsStatus, selectAllRms, selectRmsError, selectRmsStatus, updateRm } from '@/store/rmsSlice';
 import { useThemeStyles } from '@/themes/theme';
 import React, { useEffect, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
@@ -57,12 +57,14 @@ export default function Index() {
                 text1: 'RM actualitzat',
                 position: 'top',
             });
+            dispatch(clearRmsStatus(actions.update));
         }
     }, [rmsStatus]);
 
 
     function handleSave(index: number) {
-        dispatch(updateRm({ usuariID: selectedStudent, exerciciID: editing!, pes: values[index] }));
+        console.log(user)
+        dispatch(updateRm({ usuariID: user!.tipusUsuari == 'Entrenador' ? selectedStudent : user!.id, exerciciID: editing!, pes: values[index] }));
         if (rmsStatus[actions.update] == status.pending) {
             Toast.show({
                 type: 'success',

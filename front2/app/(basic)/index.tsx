@@ -14,7 +14,7 @@ import Entreno from '@/components/viewers/Entreno';
 import { actions, status } from '@/types/apiTypes';
 import { useText } from '@/hooks/useText';
 import { getExercicis, selectExercicisStatus } from '@/store/exercicisSlice';
-import { getRmsEntrenador, selectRmsStatus } from '@/store/rmsSlice';
+import { getRmsBasic, getRmsEntrenador, selectRmsStatus } from '@/store/rmsSlice';
 
 export default function Index() {
   const texts = useText();
@@ -44,7 +44,7 @@ export default function Index() {
           if (exercicisStatus == "idle") dispatch(getExercicis())
           if (configStatus == "idle") dispatch(getConfig())
           if (reservesStatus[actions.index] == status.idle) dispatch(getReservesBasic())
-          if (rmsStatus[actions.index] == status.idle) dispatch(getRmsEntrenador())
+          if (rmsStatus[actions.index] == status.idle) dispatch(getRmsBasic())
       }, []);
   
 

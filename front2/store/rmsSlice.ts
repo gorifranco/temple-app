@@ -48,6 +48,33 @@ export const getRmsEntrenador = createAsyncThunk<
   return data.data;
 });
 
+// Fetch rms basic API
+export const getRmsBasic = createAsyncThunk<
+  RmType[], // Expected result type
+  void, // No parameters required here
+  { state: RootState }
+>("alumne/getRmsBasic", async (_, { getState, rejectWithValue }) => {
+  const state = getState();
+  const token = state.auth.user?.token;
+
+  const response = await fetch(
+    process.env.EXPO_PUBLIC_API_URL + "/rms",
+    {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  const data = await response.json();
+  if (!response.ok) {
+    return rejectWithValue(data.error ?? "Failed to fetch rutines");
+  }
+  return data.data;
+});
+
+// Update rm
 export const updateRm = createAsyncThunk<
   RmType, // Expected result type
   { usuariID: number; exerciciID: number; pes: number }, // Parameters type
@@ -90,6 +117,9 @@ const rmsSlice = createSlice({
     clearRmsError: (state, action: PayloadAction<actions>) => {
       state.errors[action.payload] = null;
   },
+    clearRmsStatus: (state, action: PayloadAction<actions>) => {
+      state.actionsStatus[action.payload] = status.idle;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -137,5 +167,5 @@ export const selectAllRms = (state: RootState) => state.rms.rms;
 export const selectRmsStatus = (state: RootState) => state.rms.actionsStatus;
 export const selectRmsError = (state: RootState) => state.rms.errors;
 
-export const { deleteRmsSlice, clearRmsError } = rmsSlice.actions;
+export const { deleteRmsSlice, clearRmsError, clearRmsStatus } = rmsSlice.actions;
 export default rmsSlice.reducer;

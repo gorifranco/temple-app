@@ -16,6 +16,7 @@ import (
 // @Description Data returned when logging in
 // swagger:model UserResponse
 type UserResponse struct {
+	ID             uint   `json:"id"`
 	Nom            string `json:"nom"`
 	Email          string `json:"email"`
 	Token          string `json:"token"`
@@ -82,6 +83,7 @@ func (h *Handler) Login(c *gin.Context) {
 
 	//Builds the response
 	response := UserResponse{
+		ID:          user.ID,
 		Nom:         user.Nom,
 		Email:       user.Email,
 		Token:       token,
