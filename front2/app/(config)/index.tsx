@@ -1,7 +1,7 @@
 import TextInput from '@/components/inputs/TextInput';
 import HorariConfig from '@/components/viewers/HorariConfig';
 import { configValidator } from '@/helpers/validators';
-import { logoutRedux } from '@/store/authSlice';
+import { logoutRedux, selectUser } from '@/store/authSlice';
 import { guardarConfiguracio, selectConfig } from '@/store/configSlice';
 import { useAppDispatch, useAppSelector } from '@/store/reduxHooks';
 import { useAppTheme, useThemeStyles } from '@/themes/theme';
@@ -13,6 +13,7 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Index() {
+    const user = useAppSelector(selectUser);
     const appTheme = useAppTheme();
     const themeStyles = useThemeStyles();
     const dispatch = useAppDispatch();
@@ -45,49 +46,54 @@ export default function Index() {
             <ScrollView>
 
                 {/* Horari */}
-                <HorariConfig />
+                {user!.tipusUsuari == "Entrenador" &&
+                    (
+                        <View>
+                            <HorariConfig />
 
-                <View style={{ width: "80%", marginHorizontal: "auto", marginVertical: 10, marginBottom: 10, display: "flex", flexDirection: "row" }}>
-                    <Text style={[themeStyles.text, { marginRight: 10 }]}>Duració de les sessions (min)</Text>
-                    <Pressable onPress={() => setTimepickerVisible(true)}>
-                        <TextInput
-                            containerStyle={{ width: 68 }}
-                            inputStyle={{ textAlign: "right" }}
-                            enterKeyHint="done"
-                            value={configTmp.duracioSessions?.toString() ?? ""}
-                            onChangeText={(text: string) => setConfigTmp({ ...configTmp, duracioSessions: Number(text.replace(/[^0-9]/g, '')) })}
-                            error={!!errors.duracioSessions}
-                            errorText={errors.duracioSessions}
-                            autoCapitalize="none"
-                            inputMode="numeric"
-                            maxLength={3}
-                            editable={false}
-                        />
-                    </Pressable>
-                </View>
+                            <View style={{ width: "80%", marginHorizontal: "auto", marginVertical: 10, marginBottom: 10, display: "flex", flexDirection: "row" }}>
+                                <Text style={[themeStyles.text, { marginRight: 10 }]}>Duració de les sessions (min)</Text>
+                                <Pressable onPress={() => setTimepickerVisible(true)}>
+                                    <TextInput
+                                        containerStyle={{ width: 68 }}
+                                        inputStyle={{ textAlign: "right" }}
+                                        enterKeyHint="done"
+                                        value={configTmp.duracioSessions?.toString() ?? ""}
+                                        onChangeText={(text: string) => setConfigTmp({ ...configTmp, duracioSessions: Number(text.replace(/[^0-9]/g, '')) })}
+                                        error={!!errors.duracioSessions}
+                                        errorText={errors.duracioSessions}
+                                        autoCapitalize="none"
+                                        inputMode="numeric"
+                                        maxLength={3}
+                                        editable={false}
+                                    />
+                                </Pressable>
+                            </View>
 
-                {/* Input max students per session */}
-                <View style={{ width: "80%", marginHorizontal: "auto", marginVertical: 10, marginBottom: 10, display: "flex", flexDirection: "row" }}>
-                    <Text style={[themeStyles.text, { marginRight: 10 }]}>Alumnes per sessió</Text>
-                    <TextInput
-                        maxLength={3}
-                        containerStyle={{ width: 68 }}
-                        inputStyle={[{ textAlign: "right" }]}
-                        enterKeyHint="done"
-                        value={configTmp.maxAlumnesPerSessio?.toString() ?? ""}
-                        onChangeText={(text: string) => setConfigTmp({ ...configTmp, maxAlumnesPerSessio: Number(text.replace(/[^0-9]/g, '')) })}
-                        error={!!errors.maxAlumnesPerSessio}
-                        errorText={errors.maxAlumnesPerSessio}
-                        autoCapitalize="none"
-                        inputMode="numeric"
-                    />
-                </View>
 
-                <Pressable
-                    style={[themeStyles.button1, { marginBottom: 10 }]}
-                    onPress={() => handleCanviarConfiguracio()}>
-                    <Text style={themeStyles.button1Text}>Canviar configuració</Text>
-                </Pressable>
+                            <View style={{ width: "80%", marginHorizontal: "auto", marginVertical: 10, marginBottom: 10, display: "flex", flexDirection: "row" }}>
+                                <Text style={[themeStyles.text, { marginRight: 10 }]}>Alumnes per sessió</Text>
+                                <TextInput
+                                    maxLength={3}
+                                    containerStyle={{ width: 68 }}
+                                    inputStyle={[{ textAlign: "right" }]}
+                                    enterKeyHint="done"
+                                    value={configTmp.maxAlumnesPerSessio?.toString() ?? ""}
+                                    onChangeText={(text: string) => setConfigTmp({ ...configTmp, maxAlumnesPerSessio: Number(text.replace(/[^0-9]/g, '')) })}
+                                    error={!!errors.maxAlumnesPerSessio}
+                                    errorText={errors.maxAlumnesPerSessio}
+                                    autoCapitalize="none"
+                                    inputMode="numeric"
+                                />
+                            </View>
+
+                            <Pressable
+                                style={[themeStyles.button1, { marginBottom: 10 }]}
+                                onPress={() => handleCanviarConfiguracio()}>
+                                <Text style={themeStyles.button1Text}>Canviar configuració</Text>
+                            </Pressable>
+                        </View>
+                    )}
 
                 {/* Logout */}
                 <Pressable

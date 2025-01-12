@@ -23,10 +23,13 @@ export default function Index() {
     const rms = useAppSelector(selectAllRms);
     const rmsStatus = useAppSelector(selectRmsStatus);
     const rmsError = useAppSelector(selectRmsError);
-    const [selectedStudent, setSelectedStudent] = useState<number>(alumnes && alumnes.length > 0 ? alumnes[0].id : user!.id)
-    const [displayedExercises, setDisplayedExercises] = useState<string[]>(["Press de banca", "Sentadilla", "Peso muerto", "Press militar"]);
+    const [selectedStudent, setSelectedStudent] = useState<number>(user!.tipusUsuari == 'Entrenador' ? alumnes && alumnes.length > 0 ? alumnes[0].id : user!.id : user!.id)
+    const mainExercises = ["Press de banca", "Sentadilla", "Peso muerto", "Press militar"];
+    const [displayedExercises, setDisplayedExercises] = useState<string[]>(mainExercises);
+    const allExercises = [...mainExercises].concat(exercicis.map(ex => ex.nom).filter(ex => !mainExercises.includes(ex)));
     const [editing, setEditing] = useState<number | null>(null);
     const [values, setValues] = useState<number[]>([0, 0, 0, 0])
+
     useEffect(() => {
         const newValues = displayedExercises.map((exerciseName) => {
             const exercise = exercicis.find((ex) => ex.nom === exerciseName);
@@ -86,7 +89,7 @@ export default function Index() {
                     <Text style={themeStyles.titol1}>RMs</Text>
 
                     {/* Picker alumnes */}
-                    {user?.tipusUsuari == 'Entrenador' && (
+                    {user!.tipusUsuari == 'Entrenador' && (
                         <View style={{ width: "90%", marginVertical: 15, margin: 'auto' }}>
                             <AutocompleteAlumnes
                                 onSubmit={(id: number) => setSelectedStudent(id)}
@@ -117,7 +120,7 @@ export default function Index() {
                                             borderRadius: 5,
                                             padding: 5,
                                         }}
-                                        value={values[i].toString()}
+                                        value={values[i]?values[i].toString():0}
                                         onFocus={() => {
                                             setEditing(exercise.id);
                                         }}
@@ -139,10 +142,15 @@ export default function Index() {
                             </View>
                         );
                     })}
-
-                    <Pressable style={{ marginBottom: 20 }}>
-                        <Text style={themeStyles.subtitle}>Ver mas</Text>
-                    </Pressable>
+                    {displayedExercises.length == mainExercises.length ? (
+                        <Pressable style={{ marginBottom: 20 }} onPress={() => setDisplayedExercises(allExercises)}>
+                            <Text style={themeStyles.subtitle}>Ver mas</Text>
+                        </Pressable>
+                    ) : (
+                        <Pressable style={{ marginBottom: 20 }} onPress={() => setDisplayedExercises(mainExercises)}>
+                            <Text style={themeStyles.subtitle}>Ver menos</Text>
+                        </Pressable>
+                    )}
 
 
                     {/* <View style={{ width: "80%", marginBottom: 10, marginHorizontal: "auto" }}>
